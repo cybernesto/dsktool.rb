@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_simple_dos_dsk (TestDOSDisks)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File test/tc_dos_disks.rb, line 16</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_simple_dos_dsk</span>
+                <span class="ruby-identifier">dskname</span>=<span class="ruby-value str">&quot;dos33_with_adt.dsk&quot;</span>
+                <span class="ruby-identifier">dsk</span>=<span class="ruby-constant">DSK</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">dskname</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">dsk</span>.<span class="ruby-identifier">is_dos33?</span>,<span class="ruby-node">&quot;#{dskname} should be DOS 3.3 format&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">dsk</span>.<span class="ruby-identifier">files</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>,<span class="ruby-node">&quot;#{dskname} should have at least one file&quot;</span>)
+                
+                <span class="ruby-identifier">hello_file</span>=<span class="ruby-identifier">dsk</span>.<span class="ruby-identifier">files</span>[<span class="ruby-value str">&quot;HELLO&quot;</span>]
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">hello_file!</span>=<span class="ruby-keyword kw">nil</span>,<span class="ruby-node">&quot;#{dskname} should have a file called HELLO&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">hello_file</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-constant">AppleSoftFile</span>),<span class="ruby-value str">&quot;HELLO should be an AppleSoft file&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">hello_file</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>,<span class="ruby-value str">&quot;HELLO should have non-zero length&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">hello_file</span>.<span class="ruby-identifier">to_s</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">5</span>]<span class="ruby-operator">==</span><span class="ruby-value str">&quot;10 REM&quot;</span>,<span class="ruby-value str">&quot;HELLO should start '10 REM'&quot;</span>)
+
+                <span class="ruby-identifier">binary_file</span>=<span class="ruby-identifier">dsk</span>.<span class="ruby-identifier">files</span>[<span class="ruby-value str">&quot;MUFFIN&quot;</span>]
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">binary_file!</span>=<span class="ruby-keyword kw">nil</span>,<span class="ruby-node">&quot;#{dskname} should have a file called MUFFIN&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">binary_file</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-constant">BinaryFile</span>),<span class="ruby-value str">&quot;HELLO should be an Binary file&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">binary_file</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>,<span class="ruby-value str">&quot;MUFFIN should have non-zero length&quot;</span>)                
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">binary_file</span>.<span class="ruby-identifier">disassembly</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>,<span class="ruby-value str">&quot;MUFFIN disassembly should have non-zero length&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">binary_file</span>.<span class="ruby-identifier">disassembly</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">4</span>]<span class="ruby-operator">==</span><span class="ruby-value str">&quot;0803:&quot;</span>,<span class="ruby-value str">&quot;MUFFIN disassembly should start at $803&quot;</span>)
+
+                
+                <span class="ruby-identifier">integer_file</span>=<span class="ruby-identifier">dsk</span>.<span class="ruby-identifier">files</span>[<span class="ruby-value str">&quot;APPLESOFT&quot;</span>]
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file!</span>=<span class="ruby-keyword kw">nil</span>,<span class="ruby-node">&quot;#{dskname} should have a file called APPLESOFT&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-constant">IntegerBasicFile</span>),<span class="ruby-value str">&quot;HELLO should be an IntegetBasic file&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>,<span class="ruby-value str">&quot;APPLESOFT should have non-zero length&quot;</span>)
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file</span>.<span class="ruby-identifier">to_s</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">5</span>]<span class="ruby-operator">==</span><span class="ruby-value str">&quot;10 REM&quot;</span>,<span class="ruby-value str">&quot;APPLESOFT should start '10 REM'&quot;</span>)
+                
+
+        <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: D65</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">D65</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../files/lib/D65_rb.html">
+                lib/D65.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Object
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000007">annotations</a>&nbsp;&nbsp;
+      <a href="#M000008">disassemble</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+    <div id="constants-list">
+      <h3 class="section-bar">Constants</h3>
+
+      <div class="name-list">
+        <table summary="Constants">
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">OPCODES</td>
+          <td>=</td>
+          <td class="context-item-value">[         ['BRK',:imp], ['ORA',:inx], ['???',:imp], ['???',:imp], #00..03         ['TSB',:zpg], ['ORA',:zpg], ['ASL',:zpg], ['???',:imp], #04..07         ['PHP',:imp], ['ORA',:imm], ['ASL',:acc], ['???',:imp], #08..0b         ['TSB',:abs], ['ORA',:abs], ['ASL',:abs], ['???',:imp], #0c..0f         ['BPL',:rel], ['ORA',:iny], ['ORA',:inz], ['???',:imp], #10..13         ['TRB',:zpg], ['ORA',:zpx], ['ASL',:zpx], ['???',:imp], #14..17         ['CLC',:imp], ['ORA',:aby], ['INC',:acc], ['???',:imp], #18..1B         ['INC',:abs], ['ORA',:abx], ['ASL',:abx], ['???',:imp], #1c..1f         ['JSR',:abs], ['AND',:inx], ['???',:imp], ['???',:imp], #20..23         ['BIT',:zpg], ['AND',:zpg], ['ROL',:zpg], ['???',:imp], #24..27         ['PLP',:imp], ['AND',:imm], ['ROL',:acc], ['???',:imp], #28..2b         ['BIT',:abs], ['AND',:abs], ['ROL',:abs], ['???',:imp], #2c..2f         ['BMI',:rel], ['AND',:iny], ['AND',:inz], ['???',:imp], #30..33         ['BIT',:zpx], ['AND',:zpx], ['ROL',:zpx], ['???',:imp], #34..37         ['SEC',:imp], ['AND',:aby], ['DEC',:acc], ['???',:imp], #38..3b         ['BIT',:inx], ['AND',:abx], ['ROL',:abx], ['???',:imp], #3c..3f         ['RTI',:imp], ['EOR',:inx], ['???',:imp], ['???',:imp], #40..43         ['???',:imp], ['EOR',:zpg], ['LSR',:zpg], ['???',:imp], #44..47         ['PHA',:imp], ['EOR',:imm], ['LSR',:acc], ['???',:imp], #48..4b         ['JMP',:abs], ['EOR',:abs], ['LSR',:abs], ['???',:imp], #4c..4f         ['BVC',:rel], ['EOR',:iny], ['EOR',:inz], ['???',:imp], #50..53         ['???',:imp], ['EOR',:zpx], ['LSR',:zpx], ['???',:imp], #54..57         ['CLI',:imp], ['EOR',:aby], ['PHY',:imp], ['???',:imp], #58..5b         ['???',:imp], ['EOR',:abx], ['LSR',:abx], ['???',:imp], #5c..5f         ['RTS',:imp], ['ADC',:inx], ['???',:imp], ['???',:imp], #60..63         ['STZ',:zpg], ['ADC',:zpg], ['ROR',:zpg], ['???',:imp], #64..67         ['PLA',:imp], ['ADC',:imm], ['ROR',:acc], ['???',:imp], #68..6b         ['JMP',:ind], ['ADC',:abs], ['ROR',:abs], ['???',:imp], #6c..6f         ['BVS',:rel], ['ADC',:iny], ['ADC',:inz], ['???',:imp], #70..73         ['STZ',:zpx], ['ADC',:zpx], ['ROR',:zpx], ['???',:imp], #74..77         ['SEI',:imp], ['ADC',:aby], ['PLY',:imp], ['???',:imp], #78..7b         ['JMP',:inx], ['ADC',:abx], ['ROR',:abx], ['???',:imp], #7c..7f         ['BRA',:rel], ['STA',:inx], ['???',:imp], ['???',:imp], #80..83         ['STY',:zpg], ['STA',:zpg], ['STX',:zpg], ['???',:imp], #84..87         ['DEY',:imp], ['BIT',:imm], ['TXA',:imp], ['???',:imp], #88..8b         ['STY',:abs], ['STA',:abs], ['STX',:abs], ['???',:imp], #8c..8f         ['BCC',:rel], ['STA',:iny], ['STA',:inz], ['???',:imp], #90..93         ['STY',:zpx], ['STA',:zpx], ['STX',:zpy], ['???',:imp], #94..97         ['TYA',:imp], ['STA',:aby], ['TXS',:imp], ['???',:imp], #98..9b         ['STZ',:abs], ['STA',:abx], ['STZ',:abx], ['???',:imp], #9c..9f         ['LDY',:imm], ['LDA',:inx], ['LDX',:imm], ['???',:imp], #a0..a3         ['LDY',:zpg], ['LDA',:zpg], ['LDX',:zpg], ['???',:imp], #a4..a7         ['TAY',:imp], ['LDA',:imm], ['TAX',:imp], ['???',:imp], #a8..ab         ['LDY',:abs], ['LDA',:abs], ['LDX',:abs], ['???',:imp], #ab..af         ['BCS',:rel], ['LDA',:iny], ['LDA',:inz], ['???',:imp], #b0..b3         ['LDY',:zpx], ['LDA',:zpx], ['LDX',:zpy], ['???',:imp], #b4..b7         ['CLV',:imp], ['LDA',:aby], ['TSX',:imp], ['???',:imp], #b8..bb         ['LDY',:abx], ['LDA',:abx], ['LDX',:aby], ['???',:imp], #bc..bf         ['CPY',:imm], ['CMP',:inx], ['???',:imp], ['???',:imp], #c0..c3         ['CPY',:zpg], ['CMP',:zpg], ['DEC',:zpg], ['???',:imp], #c4..c7         ['INY',:imp], ['CMP',:imm], ['DEX',:imp], ['???',:imp], #c8..cb         ['CPY',:abs], ['CMP',:abs], ['DEC',:abs], ['???',:imp], #cc..cf         ['BNE',:rel], ['CMP',:iny], ['CMP',:inz], ['???',:imp], #d0..d3         ['???',:imp], ['CMP',:zpx], ['DEC',:zpx], ['???',:imp], #d4..d7         ['CLD',:imp], ['CMP',:aby], ['PHX',:imp], ['???',:imp], #d8..db         ['???',:imp], ['CMP',:abx], ['DEC',:abx], ['???',:imp], #db..df         ['CPX',:imm], ['SBC',:inx], ['???',:imp], ['???',:imp], #e0..e3         ['CPX',:zpg], ['SBC',:zpg], ['INC',:zpg], ['???',:imp], #e4..e7         ['INX',:imp], ['SBC',:imm], ['NOP',:imp], ['???',:imp], #e8..eb         ['CPX',:abs], ['SBC',:abs], ['INC',:abs], ['???',:imp], #ec..ef         ['BEQ',:rel], ['SBC',:iny], ['SBC',:ind], ['???',:imp], #f0..f3         ['???',:imp], ['SBC',:zpx], ['INC',:zpx], ['???',:imp], #f4..f7         ['SED',:imp], ['SBC',:aby], ['PLX',:imp], ['???',:imp], #f8..fb         ['???',:imp], ['SBC',:abx], ['INC',:abx], ['???',:imp]</td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">OPCODE_SIZE</td>
+          <td>=</td>
+          <td class="context-item-value">{         :imp,1,         :acc,1,         :imm,2,         :abs,3,         :abx,3,         :aby,3,         :zpg,2,         :zpx,2,         :zpy,2,         :ind,3,         :inx,2,         :iny,2,         :inz,2,         :rel,2</td>
+        </tr>
+        </table>
+      </div>
+    </div>
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000007" class="method-detail">
+        <a name="M000007"></a>
+
+        <div class="method-heading">
+          <a href="D65.src/M000007.html" target="Code" class="method-signature"
+            onclick="popupCode('D65.src/M000007.html');return false;">
+          <span class="method-name">annotations</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+map of memory locations and annotations e.g. {0xFF3A=&gt;&quot;BELL -
+writes a ^G to stdout&quot;}
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000008" class="method-detail">
+        <a name="M000008"></a>
+
+        <div class="method-heading">
+          <a href="D65.src/M000008.html" target="Code" class="method-signature"
+            onclick="popupCode('D65.src/M000008.html');return false;">
+          <span class="method-name">disassemble</span><span class="method-args">(buffer,start_address=0)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

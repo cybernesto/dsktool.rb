@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>disassemble (D65)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/D65.rb, line 104</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-constant">D65</span>.<span class="ruby-identifier">disassemble</span>(<span class="ruby-identifier">buffer</span>,<span class="ruby-identifier">start_address</span>=<span class="ruby-value">0</span>)
+        
+                <span class="ruby-identifier">index</span>=<span class="ruby-value">0</span>
+                <span class="ruby-identifier">s</span>=<span class="ruby-value str">&quot;&quot;</span>
+                <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">index</span><span class="ruby-operator">&lt;</span><span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">length</span>
+                        <span class="ruby-identifier">byte</span>=<span class="ruby-identifier">buffer</span>[<span class="ruby-identifier">index</span>]
+                        <span class="ruby-identifier">current_address</span>=<span class="ruby-identifier">start_address</span><span class="ruby-operator">+</span><span class="ruby-identifier">index</span>
+                        <span class="ruby-identifier">opcode_name</span>=<span class="ruby-constant">OPCODES</span>[<span class="ruby-identifier">byte</span>][<span class="ruby-value">0</span>]
+                        <span class="ruby-identifier">operand_type</span>=<span class="ruby-constant">OPCODES</span>[<span class="ruby-identifier">byte</span>][<span class="ruby-value">1</span>]
+                        <span class="ruby-identifier">next_byte</span>=(<span class="ruby-identifier">index</span><span class="ruby-operator">&lt;</span><span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">-</span><span class="ruby-value">1</span><span class="ruby-operator">?</span><span class="ruby-identifier">buffer</span>[<span class="ruby-identifier">index</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>]<span class="ruby-operator">:</span><span class="ruby-value">0</span>)
+                        <span class="ruby-identifier">next_word</span>=(<span class="ruby-identifier">index</span><span class="ruby-operator">&lt;</span><span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">-</span><span class="ruby-value">2</span><span class="ruby-operator">?</span><span class="ruby-identifier">buffer</span>[<span class="ruby-identifier">index</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>]<span class="ruby-operator">+</span><span class="ruby-identifier">buffer</span>[<span class="ruby-identifier">index</span><span class="ruby-operator">+</span><span class="ruby-value">2</span>]<span class="ruby-operator">*</span><span class="ruby-value">256</span><span class="ruby-operator">:</span><span class="ruby-value">0</span>)
+                        <span class="ruby-identifier">operand_format</span>,<span class="ruby-identifier">operand_address</span>= <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">operand_type</span>
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:imp</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">''</span>,<span class="ruby-value str">''</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:acc</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;A&quot;</span>,<span class="ruby-value str">''</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:imm</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;\#$%02X&quot;</span>,<span class="ruby-identifier">next_byte</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:abs</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;$%04X&quot;</span>,<span class="ruby-identifier">next_word</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:abx</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;$%04X,X&quot;</span>,<span class="ruby-identifier">next_word</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:aby</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;$%04X,Y&quot;</span>,<span class="ruby-identifier">next_word</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:zpg</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;$%02X&quot;</span>,<span class="ruby-identifier">next_byte</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:zpx</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;$%02X,X&quot;</span>,<span class="ruby-identifier">next_byte</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:zpy</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;$%02X,Y&quot;</span>,<span class="ruby-identifier">next_byte</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:ind</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;($%04X)&quot;</span>,<span class="ruby-identifier">next_word</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:inx</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;($%04X),X&quot;</span>,<span class="ruby-identifier">next_word</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:iny</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;($%04X),Y&quot;</span>,<span class="ruby-identifier">next_word</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:inz</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;($%02X),Y&quot;</span>,<span class="ruby-identifier">next_byte</span>]
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:rel</span> <span class="ruby-keyword kw">then</span> [<span class="ruby-value str">&quot;$%04X&quot;</span>,(<span class="ruby-identifier">current_address</span><span class="ruby-operator">+</span><span class="ruby-identifier">next_byte</span>.<span class="ruby-identifier">chr</span>.<span class="ruby-identifier">unpack</span>(<span class="ruby-value str">&quot;c&quot;</span>)[<span class="ruby-value">0</span>]<span class="ruby-operator">+</span><span class="ruby-value">2</span>)<span class="ruby-operator">%</span><span class="ruby-value">0x10000</span>]
+                                <span class="ruby-keyword kw">else</span> 
+                                        <span class="ruby-identifier">abort</span>(<span class="ruby-node">&quot;unknown symbol #{operand_type}&quot;</span>)
+                        <span class="ruby-keyword kw">end</span>
+                        <span class="ruby-identifier">operand</span> = <span class="ruby-identifier">sprintf</span>(<span class="ruby-identifier">operand_format</span>,<span class="ruby-identifier">operand_address</span>)
+                        <span class="ruby-identifier">opcode_size</span>=<span class="ruby-constant">OPCODE_SIZE</span>[<span class="ruby-identifier">operand_type</span>]
+                        <span class="ruby-identifier">instruction_bytes</span>=<span class="ruby-keyword kw">case</span> <span class="ruby-identifier">opcode_size</span>
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-value">1</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">sprintf</span>(<span class="ruby-value str">&quot;%02X      &quot;</span>,<span class="ruby-identifier">byte</span>)
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-value">2</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">sprintf</span>(<span class="ruby-value str">&quot;%02X %02X   &quot;</span>,<span class="ruby-identifier">byte</span>,<span class="ruby-identifier">next_byte</span>)
+                                <span class="ruby-keyword kw">when</span> <span class="ruby-value">3</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">sprintf</span>(<span class="ruby-value str">&quot;%02X %02X %02X&quot;</span>,<span class="ruby-identifier">byte</span>,<span class="ruby-identifier">next_byte</span>,<span class="ruby-identifier">next_word</span><span class="ruby-operator">&gt;&gt;</span><span class="ruby-value">8</span>)
+                        <span class="ruby-keyword kw">end</span>
+
+                        
+                        <span class="ruby-identifier">s</span><span class="ruby-operator">+=</span><span class="ruby-identifier">sprintf</span>(<span class="ruby-value str">&quot;%04X:  %s %s %s  ; &quot;</span>,<span class="ruby-identifier">current_address</span>,<span class="ruby-identifier">instruction_bytes</span>,<span class="ruby-identifier">opcode_name</span>,<span class="ruby-identifier">operand</span>.<span class="ruby-identifier">ljust</span>(<span class="ruby-value">10</span>))
+                        <span class="ruby-identifier">annotation</span>=<span class="ruby-identifier">annotations</span>[<span class="ruby-identifier">operand_address</span>]
+                        <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">annotation</span> <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-identifier">operand_type!</span>=<span class="ruby-identifier">:imm</span>)) <span class="ruby-keyword kw">then</span>
+                                <span class="ruby-identifier">s</span><span class="ruby-operator">+=</span><span class="ruby-value str">&quot;  &quot;</span><span class="ruby-operator">+</span><span class="ruby-identifier">annotation</span>.<span class="ruby-identifier">to_s</span>
+                        <span class="ruby-keyword kw">end</span>
+                        <span class="ruby-identifier">s</span><span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\n&quot;</span>
+                        <span class="ruby-identifier">index</span><span class="ruby-operator">+=</span><span class="ruby-identifier">opcode_size</span>
+                <span class="ruby-keyword kw">end</span>
+        
+                <span class="ruby-identifier">s</span>
+        <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
