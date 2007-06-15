@@ -1,0 +1,199 @@
+---
+0x20: WNDLFT - Text window left-edge (0-39)
+0x21: WNDWDTH - Text window width (1-40)
+0x22: WNDTOP -Text window top-edge (0-23)
+0x23: WNDBTM - Text window bottom (1-24)
+0x24: CH - Horizontal cursor-position (0-39)
+0x25: CV - Vertical cursor-position (0-23)
+0x26: GBASL - low byte of screen address of left end point of line
+0x27: GBASH - high byte of screen address of left end point of line
+0x28: BASL - low byte of left end char position of current line
+0x29: BASH - high byte of left end char position of current line
+0x2B: Boot slot * $10 (after boot only)
+0x2C: H2 - Lo-res line end-point
+0x2E: MASK / CHKSUM
+0x2F: LASTIN - last byte read from cassette
+0x30: COLOR - Lo-res COLOR * $11
+0x32: INVFLAG - Text output format [$3F=INVERSE $FF=NORMAL $7F=FLASH]
+0x33: PROMPT - Prompt-character used by GETLN
+0x34: YSAV 
+0x35: YSAV1
+0x36: CSWL - low byte of stdout routine
+0x37: CSWH - high byte of stdout routine
+0x38: KSWL - low byte of stdin routine
+0x39: KSWH - high byte of stdin routine
+0x3A: PCL - saved program counter (low byte)
+0x3B: PCH - saved program counter (high byte)
+0x45: ACC - saved A 
+0x46: XREG - saved X
+0x47: YREG - saved Y
+0x48: STATUS - saved STATUS register
+0x49: SPNT - saved stack pointer
+0x4A: LOMEM address (INT) (low byte)	
+0x4B: LOMEM address (INT) (high byte)
+0x4C: HIMEM address (INT) (low byte)
+0x4D: HIMEM address (INT) (high byte)
+0x4E: Random-Number Field (low byte)
+0x4F: Random-Number Field (high byte)
+0x67: LOMEM - Start of Applesoft program (low byte)
+0x68: LOMEM - Start of Applesoft program (high byte)
+0x69: HIMEM - Start of varible space & end of Applesoft program (low byte)
+0x6A: HIMEM - Start of varible space & end of Applesoft program (high byte)
+0x6B: Start of array space (FP) (low byte)
+0x6C: Start of array space (FP) (high byte)
+0xCA: Start of Program Address (INT) (low byte)
+0xCB: Start of Program Address (INT) (high byte)
+0xCC: End of Varible Storage (INT) (low byte)
+0xCD: End of Varible Storage (INT) (high byte)
+0xD6: RUN Flag (set to $FF turns Applesoft into run only.)
+0xD8: ONERR Flag (set to $00 cancels ONERR)
+0xDA: "Line# of ONERR Error (low byte)"
+0xDB: "Line# of ONERR Error (high byte)"
+0xDE: ONERR Error Codes 
+0xE0: X Coordinate of last HPLOT (0-279) (low byte)
+0xE1: X Coordinate of last HPLOT (0-279) (high byte)
+0xE2: Y Coordinate of last HPLOT (0-191)
+0xE4: HCOLOR codes:$00=0 $2A=1 $85=2 $7F=3 $80=4 $AA=5 $D5=6 $FF=6
+0xE6: "Hi res plotting page (32=page 1, 64=page 2, 96=page 3)"
+0xE7: SCALE (NOTE:SCALE=0 is equivalent to a SCALE of $FF.)
+0xE8: Shape table start address. (low byte)
+0xE9: Shape table start address. (high byte)
+0xEA: Hi-Res Collision-Check 
+0xF1: SPEED (NOTE:PEEK(241) is 256 minus the current SPEED.)
+0xF3: FLASH Mask
+0xF9: ROT (rotation) value
+0x3F0: BRK handler vector (low byte)
+0x3F1: BRK handler vector (high byte)
+0x3F2: RESET handler vector (low byte)
+0x3F3: RESET handler vector (high byte)
+0x3F4: "Powerup indicator (if not == EOR of #$A5 and $3F3 then RESET leads to cold-start)"
+0x3F5: Applesoft & vector handler - byte 1
+0x3F6: Applesoft & vector handler - byte 2
+0x3F7: Applesoft & vector handler - byte 3
+0x3F8: Control-y handler - byte 1
+0x3F9: Control-y handler - byte 2
+0x3FA: Control-y handler - byte 3
+0x3FB: NMI handler - byte 1
+0x3FC: NMI handler - byte 2
+0x3FD: NMI handler - byte 3
+0x3FE: IRQ vector address - (low byte)
+0x3FB: IRQ vector address - (high byte)
+0xC000: 80STOREOFF - Allow page2 to switch video page1 page2 
+0xC001: 80STOREON - Allow page2 to switch main & aux video memory 
+0xC002: RAMRDOFF - Read enable main memory from $0200-$BFFF 
+0xC003: RAMDRON - Read enable aux memory from $0200-$BFFF 
+0xC004: RAMWRTOFF - Write enable main memory from $0200-$BFFF 
+0xC005: RAMWRTON - Write enable aux memory from $0200-$BFFF 
+0xC006: INTCXROMOFF - Enable slot ROM from $C100-$CFFF 
+0xC007: INTCXROMON - Enable main ROM from $C100-$CFFF 
+0xC008: ALZTPOFF - Enable main memory from $0000-$01FF & avl BSR 
+0xC009: ALTZPON  - Enable aux memory from $0000-$01FF & avl BSR 
+0xC00A: SLOTC3ROMOFF - Enable main ROM from $C300-$C3FF 
+0xC00B: SLOTC3ROMON - Enable slot ROM from $C300-$C3FF 
+0xC00C: 80COLOFF - Turn off 80 column display 
+0xC00D: 80COLON  - Turn on 80 column display 
+0xC00E: ALTCHARSETOFF - Turn off alternate characters 
+0xC00F: ALTCHARSETON - Turn on alternate characters 
+0xC010: AKD - 1=key pressed 0=keys free (clears strobe) 
+0xC011: BSRBANK2 - 1=bank2 available 0=bank1 available 
+0xC012: BSRREADRAM - 1=BSR active for read 0=$D000-$FFFF active 
+0xC013: RAMRD - 0=main $0200-$BFFF active reads 1=aux active 
+0xC014: RAMWRT - 0=main $0200-$BFFF active writes 1=aux writes 
+0xC015: INTCXROM - 1=main $C100-$CFFF ROM active 0=slot active 
+0xC016: ALTZP - 1=aux $0000-$1FF+auxBSR 0=main available 
+0xC017: SLOTC3ROM - 1=slot $C3 ROM active 0=main $C3 ROM active 
+0xC018: 80STORE  - 1=page2 switches main/aux 0=page2 video 
+0xC019: VERTBLANK - 1=vertical retrace on 0=vertical retrace off 
+0xC01A: TEXT - 1=text mode is active 0=graphics mode active 
+0xC01B: MIXED - 1=mixed graphics & text  
+0xC01C: PAGE2 - 1=video page2 selected or aux 
+0xC01D: HIRES - 1=high resolution graphics 0=low resolution 
+0xC01E: ALTCHARSET - 1=alt character set on 0=alt char set off 
+0xC01F: 80COL - 1=80 col display on 0=80 col display off 
+0xC020: TAPEOUT - toggle the cassette output
+0xC030: SPEAKER - toggle speaker diaphragm
+oxC040: STROBE - generate .5 uS low pulse @ Game pin 5
+0xC050: TEXTOFF  - Select graphics mode 
+0xC051: TEXTON - Select text mode 
+0xC052: MIXEDOFF - Use full screen for graphics 
+0xC053: MIXEDON  - Use graphics with 4 lines of text 
+0xC054: PAGE2OFF - Select panel display (or main video memory) 
+0xC055: PAGE2ON  - Select page2 display (or aux video memory) 
+0xC056: HIRESOFF - Select low resolution graphics 
+0xC057: HIRESON - Select high resolution graphics 
+0xC058: SETAN0 - annunciator-0 output to 0
+0xC059: CLRAN0 - annunciator-0 output to 1
+0xC05A: SETAN1 - annunciator-1 output to 0
+0xC05B: CLRAN1 - annunciator-1 output to 1
+0xC05C: SETAN2 - annunciator-2 output to 0
+0xC05D: CLRAN2 - annunciator-2 output to 1
+0xC05E: SETDHIRES - turn on double hi-res
+0xC05F: CLRDHIRES - turn off double hi-res
+0xC060: TAPEIN - bit 7 = data from cassete 
+0xC061: OPNAPPLE - open apple (command) key data
+0xC062: CLSAPPLE - closed apple (option) key data (read)
+0xC07E: SETIOUDIS - enable DHIRES & disable $C058-5F (W)
+0xC07F: CLRIOUDIS - disable DHIRES & enable $C058-5F (W)
+0xC080: RD LC RAM bank2, WR-protect LC RAM
+0xC081: ROMIN - RD ROM, WR-enable LC RAM
+0xC082: RD ROM, WR-protect LC RAM
+0xC083: LCBANK2 - RD LC RAM bank2, WR-enable LC RAM
+0xC084: RD LC RAM bank2, WR-protect LC RAM
+0xC085: RD ROM, WR-enable LC RAM
+0xC086: RD ROM, WR-protect LC RAM
+0xC087: RD LC RAM bank2, WR-enable LC RAM
+0xC088: RD LC RAM bank1, WR-protect LC RAM
+0xC089: RD ROM, WR-enable LC RAM
+0xC08A: RD ROM, WR-protect LC RAM
+0xC08B: LCBANK1 - RD LC RAM bank1, WR-enable LC RAM
+0xC08C: RD LC RAM bank1, WR-protect LC RAM
+0xC08D: RD ROM, WR-enable LC RAM
+0xC08E: RD ROM, WR-protect LC RAM
+0xC08F: LCBANK1 - RD LC RAM bank1, WR-enable LC RAM
+0xC0E8: Turn on disk motor (slot 6)
+0xC0E9: Turn off disk motor (slot 6)
+0xCFFD: CLRC8ROM - disable Slot card C8 ROM
+0xF800: "PLOT - draw block on low res screen - vert position in A, horizontal position in Y"
+0xF819: "HLINE - draw horizontal line - vertical address in A, start horizontal position in Y, end horizontal position in $2C"
+0xF828: "VLINE - draw vertical line of blocks. horizintal coordinate in Y, top vertical coordinate in A,  bottom vertical coordinate in $2D"
+0xF832: "CLRSCR - clear the low res screen"
+0xF836: "CLRTOP - clear top 40 rows of low res screen"
+0xF85F: "NEXTCOL - incriment colour by 3"
+0xF864: "SETCOL - set low res gfx colour to value in A"
+0xF871: "SCRN - read the low res screen. on input, A is vertical position, Y is horizontal. on return, A is color of block"
+0xF941: "PRNTAX - print A & X in hex to stdout"
+0xF948: "PRBLNK - print 3 blank spaces to stdout"
+0xF94A: "PRBL2 - print many blank spaces - X holds count"
+0xFB1E: "PREAD - read a hand control - on input X is control (0..3), on return Y holds value"
+0xFB2F: "INIT - set STATUS in zero page to 0"
+0xFC42: "CLREOP - clear to end of window"
+0xFC58: "HOME - home cursor and clear"
+0xFC9C: "CLREOL - clear to end of line from cursor"
+0xFC9E: "CLREOLZ - clear to end of line, starting from BASL,Y"
+0xFCA8: "WAIT - wait for period of time specified by A. delay is 1/2(26+27A+5A^2) microseconds"
+0xFD0C: "RDKEY - get an input char, using routine at ($38/$39)"
+0xFD1B: "KEYIN - wait for keypress, keycode returned in A"
+0xFD35: "RDCHAR - read a char from stdin"
+0xFD67: "GETLNZ - print CR, then call GETLN"
+0xFD6A: "GETLN - get an input line - uses char in $36 as prompt, input stored in $200, length in X"
+0xFD6F: "GETLN1 - get input line, no prompt"
+0xFD75: "NEXTCHAR - process next char in input buffer"
+0xFD8B: "CROUT1 - return with clear"
+0xFD8E: "CROUT - send a CR to stdout"
+0xFDDA: "PRBYTE - print A to stdout as hex digits"
+0xFDE3: "PRHEX - print low nibble of A to stdout as a hex digit"
+0xFDED: "COUT - output char in A (uses routine at ($36/$37) for output)"
+0xFDF0: "COUT1 - output char in A to screen"
+0xFE2C: "MOVE - destination address in $42/$43, start source in $3C/$3D, end source in $3E/$3F"
+0xFE36: "VERIFY - compare 2 blocks of memory, destination is in $42/$43, start source in $3C/$3D, end address in $3E/3F"
+0xFE80: "SETINV - set inverse mode"
+0xFE84: "SETNORM - set normal mode"
+0xFE89: "SETKBD - set port #0(keyboard) for input"
+0xFE93: "SETVID - set port #0(video) for output"
+0xFECD: "WRITE - write data to cassete. Address of first byte in $3C/$3D, last byte in $3D/$3E"
+0xFEFD: "READ - read from tape. address of first byte in $3C/$3D, end address in $3E/$3D"
+0xFF2D: "PRERR - print ERR to stdout"
+0xFF3A: "BELL - writes a ^G to stdout"
+0xFF3F: "IOREST - load registers with locations $45 to $49"
+0xFF4A: "IOSAVE - save all registers to locations $45 to $49 in order A,X,Y,P,S"
+0xFFBD: "BELL1 - send a beep to the speaker"
