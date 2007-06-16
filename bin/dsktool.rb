@@ -1,5 +1,5 @@
 #
-# dsktool
+# dsktool.rb
 #
 # == Synopsis
 #
@@ -18,12 +18,12 @@
 #  -v | --version               show version number
 #
 # examples:
-#	dsktool -c DOS3MASTR.dsk
-#	dsktool -l FID DOS3MASTR.dsk
-#	dsktool -d fid -o fid.asm DOS3MASTR.dsk
-#	dsktool -e "COLOR DEMOSOFT" DOS3MASTR.dsk
-#	dsktool -e HELLO -o HELLO.bas DOS3MASTR.dsk
-#	dsktool -x DOS3MASTR.dsk
+#	dsktool.rb -c DOS3MASTR.dsk
+#	dsktool.rb -l FID DOS3MASTR.dsk
+#	dsktool.rb -l fid -o fid.asm DOS3MASTR.dsk
+#	dsktool.rb -e "COLOR DEMOSOFT" DOS3MASTR.dsk
+#	dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
+#	dsktool.rb -x DOS3MASTR.dsk
 #
 
 DSKTOOL_VERSION="0.1.2"
