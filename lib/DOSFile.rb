@@ -56,6 +56,53 @@ class BinaryFile < DOSFile
 	end
 end
 
+# Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
+ #Integer Basic file format:
+ # <Length_of_file> (16-bit little endian)
+ # <Line>
+ # ......
+ # <Line>
+ #
+ # where <Line> is:
+ # 1 byte:   Line length
+ # 2 bytes:  Line number, binary little endian
+ # <token>
+ # <token>
+ # <token>
+ # ......
+ # <end-of-line token>
+ #
+ # <token> is one of:
+ # $12 - $7F:   Tokens as listed below: 1 byte/token
+ # $80 - $FF:   ASCII characters with high bit set
+ # $B0 - $B9:   Integer constant, 3 bytes:  $B0-$B9,
+ #                     followed by the integer value in
+ #                     2-byte binary little-endian format
+ #                     (Note: a $B0-$B9 byte preceded by an
+ #                      alphanumeric ASCII(hi_bit_set) byte
+ #                      is not the start of an integer
+ #                      constant, but instead part of a
+ #                      variable name)
+ #
+ # <end-of-line token> is:
+ # $01:         One byte having the value $01
+ #                   (Note: a $01 byte may also appear
+ #                    inside an integer constant)
+ #
+ # Note that the tokens $02 to $11 represent commands which
+ # can be executed as direct commands only -- any attempt to
+ # enter then into an Integer Basic program will be rejected
+ # as a syntax error.  Therefore, no Integer Basic program
+ # which was entered through the Integer Basic interpreter
+ # will contain any of the tokens $02 to $11.  The token $00
+ # appears to be unused and won't appear in Integer Basic
+ # programs either.  However, $00 is used as an end-of-line
+ # marker in S-C Assembler source files, which also are of
+ # DOS file type "I".
+ #
+ # (note here a difference from Applesoft Basic, where there
+ # are no "direct mode only" commands - any Applesoft commands
+ # can be entered into an Applesoft program as well).
 class IntegerBasicFile < DOSFile
 	def file_type
 		"I"
@@ -127,58 +174,6 @@ INTEGER_BASIC_TOKENS=  [
         "DSP",   "TRACE", "PR#",   "IN#",
     ]
 
-
-# Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
-# FID was downloaded from http://stjarnhimlen.se/apple2/
- #   Integer Basic file format:
- #
- #   <Length_of_file> (16-bit little endian)
- #   <Line>
- #   ......
- #   <Line>
- #
- #   where <Line> is:
- #      1 byte:   Line length
- #      2 bytes:  Line number, binary little endian
- #      <token>
- #      <token>
- #      <token>
- #      .......
- #      <end-of-line token>
- #
- #   <token> is one of:
- #      $12 - $7F:   Tokens as listed below: 1 byte/token
- #      $80 - $FF:   ASCII characters with high bit set
- #      $B0 - $B9:   Integer constant, 3 bytes:  $B0-$B9,
- #                     followed by the integer value in
- #                     2-byte binary little-endian format
- #                     (Note: a $B0-$B9 byte preceded by an
- #                      alphanumeric ASCII(hi_bit_set) byte
- #                      is not the start of an integer
- #                      constant, but instead part of a
- #                      variable name)
- #
- #   <end-of-line token> is:
- #      $01:         One byte having the value $01
- #                   (Note: a $01 byte may also appear
- #                    inside an integer constant)
- #
- #  Note that the tokens $02 to $11 represent commands which
- #  can be executed as direct commands only -- any attempt to
- #  enter then into an Integer Basic program will be rejected
- #  as a syntax error.  Therefore, no Integer Basic program
- #  which was entered through the Integer Basic interpreter
- #  will contain any of the tokens $02 to $11.  The token $00
- #  appears to be unused and won't appear in Integer Basic
- #  programs either.  However, $00 is used as an end-of-line
- #  marker in S-C Assembler source files, which also are of
- #  DOS file type "I".
- #
- #  (note here a difference from Applesoft Basic, where there
- #  are no "direct mode only" commands - any Applesoft commands
- #  can be entered into an Applesoft program as well).
- #
- #
 
 	def is_alnum(c)
 		!((c.chr=~/[A-Za-z0-9]/).nil?)
@@ -257,7 +252,19 @@ INTEGER_BASIC_TOKENS=  [
 
 end
 
-
+# Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
+#
+#Applesoft file format:
+# <Length_of_file> (16-bit little endian)
+# <Line>
+# ......
+# <Line>
+# where <Line> is:
+# <Next addr>  (16-bit little endian)
+# <Line no>    (16-bit little endian: 0-65535)
+# <Tokens and/or characters>
+# <End-of-line marker: $00 >
+#
 class AppleSoftFile < DOSFile
 
 	
@@ -293,22 +300,6 @@ private
 		"?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?"
 ]
 
-# Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
-# FID was downloaded from http://stjarnhimlen.se/apple2/
-#
-#Applesoft file format:
-#
-#<Length_of_file> (16-bit little endian)
-#<Line>
-#......
-#<Line>
-#
-#where <Line> is:
-#<Next addr>  (16-bit little endian)
-#<Line no>    (16-bit little endian: 0-65535)
-#<Tokens and/or characters>
-#<End-of-line marker: $00 $00 bytes>
-#
 
 
 	def buffer_as_applesoft_file(buffer)
