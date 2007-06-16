@@ -7,7 +7,7 @@
 #
 # == Usage
 #
-# dsktool [switches] <filename.dsk>
+# dsktool.rb [switches] <filename.dsk>
 #  -c | --catalog               display catalog
 #  -d | --disassemble FILENAME  disassemble 65C02 opcodes (binary files only)
 #  -e | --extract FILENAME      extract file by name (either to stdout, 
