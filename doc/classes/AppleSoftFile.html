@@ -90,6 +90,26 @@
 <img src="../dot/f_3.png" usemap="#map" border=0 alt="TopLevel">
     </div>
 
+    <div id="description">
+      <pre>
+ Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
+</pre>
+<p>
+Applesoft file format:
+</p>
+<pre>
+ &lt;Length_of_file&gt; (16-bit little endian)
+ &lt;Line&gt;
+ ......
+ &lt;Line&gt;
+ where &lt;Line&gt; is:
+ &lt;Next addr&gt;  (16-bit little endian)
+ &lt;Line no&gt;    (16-bit little endian: 0-65535)
+ &lt;Tokens and/or characters&gt;
+ &lt;End-of-line marker: $00 $00 bytes&gt;
+</pre>
+
+    </div>
 
 
    </div>
