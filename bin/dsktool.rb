@@ -17,8 +17,7 @@
 #  -x | --explode               extract all files 
 #  -v | --version               show version number
 #
-# Currently only works with DOS 3.3 format 
-# DSK images can be
+# Currently only works with DOS 3.3 format DSK images 
 #
 # examples:
 #	dsktool.rb -c DOS3MASTR.dsk.gz
@@ -29,12 +28,12 @@
 #	dsktool.rb -x DOS3MASTR.dsk.gz
 #
 
-DSKTOOL_VERSION="0.1.3"
+DSKTOOL_VERSION="0.1.4"
 
 require 'optparse'
 require 'rdoc/usage'
 
-#due to a bug in rdoc, tghe Usage won't work correctly when run from a gem executable
+#due to a bug in rdoc, RDoc.usage won't work correctly when run from a gem executable
 # see http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/211297
 # Display usage from the given file
 def RDoc.usage_from_file(input_file, *args)
