@@ -355,7 +355,7 @@ class SCAsmFile < DOSFile
 	def file_type
 		"I"
 	end
-	#display file with al tokens expanded to ASCII
+	#display file with all tokens expanded
 	def to_s
 		SCAsmFile.buffer_as_scasm_file(@contents)
 	end	

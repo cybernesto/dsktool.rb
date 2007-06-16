@@ -104,7 +104,7 @@ if(catalog) then
 end
 
 if(explode) then
-	output_dir=filename.sub(/\.[^.]*$/,"")
+	output_dir=File.basename(filename,".*")
 	if !(File.exists?(output_dir)) then
 		Dir.mkdir(output_dir)	
 	end
