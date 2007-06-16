@@ -26,7 +26,7 @@
 #	dsktool -x DOS3MASTR.dsk
 #
 
-DSKTOOL_VERSION="0.1.1"
+DSKTOOL_VERSION="0.1.2"
 
 require 'optparse'
 require 'rdoc/usage'
