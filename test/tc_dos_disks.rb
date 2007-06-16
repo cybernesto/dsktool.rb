@@ -41,9 +41,30 @@ class TestDOSDisks <Test::Unit::TestCase
 		assert(integer_file!=nil,"#{dskname} should have a file called APPLESOFT")
 		assert(integer_file.instance_of?(IntegerBasicFile),"HELLO should be an IntegetBasic file")
 		assert(integer_file.to_s.length>0,"APPLESOFT should have non-zero length")
-		assert(integer_file.to_s[0..5]=="10 REM","APPLESOFT should start '10 REM'")
-		
-
+		assert(integer_file.to_s[0..5]=="10 REM","APPLESOFT should start '10 REM'")		
 	end
-	
+
+	def test_scasm_file
+		dskname=File.dirname(__FILE__)+"//AAL_1.DSK"
+		dsk=DSK.read(dskname)
+		assert(dsk.is_dos33?,"#{dskname} should be DOS 3.3 format")
+		assert(dsk.files.length>0,"#{dskname} should have at least one file")
+		
+		asm_file=dsk.files["MORSE CODE"]
+		assert(asm_file!=nil,"#{dskname} should have a file called MORSE CODE")
+		assert(asm_file.instance_of?(SCAsmFile),"MORSE CODE should be an SCasm file")
+		assert(asm_file.to_s.length>0,"MORSE CODE should have non-zero length")
+		assert(!(asm_file.to_s=~/930\W*.LIST OFF/).nil?,"MORSE CODE should start '930        .LIST OFF'")
+	end
+
+	def test_compressed_dos_dsk
+		dskname=File.dirname(__FILE__)+"//vaults_of_zurich.dsk.gz"
+		dsk=DSK.read(dskname)
+		assert(dsk.is_dos33?,"#{dskname} should be DOS 3.3 format")
+		assert(dsk.files.length>0,"#{dskname} should have at least one file")
+		
+		hello_file=dsk.files["HELLO"]
+		assert(hello_file!=nil,"#{dskname} should have a file called HELLO")
+		assert(hello_file.instance_of?(AppleSoftFile),"HELLO should be an AppleSoft file")
+	end	
 end
