@@ -3,30 +3,33 @@
 #
 # == Synopsis
 #
-# Manipulate DSK format files
+# Manipulate DSK format files (as used by Apple 2 emulators)
 #
 # == Usage
 #
 # dsktool.rb [switches] <filename.dsk>
-#  -c | --catalog               display catalog
-#  -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
+#  -c | --log               display catalog
 #  -e | --extract FILENAME      extract file by name (either to stdout, 
 #                               or file specified by --output)
 #  -h | --help                  display this message
+#  -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
 #  -o | --output FILENAME       specify name to save extracted file as
 #  -x | --explode               extract all files 
 #  -v | --version               show version number
 #
+# Currently only works with DOS 3.3 format 
+# DSK images can be
+#
 # examples:
-#	dsktool.rb -c DOS3MASTR.dsk
+#	dsktool.rb -c DOS3MASTR.dsk.gz
 #	dsktool.rb -l FID DOS3MASTR.dsk
-#	dsktool.rb -l fid -o fid.asm DOS3MASTR.dsk
-#	dsktool.rb -e "COLOR DEMOSOFT" DOS3MASTR.dsk
+#	dsktool.rb --list fid -o fid.asm DOS3MASTR.dsk
+#	dsktool.rb --extract "COLOR DEMOSOFT" DOS3MASTR.dsk
 #	dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
-#	dsktool.rb -x DOS3MASTR.dsk
+#	dsktool.rb -x DOS3MASTR.dsk.gz
 #
 
-DSKTOOL_VERSION="0.1.2"
+DSKTOOL_VERSION="0.1.3"
 
 require 'optparse'
 require 'rdoc/usage'
@@ -93,7 +96,11 @@ output_file= case
 end
 	
 if(catalog) then	
-	dsk.dump_catalog
+	if (dsk.is_dos33?) then
+		dsk.dump_catalog
+	else
+		puts "#{filename} is not in DOS 3.3 format"
+	end
 end
 
 if(explode) then

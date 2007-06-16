@@ -1,0 +1,4 @@
+V0.1.3
+
+2007-07-16 Added support for gzipped files (assumes .gz extension)
+2007-07-16 Added support for S-C Assembler files

@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Sat Jun 16 14:49:29 AUS Eastern Standard Time 2007</td>
+      <td>Sat Jun 16 16:00:35 AUS Eastern Standard Time 2007</td>
     </tr>
     </table>
   </div>
@@ -67,31 +67,26 @@
 
 
   <div id="contextContent">
-    <div id="diagram">
-      <map id="map" name="map">
-  <area shape="RECT" coords="16,16,109,63"      href="../../classes/RDoc.html" alt="RDoc">
-</map>
-<img src="../../dot/f_0.png" usemap="#map" border=0 alt="TopLevel">
-    </div>
 
     <div id="description">
       <p>
-dsktool
+dsktool.rb
 </p>
 <h2>Synopsis</h2>
 <p>
-Manipulate <a href="../../classes/DSK.html">DSK</a> format files
+Manipulate <a href="../../classes/DSK.html">DSK</a> format files (as used
+by Apple 2 emulators)
 </p>
 <h2>Usage</h2>
 <p>
 dsktool.rb [switches] &lt;filename.dsk&gt;
 </p>
 <pre>
- -c | --catalog               display catalog
- -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
+ -c | --log               display catalog
  -e | --extract FILENAME      extract file by name (either to stdout,
                               or file specified by --output)
  -h | --help                  display this message
+ -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
  -o | --output FILENAME       specify name to save extracted file as
  -x | --explode               extract all files
  -v | --version               show version number
@@ -100,12 +95,12 @@ dsktool.rb [switches] &lt;filename.dsk&gt;
 examples:
 </p>
 <pre>
-      dsktool -c DOS3MASTR.dsk
-      dsktool -l FID DOS3MASTR.dsk
-      dsktool -d fid -o fid.asm DOS3MASTR.dsk
-      dsktool -e &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
-      dsktool -e HELLO -o HELLO.bas DOS3MASTR.dsk
-      dsktool -x DOS3MASTR.dsk
+      dsktool.rb -c DOS3MASTR.dsk
+      dsktool.rb -l FID DOS3MASTR.dsk
+      dsktool.rb --list fid -o fid.asm DOS3MASTR.dsk
+      dsktool.rb --extract &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
+      dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
+      dsktool.rb -x DOS3MASTR.dsk
 </pre>
 
     </div>
@@ -139,25 +134,26 @@ examples:
         <tr class="top-aligned-row context-row">
           <td class="context-item-name">DSKTOOL_VERSION</td>
           <td>=</td>
-          <td class="context-item-value">&quot;0.1.1&quot;</td>
+          <td class="context-item-value">&quot;0.1.3&quot;</td>
           <td width="3em">&nbsp;</td>
           <td class="context-item-desc">
-dsktool
+dsktool.rb
 
 <h2>Synopsis</h2>
 <p>
-Manipulate <a href="../../classes/DSK.html">DSK</a> format files
+Manipulate <a href="../../classes/DSK.html">DSK</a> format files (as used
+by Apple 2 emulators)
 </p>
 <h2>Usage</h2>
 <p>
 dsktool.rb [switches] &lt;filename.dsk&gt;
 </p>
 <pre>
- -c | --catalog               display catalog
- -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
+ -c | --log               display catalog
  -e | --extract FILENAME      extract file by name (either to stdout,
                               or file specified by --output)
  -h | --help                  display this message
+ -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
  -o | --output FILENAME       specify name to save extracted file as
  -x | --explode               extract all files
  -v | --version               show version number
@@ -166,12 +162,12 @@ dsktool.rb [switches] &lt;filename.dsk&gt;
 examples:
 </p>
 <pre>
-      dsktool -c DOS3MASTR.dsk
-      dsktool -l FID DOS3MASTR.dsk
-      dsktool -d fid -o fid.asm DOS3MASTR.dsk
-      dsktool -e &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
-      dsktool -e HELLO -o HELLO.bas DOS3MASTR.dsk
-      dsktool -x DOS3MASTR.dsk
+      dsktool.rb -c DOS3MASTR.dsk
+      dsktool.rb -l FID DOS3MASTR.dsk
+      dsktool.rb --list fid -o fid.asm DOS3MASTR.dsk
+      dsktool.rb --extract &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
+      dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
+      dsktool.rb -x DOS3MASTR.dsk
 </pre>
 </td>
         </tr>

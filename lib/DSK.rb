@@ -28,11 +28,18 @@ class DSK
 	end
 	
 	#read in an existing DSK file (must exist)
-	def DSK.read(filename)	
-		file_bytes=File.new(filename,"rb").read
+	def DSK.read(filename)
+		#is the file extension .gz?
+		if !(filename=~/\.gz$/).nil? then
+			require 'zlib'
+			file_bytes=Zlib::GzipReader.new(File.new(filename,"rb")).read
+		else
+			file_bytes=File.new(filename,"rb").read
+		end
 		if (file_bytes.length!=DSK_FILE_LENGTH) then
 			abort("#{filename} is not a valid DSK format file")
 		end
+		
 		dsk=DSK.new(file_bytes)		
 		if (dsk.is_dos33?) 
 			require 'DOSDisk'

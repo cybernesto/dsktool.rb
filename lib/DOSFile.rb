@@ -328,8 +328,99 @@ private
 		end
 	       s
 	end
+end
+
+# Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
+#
+#   S-C Assembler file format:
+#
+#  <Length_of_file> (16-bit little endian)
+#  <Line>
+#  ......
+#  <Line>
+#
+#  where <Line> is:
+#  <Length>     (8-bit: including length byte, line no, contents, zero>
+#  <Line no>    (16-bit little endian: 0-65535)
+#  <Characters>
+#  <Zero byte>  ($00, to mark the end of the S-C Asm source line)
+#
+#  where <Characters> are an arbitrary sequence of:
+#  <Literal character>:      $20 to $7E - literal characters
+#  <Compressed spaces>:      $80 to $BF - represents 1 to 63 spaces
+#  <Compressed repetition>:  $C0 <n> <ch> - represents <ch> n times
+ #
+
+class SCAsmFile < DOSFile
+	def file_type
+		"I"
+	end
+	#display file with al tokens expanded to ASCII
+	def to_s
+		SCAsmFile.buffer_as_scasm_file(@contents)
+	end	
+	
+	def file_extension
+		".asm"
+	end
+
+	def SCAsmFile.can_be_scasm_file(buffer)
+		length=buffer[0]+buffer[1]*256
+		index=2
+		s=""
+		while (index<length)
+			line_length=buffer[index]
+			line_no=buffer[index+1]+buffer[index+2]*256
+			index+=3 #skip over the "line number" field
+			#S-C Assembler lines always ends with a 0x00 
+			if ( buffer[index+line_length-4] != 0x00 )
+				return false
+			end
+			buffer[index..index+line_length-3].each_byte do |b|
+					if b>0xc0 then
+						return false
+					end
+			end
+			index+= line_length-3
+		end
+		return true
+	end
+	
+private
+	def SCAsmFile.buffer_as_scasm_file(buffer)
+		length=buffer[0]+buffer[1]*256
+		index=2
+		s=""
+		while (index<length)
+			line_length=buffer[index]
+			line_no=buffer[index+1]+buffer[index+2]*256
+			s+=sprintf("%d ",line_no)
+			index+=3 #skip over the "line number" field
+			end_of_line=index+line_length-4
+			while(index<end_of_line)
+				b=buffer[index]
+				if (b==0xC0) then
+					repeat_count=buffer[index+1]
+					repeat_char=(buffer[index+2]).chr
+					s+=repeat_char*repeat_count
+					index+=3
+				elsif(b>=0x80) then
+					s+=" "*(b-0x80)
+					index+=1
+				else
+					s+=b.chr
+					index+=1
+				end
+			end
+			index+=1 #skip over end-of-line marker
+			s+="\n"
+		end
+		s
+	end
 
 end
+
+
 # == Author
 # Jonno Downes (jonno@jamtronix.com)
 #
