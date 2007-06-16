@@ -1,5 +1,9 @@
+#make sure the relevant folder with our libraries is in the require path
+lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
+$:.unshift(lib_path) unless $:.include?(lib_path)
+
 require 'test/unit'
-require '../lib/DSK'
+require 'DSK'
 
 class TestDOSDisks <Test::Unit::TestCase
 	def test_bad_dsks
@@ -14,7 +18,7 @@ class TestDOSDisks <Test::Unit::TestCase
 	end
 
 	def test_simple_dos_dsk
-		dskname="dos33_with_adt.dsk"
+		dskname=File.dirname(__FILE__)+"//dos33_with_adt.dsk"
 		dsk=DSK.read(dskname)
 		assert(dsk.is_dos33?,"#{dskname} should be DOS 3.3 format")
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")

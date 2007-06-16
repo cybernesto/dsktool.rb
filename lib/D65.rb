@@ -91,7 +91,7 @@ OPCODE_SIZE={
 } 
 	
 end
-	require 'YAML'
+	require 'YAML'  unless defined? YAML 
 	@@annotations=YAML::load(File.open(File.dirname(__FILE__)+"/a2_symbols.yaml"))
 
 	#map of memory locations and annotations

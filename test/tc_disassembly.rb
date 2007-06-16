@@ -1,6 +1,10 @@
+#make sure the relevant folder with our libraries is in the require path
+lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
+$:.unshift(lib_path) unless $:.include?(lib_path)
+
 require 'test/unit'
-require '../lib/D65'
-require '../lib/DSK'
+require 'D65'
+require 'DSK'
 
 class TestDisassembly <Test::Unit::TestCase
 
