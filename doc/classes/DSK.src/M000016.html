@@ -5,23 +5,18 @@
 
 <html>
 <head>
-  <title>read (DSK)</title>
+  <title>is_dos33? (DSK)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/DSK.rb, line 31</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-constant">DSK</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">filename</span>) 
-                <span class="ruby-identifier">file_bytes</span>=<span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">filename</span>,<span class="ruby-value str">&quot;rb&quot;</span>).<span class="ruby-identifier">read</span>
-                <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">file_bytes</span>.<span class="ruby-identifier">length!</span>=<span class="ruby-constant">DSK_FILE_LENGTH</span>) <span class="ruby-keyword kw">then</span>
-                        <span class="ruby-identifier">abort</span>(<span class="ruby-node">&quot;#{filename} is not a valid DSK format file&quot;</span>)
-                <span class="ruby-keyword kw">end</span>
-                <span class="ruby-identifier">dsk</span>=<span class="ruby-constant">DSK</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">file_bytes</span>)               
-                <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">dsk</span>.<span class="ruby-identifier">is_dos33?</span>) 
-                        <span class="ruby-identifier">require</span> <span class="ruby-value str">'DOSDisk'</span>
-                        <span class="ruby-identifier">dsk</span>=<span class="ruby-constant">DOSDisk</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">file_bytes</span>)
-                <span class="ruby-keyword kw">end</span>
-                <span class="ruby-identifier">dsk</span>
+  <pre><span class="ruby-comment cmt"># File lib/DSK.rb, line 13</span>
+        <span class="ruby-keyword kw">def</span>    <span class="ruby-identifier">is_dos33?</span>
+                <span class="ruby-comment cmt"># VTOC is at offset 0x11000</span>
+                <span class="ruby-comment cmt"># bytes 1/2/3 are a track number, sector number and DOS version number</span>
+                <span class="ruby-comment cmt"># see if these are reasonable values</span>
+
+                (<span class="ruby-ivar">@file_bytes</span>[<span class="ruby-value">0x11001</span>]<span class="ruby-operator">&lt;=</span><span class="ruby-value">34</span>) <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-ivar">@file_bytes</span>[<span class="ruby-value">0x11002</span>]<span class="ruby-operator">&lt;=</span><span class="ruby-value">15</span>) <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-ivar">@file_bytes</span>[<span class="ruby-value">0x11003</span>]<span class="ruby-operator">==</span><span class="ruby-value">3</span>)
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
