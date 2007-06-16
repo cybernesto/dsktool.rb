@@ -17,21 +17,37 @@
 #  -x | --explode               extract all files 
 #
 # examples:
-#	dsktool -c adtpro.dsk
-#	dsktool -d FID adtpro.dsk
-#	dsktool -d FID -o fid.asm adtpro.dsk
-#	dsktool -e "COLOR DEMOSOFT" adtpro.dsk
-#	dsktool -e HELLO -o HELLO.bas adtpro.dsk
-#	dsktool -x adtpro.dsk
+#	dsktool -c DOS3MASTR.dsk
+#	dsktool -d FID DOS3MASTR.dsk
+#	dsktool -d fid -o fid.asm DOS3MASTR.dsk
+#	dsktool -e "COLOR DEMOSOFT" DOS3MASTR.dsk
+#	dsktool -e HELLO -o HELLO.bas DOS3MASTR.dsk
+#	dsktool -x DOS3MASTR.dsk
 #
 # == Author
 # Jonno Downes (jonno@jamtronix.com)
 #
 # == Copyright
-# Copyright (c) 2006 Jonno Downes (jonno@jamtronix.com)
-# This program is free software.
-# You can distribute/modify this program under the terms of
-# the GNU LGPL, Lesser General Public License version 2.1.
+# Copyright (c) 2007 Jonno Downes (jonno@jamtronix.com)
+#
+#Permission is hereby granted, free of charge, to any person obtaining
+#a copy of this software and associated documentation files (the
+#"Software"), to deal in the Software without restriction, including
+#without limitation the rights to use, copy, modify, merge, publish,
+#distribute, sublicense, and/or sell copies of the Software, and to
+#permit persons to whom the Software is furnished to do so, subject to
+#the following conditions:
+
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 require 'optparse'
 require 'rdoc/usage'
@@ -51,7 +67,11 @@ opts.on("-o","--output FILENAME",String) {|val| output_filename=val}
 filename=opts.parse(ARGV)[0] rescue RDoc::usage('usage')
 RDoc::usage('usage') if (filename.nil?)
 
-require '../lib/DSK'
+#make sure the relevant folder with our libraries is in the require path
+lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
+$:.unshift(lib_path) unless $:.include?(lib_path)
+	
+require 'DSK'
 dsk=DSK.read(filename)
 output_file= case
 	when (output_filename.nil?) then STDOUT
