@@ -17,6 +17,17 @@ class TestDOSDisks <Test::Unit::TestCase
 		assert(!dsk.is_dos33?,"empty DSK should not be DOS 3.3 format")
 	end
 
+	def test_open_url_to_compressed_dsk
+		dskname="http://www.apple2.org.za/mirrors/ftp.apple.asimov.net/images/games/adventure/vaults_of_zurich.dsk.gz"
+		dsk=DSK.read(dskname)
+		assert(dsk.is_dos33?,"#{dskname} should be DOS 3.3 format")
+		assert(dsk.files.length>0,"#{dskname} should have at least one file")
+		
+		hello_file=dsk.files["HELLO"]
+		assert(hello_file!=nil,"#{dskname} should have a file called HELLO")
+		assert(hello_file.instance_of?(AppleSoftFile),"HELLO should be an AppleSoft file")
+	end
+
 	def test_simple_dos_dsk
 		dskname=File.dirname(__FILE__)+"//dos33_with_adt.dsk"
 		dsk=DSK.read(dskname)
@@ -57,14 +68,4 @@ class TestDOSDisks <Test::Unit::TestCase
 		assert(!(asm_file.to_s=~/930\W*.LIST OFF/).nil?,"MORSE CODE should start '930        .LIST OFF'")
 	end
 
-	def test_compressed_dos_dsk
-		dskname=File.dirname(__FILE__)+"//vaults_of_zurich.dsk.gz"
-		dsk=DSK.read(dskname)
-		assert(dsk.is_dos33?,"#{dskname} should be DOS 3.3 format")
-		assert(dsk.files.length>0,"#{dskname} should have at least one file")
-		
-		hello_file=dsk.files["HELLO"]
-		assert(hello_file!=nil,"#{dskname} should have a file called HELLO")
-		assert(hello_file.instance_of?(AppleSoftFile),"HELLO should be an AppleSoft file")
-	end	
 end

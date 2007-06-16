@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Sat Jun 16 16:00:35 AUS Eastern Standard Time 2007</td>
+      <td>Sat Jun 16 16:15:39 AUS Eastern Standard Time 2007</td>
     </tr>
     </table>
   </div>
@@ -67,6 +67,12 @@
 
 
   <div id="contextContent">
+    <div id="diagram">
+      <map id="map" name="map">
+  <area shape="RECT" coords="16,16,109,63"      href="../../classes/RDoc.html" alt="RDoc">
+</map>
+<img src="../../dot/f_0.png" usemap="#map" border=0 alt="TopLevel">
+    </div>
 
     <div id="description">
       <p>
@@ -92,15 +98,19 @@ dsktool.rb [switches] &lt;filename.dsk&gt;
  -v | --version               show version number
 </pre>
 <p>
+Currently only works with DOS 3.3 format <a
+href="../../classes/DSK.html">DSK</a> images can be
+</p>
+<p>
 examples:
 </p>
 <pre>
-      dsktool.rb -c DOS3MASTR.dsk
+      dsktool.rb -c DOS3MASTR.dsk.gz
       dsktool.rb -l FID DOS3MASTR.dsk
       dsktool.rb --list fid -o fid.asm DOS3MASTR.dsk
       dsktool.rb --extract &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
       dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
-      dsktool.rb -x DOS3MASTR.dsk
+      dsktool.rb -x DOS3MASTR.dsk.gz
 </pre>
 
     </div>
@@ -159,15 +169,19 @@ dsktool.rb [switches] &lt;filename.dsk&gt;
  -v | --version               show version number
 </pre>
 <p>
+Currently only works with DOS 3.3 format <a
+href="../../classes/DSK.html">DSK</a> images can be
+</p>
+<p>
 examples:
 </p>
 <pre>
-      dsktool.rb -c DOS3MASTR.dsk
+      dsktool.rb -c DOS3MASTR.dsk.gz
       dsktool.rb -l FID DOS3MASTR.dsk
       dsktool.rb --list fid -o fid.asm DOS3MASTR.dsk
       dsktool.rb --extract &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
       dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
-      dsktool.rb -x DOS3MASTR.dsk
+      dsktool.rb -x DOS3MASTR.dsk.gz
 </pre>
 </td>
         </tr>

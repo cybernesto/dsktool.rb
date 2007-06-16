@@ -1,5 +1,6 @@
 $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+require 'open-uri'
 
 #
 # For manipulating DSK files, as created by ADT (http://adt.berlios.de) and ADTPRo (http://adtpro.sourceforge.net)
@@ -32,9 +33,9 @@ class DSK
 		#is the file extension .gz?
 		if !(filename=~/\.gz$/).nil? then
 			require 'zlib'
-			file_bytes=Zlib::GzipReader.new(File.new(filename,"rb")).read
+			file_bytes=Zlib::GzipReader.new(open(filename,"rb")).read
 		else
-			file_bytes=File.new(filename,"rb").read
+			file_bytes=open(filename,"rb").read
 		end
 		if (file_bytes.length!=DSK_FILE_LENGTH) then
 			abort("#{filename} is not a valid DSK format file")

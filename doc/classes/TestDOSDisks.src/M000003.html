@@ -35,9 +35,7 @@
                 <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file!</span>=<span class="ruby-keyword kw">nil</span>,<span class="ruby-node">&quot;#{dskname} should have a file called APPLESOFT&quot;</span>)
                 <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-constant">IntegerBasicFile</span>),<span class="ruby-value str">&quot;HELLO should be an IntegetBasic file&quot;</span>)
                 <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>,<span class="ruby-value str">&quot;APPLESOFT should have non-zero length&quot;</span>)
-                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file</span>.<span class="ruby-identifier">to_s</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">5</span>]<span class="ruby-operator">==</span><span class="ruby-value str">&quot;10 REM&quot;</span>,<span class="ruby-value str">&quot;APPLESOFT should start '10 REM'&quot;</span>)
-                
-
+                <span class="ruby-identifier">assert</span>(<span class="ruby-identifier">integer_file</span>.<span class="ruby-identifier">to_s</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">5</span>]<span class="ruby-operator">==</span><span class="ruby-value str">&quot;10 REM&quot;</span>,<span class="ruby-value str">&quot;APPLESOFT should start '10 REM'&quot;</span>)           
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
