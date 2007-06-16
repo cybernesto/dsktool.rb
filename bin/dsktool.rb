@@ -33,7 +33,6 @@
 # You can distribute/modify this program under the terms of
 # the GNU LGPL, Lesser General Public License version 2.1.
 
-require '../lib/DSK'
 require 'optparse'
 require 'rdoc/usage'
 catalog=false
@@ -52,6 +51,7 @@ opts.on("-o","--output FILENAME",String) {|val| output_filename=val}
 filename=opts.parse(ARGV)[0] rescue RDoc::usage('usage')
 RDoc::usage('usage') if (filename.nil?)
 
+require '../lib/DSK'
 dsk=DSK.read(filename)
 output_file= case
 	when (output_filename.nil?) then STDOUT
