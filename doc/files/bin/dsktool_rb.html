@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Sat Jun 16 11:44:14 AUS Eastern Standard Time 2007</td>
+      <td>Sat Jun 16 14:49:29 AUS Eastern Standard Time 2007</td>
     </tr>
     </table>
   </div>
@@ -69,63 +69,43 @@
   <div id="contextContent">
     <div id="diagram">
       <map id="map" name="map">
+  <area shape="RECT" coords="16,16,109,63"      href="../../classes/RDoc.html" alt="RDoc">
 </map>
 <img src="../../dot/f_0.png" usemap="#map" border=0 alt="TopLevel">
     </div>
 
     <div id="description">
-      <pre>
- dsktool
-
- == Synopsis
-
- Manipulate DSK format files
-
- == Usage
-
- dsktool.rb [switches] &lt;filename.dsk&gt;
-  -c | --catalog               display catalog
-  -d | --disassemble FILENAME  disassemble 65C02 opcodes (binary files only)
-  -e | --extract FILENAME      extract file by name (either to stdout,
-                               or file specified by --output)
-  -h | --help                  display this message
-  -o | --output FILENAME       specify name to save extracted file as
-  -x | --explode               extract all files
-
- examples:
-       dsktool -c DOS3MASTR.dsk
-       dsktool -d FID DOS3MASTR.dsk
-       dsktool -d fid -o fid.asm DOS3MASTR.dsk
-       dsktool -e &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
-       dsktool -e HELLO -o HELLO.bas DOS3MASTR.dsk
-       dsktool -x DOS3MASTR.dsk
-
- == Author
- Jonno Downes (jonno@jamtronix.com)
-
- == Copyright
- Copyright (c) 2007 Jonno Downes (jonno@jamtronix.com)
-</pre>
+      <p>
+dsktool
+</p>
+<h2>Synopsis</h2>
 <p>
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the
-&quot;Software&quot;), to deal in the Software without restriction,
-including without limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to the
-following conditions:
+Manipulate <a href="../../classes/DSK.html">DSK</a> format files
+</p>
+<h2>Usage</h2>
+<p>
+dsktool.rb [switches] &lt;filename.dsk&gt;
 </p>
 <pre>
- The above copyright notice and this permission notice shall be
- included in all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ -c | --catalog               display catalog
+ -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
+ -e | --extract FILENAME      extract file by name (either to stdout,
+                              or file specified by --output)
+ -h | --help                  display this message
+ -o | --output FILENAME       specify name to save extracted file as
+ -x | --explode               extract all files
+ -v | --version               show version number
+</pre>
+<p>
+examples:
+</p>
+<pre>
+      dsktool -c DOS3MASTR.dsk
+      dsktool -l FID DOS3MASTR.dsk
+      dsktool -d fid -o fid.asm DOS3MASTR.dsk
+      dsktool -e &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
+      dsktool -e HELLO -o HELLO.bas DOS3MASTR.dsk
+      dsktool -x DOS3MASTR.dsk
 </pre>
 
     </div>
@@ -151,6 +131,53 @@ following conditions:
     <div id="section">
 
 
+    <div id="constants-list">
+      <h3 class="section-bar">Constants</h3>
+
+      <div class="name-list">
+        <table summary="Constants">
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">DSKTOOL_VERSION</td>
+          <td>=</td>
+          <td class="context-item-value">&quot;0.1.1&quot;</td>
+          <td width="3em">&nbsp;</td>
+          <td class="context-item-desc">
+dsktool
+
+<h2>Synopsis</h2>
+<p>
+Manipulate <a href="../../classes/DSK.html">DSK</a> format files
+</p>
+<h2>Usage</h2>
+<p>
+dsktool.rb [switches] &lt;filename.dsk&gt;
+</p>
+<pre>
+ -c | --catalog               display catalog
+ -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
+ -e | --extract FILENAME      extract file by name (either to stdout,
+                              or file specified by --output)
+ -h | --help                  display this message
+ -o | --output FILENAME       specify name to save extracted file as
+ -x | --explode               extract all files
+ -v | --version               show version number
+</pre>
+<p>
+examples:
+</p>
+<pre>
+      dsktool -c DOS3MASTR.dsk
+      dsktool -l FID DOS3MASTR.dsk
+      dsktool -d fid -o fid.asm DOS3MASTR.dsk
+      dsktool -e &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
+      dsktool -e HELLO -o HELLO.bas DOS3MASTR.dsk
+      dsktool -x DOS3MASTR.dsk
+</pre>
+</td>
+        </tr>
+        </table>
+      </div>
+    </div>
 
 
 
