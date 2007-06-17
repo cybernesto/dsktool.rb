@@ -8,6 +8,10 @@ require 'open-uri'
 #
 class DSK
 
+	#does this filename have a suitable extension?
+	def DSK.is_dsk_file?(filename)
+		!(filename.upcase=~/\.DSK$|\.DSK\.GZ$|\.PO$|\.PO\.GZ$/).nil?
+	end
 	DSK_FILE_LENGTH=143360
 	attr_accessor (:file_bytes)
 	# does this DSK have a standard Apple DOS 3.3 VTOC?
@@ -18,6 +22,7 @@ class DSK
 
 		(@file_bytes[0x11001]<=34) && (@file_bytes[0x11002]<=15) && (@file_bytes[0x11003]==3)
 	end
+
 
 	#create a new DSK structure (in memory, not on disk)
 	def initialize(file_bytes="\0"*DSK_FILE_LENGTH)	
