@@ -6,6 +6,17 @@ require 'test/unit'
 require 'DSK'
 
 class TestDOSDisks <Test::Unit::TestCase
+
+
+	def test_file_names
+		assert(DSK.is_dsk_file?("file.dsk"))
+		assert(DSK.is_dsk_file?("file.DSK"))
+		assert(DSK.is_dsk_file?("file.dsk.gz"))
+		assert(DSK.is_dsk_file?("file.po"))
+		assert(DSK.is_dsk_file?("file.po.gz"))
+		assert(!DSK.is_dsk_file?("file.dsk.zip"))
+
+	end
 	def test_bad_dsks
 		assert_raise(RuntimeError,"short file should throw an error") {dsk=DSK.new("0"*100)}
 		assert_raise(Errno::ENOENT,"non existant file should throw an error") {dsk=DSK.read("NonExistantFileName.not")}

@@ -33,37 +33,12 @@
 
 DSKTOOL_VERSION="0.1.5"
 
+#make sure the relevant folder with our libraries is in the require path
+lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
+$:.unshift(lib_path) unless $:.include?(lib_path)
+
 require 'optparse'
-require 'rdoc/usage'
-
-#due to a bug in rdoc, RDoc.usage won't work correctly when run from a gem executable
-# see http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/211297
-# Display usage from the given file
-def RDoc.usage_from_file(input_file, *args)
-	comment = File.open(input_file) do |file|
-		RDoc.find_comment(file)
-	end
-	comment = comment.gsub(/^\s*#/, '')
-
-	markup = SM::SimpleMarkup.new
-	flow_convertor = SM::ToFlow.new
-    
-	flow = markup.convert(comment, flow_convertor)
-
-	format = "plain"
-
-	unless args.empty?
-		flow = extract_sections(flow, args)
-	end
-
-	options = RI::Options.instance
-	if args = ENV["RI"]
-		options.parse(args.split)
-	end
-	formatter = options.formatter.new(options, "")
-	formatter.display_flow(flow)
-	exit
-end
+require 'rdoc_patch' #RDoc::usage patched to work under gem executables
 
 
 catalog=false
@@ -76,7 +51,7 @@ explode_directory=nil
 opts=OptionParser.new
 opts.on("-h","--help") {RDoc::usage_from_file(__FILE__)}
 opts.on("-v","--version") do
-	puts "dsktool.rb "+DSKTOOL_VERSION
+		puts File.basename($0)+" "+DSKTOOL_VERSION
 	exit
 end
 opts.on("-r","--raw") {raw_mode=true}
@@ -88,9 +63,6 @@ opts.on("-o","--output FILENAME",String) {|val| output_filename=val}
 filename=opts.parse(ARGV)[0] rescue RDoc::usage_from_file(__FILE__,'Usage')
 RDoc::usage_from_file(__FILE__,'Usage') if (filename.nil?)
 
-#make sure the relevant folder with our libraries is in the require path
-lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
-$:.unshift(lib_path) unless $:.include?(lib_path)
 	
 require 'DSK'
 dsk=DSK.read(filename)
