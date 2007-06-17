@@ -8,7 +8,7 @@
 # == Usage
 #
 # dsktool.rb [switches] <filename.dsk>
-#  -c | --log               display catalog
+#  -c | --catalog               display catalog
 #  -e | --extract FILENAME      extract file by name (either to stdout, 
 #                               or file specified by --output)
 #  -h | --help                  display this message
