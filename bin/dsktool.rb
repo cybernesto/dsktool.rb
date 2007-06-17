@@ -1,4 +1,4 @@
-#
+#!/usr/bin/ruby
 # dsktool.rb
 #
 # == Synopsis
@@ -18,6 +18,8 @@
 #  -v | --version               show version number
 #
 # Currently only works with DOS 3.3 format DSK images 
+# Will uncompress gzipped files (with extension .gz)
+# input files can be URLs
 #
 # examples:
 #	dsktool.rb -c DOS3MASTR.dsk.gz
@@ -26,7 +28,7 @@
 #	dsktool.rb --extract "COLOR DEMOSOFT" DOS3MASTR.dsk
 #	dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
 #	dsktool.rb -x DOS3MASTR.dsk.gz
-#
+#	dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
 
 DSKTOOL_VERSION="0.1.4"
 
