@@ -69,7 +69,7 @@ require 'DOSFile'
 # 03-20 File Name (30 characters)
 # 21-22 Length of file in sectors (LO/HI format)
 #
-#
+#	
 #TRACK/SECTOR LIST FORMAT (from Beneath Apple DOS p 4-6)
 # 00	Not used
 # 01	Track number of next T/S list of one is needed or zero if no more t/s list
@@ -143,7 +143,7 @@ class DOSDisk < DSK
 #						when 0x10 then "R"	#RELOCATABLE object module file
 #						when 0x20 then "a"	#??
 #						when 0x40 then "b"	#??
-						else DOSFile.new(filename,locked,sector_count,contents)
+						else DOSFile.new(filename,locked,sector_count,contents,sprintf("$%02X",file_type_code))
 					end
 	
 				end
