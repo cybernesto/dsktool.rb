@@ -1,4 +1,6 @@
 V0.1.5
+bugfix - the S-C Assembler file detect routine was sometimes getting into endless loop
+added 'dskserver.rb'
 --explode now lets an output directory be specified by --output 
 
 V0.1.4

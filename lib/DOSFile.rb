@@ -7,16 +7,17 @@ require 'D65'
 class DOSFile
 	
 	attr_accessor(:filename,:locked,:file_type,:sector_count,:contents) 
-	def initialize(filename,locked,sector_count,contents)
+	def initialize(filename,locked,sector_count,contents,file_type=nil)
 		@filename=filename
 		@locked=locked
 		@sector_count=sector_count
-		@file_type="?"
+		@file_type= file_type
 		@contents=contents
 	end
 
 	#File type as displayed in Apple DOS 3.3 Catalog
 	def file_type
+		@file_type
 	end
 
 	def to_s
@@ -387,7 +388,7 @@ class SCAsmFile < DOSFile
 						return false
 					end
 			end
-			index+= line_length-3
+			index+= (line_length-3).abs
 		end
 		return true
 	end

@@ -41,60 +41,121 @@ include WEBrick
 
 def common_header
 "
-	<html><head><title>dskserver.rb</title></head>
-	<body><h1>dskserver.rb</h1>
+	<html>
+	<body>
 
 "
 end
 def common_footer
 "
-	<p><i>#{Time.now()}</i>
-	</body></html>
-
 "
 end
 
-def make_navigation(relative_path)
+def make_navigation_path(relative_path,filename=nil)
 	path_parts=relative_path.split("/")
 	#make the cookie-crumb-trail 
-	partial_path="/dir/"
-	s="<a href=/dir/>[top directory]</a>"
+	partial_path=""
+	s="<a href=/dir/>DSK Server</a>"
 	path_parts.each do |p|
 		if p.length>0 then
-			partial_path+="#{CGI.escape(p)}/"
-			s+=" / <a href=#{partial_path}> #{p}</a>"
-		end			
+			partial_path+="/#{p}"
+			if File.exist?(@@root_directory+"/"+partial_path) then
+				if (File.stat(@@root_directory+"/"+partial_path).directory?) then
+					s+=" / <a href=/dir#{CGI.escape(partial_path)}> #{p}</a>"
+				else
+					s+=" / <a href=/catalog#{CGI.escape(partial_path)}> #{p}</a>"
+				end
+			end			
+		end
 	end
 	
+	if !filename.nil? then
+		s+=" / <a href=/showfile/#{CGI.escape(relative_path)+'?filename='+CGI.escape(filename)}>#{filename}</a>"
+	end
+
+	absolute_path=@@root_directory+relative_path
 	#show the contents of the current directory
-	dir=Dir.new(absolute_path)
-	directories=[]
-	dsk_files=[]
-	dir.each do |f| 
-		directories<<f if (f[0].chr!=".") && (File.stat(absolute_path+"/"+f).directory?)
-		dsk_files<<f if (DSK.is_dsk_file?(f))
+	if File.exist?(absolute_path) && (File.stat(absolute_path).directory?) then
+		dir=Dir.new(absolute_path)
+		directories=[]
+		dsk_files=[]
+		dir.each do |f| 
+			directories<<f if (f[0].chr!=".") && (File.stat(absolute_path+"/"+f).directory?)
+			dsk_files<<f if (DSK.is_dsk_file?(f))
+		end
+		#list out the directories
+		s+="<ul>"
+		s+="<li>[dir] <a href=/#{CGI.escape('/dir/'+File.dirname(relative_path))}>..</a>\n"
+		directories.sort.each do |d|
+			s+="<li>[dir] <a href=/#{CGI.escape('/dir/'+relative_path+'/'+d)}>#{d}</a>\n"
+		end
+		
+		#list out the DSK files		
+		dsk_files.sort.each do |f|
+			s+="<li>[dsk] <a href=/#{CGI.escape('/catalog/'+relative_path+'/'+f)}>#{f}</a>\n"
+		end
+		s+="</ul>"
 	end
-	#list out the directories
-	s+="<ul>"
-	directories.sort.each do |d|
-		s+="<li><a href=/#{CGI.escape('/dir/'+relative_path+'/'+d)}>#{d}</a>\n"
-	end
-	s+="</ul>"
-	#list out the DSK files
-	s+="<table>"
-	dsk_files.sort.each do |f|
-		s+="<tr><td>#{f}</td><td><a href=/#{CGI.escape('/catalog/'+relative_path+'/'+f)}>catalog</a></td></tr>\n"
-	end
-	s+="</table>"
-
 	s
-
 end
+def make_catalog(relative_path)
+	s="<p>"
+	begin
+		absolute_path=@@root_directory+relative_path
+		dsk=DSK.read(absolute_path)
+		
+		if (dsk.is_dos33?) then
+			s+="<table>\n<th>TYPE</th><th>NAME</th><th>SECTORS</th></tr>\n"
+			dsk.files.each_value do |f|
+				s+="<td>#{f.file_type}</td><td><a href=/showfile/#{CGI.escape(relative_path)+'?filename='+CGI.escape(f.filename)}>#{f.filename}</a></td><td>#{sprintf('%03d',f.sector_count)}</td></tr>\n"
+			end
+			s+="</table>"
+		else
+			s+="<i>not DOS 3.3 format</i>"
+		end
+	rescue Exception => exception
+		s+="<i>ERROR:#{exception}</i>"
+	end
+	s
+	
+	
+	
+	
+end
+def show_file(relative_path,filename)
+	absolute_path=@@root_directory+relative_path
+	dsk=DSK.read(absolute_path)
+	file=dsk.files[filename]
+	if file.nil? then
+		s="<i>#{filename} not found</i>"
+	else 
+		s="<hl><pre>#{file.file_type=='B'?file.disassembly : file.to_s}\n</pre><hl>"
+	end
+	s
+end
+
 class DirectoryServlet < HTTPServlet::AbstractServlet
 	def do_GET(req,res)
 		relative_path=CGI.unescape(req.path).sub(/^\/dir/,"")
 		res['Content-Type']="text/html"
 		res.body=common_header+make_navigation_path(relative_path)+common_footer
+	end
+end
+
+class CatalogServlet < HTTPServlet::AbstractServlet
+	def do_GET(req,res)
+		relative_path=CGI.unescape(req.path).sub(/^\/catalog/,"")
+		res['Content-Type']="text/html"
+		res.body=common_header+make_navigation_path(relative_path)+make_catalog(relative_path)+common_footer
+	end
+end
+
+class ShowFileServlet < HTTPServlet::AbstractServlet
+	def do_GET(req,res)
+		relative_path=CGI.unescape(req.path).sub(/^\/showfile/,"")
+		filename=CGI.unescape(req.query['filename'])
+		res['Content-Type']="text/html"
+		res.body=common_header+make_navigation_path(relative_path,filename)+show_file(relative_path,filename)+common_footer
 	end
 end
 
@@ -104,6 +165,8 @@ s=HTTPServer.new(
 trap("INT") {s.shutdown}
 
 s.mount("/dir",DirectoryServlet)
+s.mount("/catalog",CatalogServlet)
+s.mount("/showfile",ShowFileServlet)
 
 puts "point your browser at http://localhost:#{@listening_port}/"
 s.start
