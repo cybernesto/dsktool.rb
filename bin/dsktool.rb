@@ -31,7 +31,7 @@
 #	dsktool.rb -x DOS3MASTR.dsk.gz
 #	dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
 
-DSKTOOL_VERSION="0.1.4"
+DSKTOOL_VERSION="0.1.5"
 
 require 'optparse'
 require 'rdoc/usage'
