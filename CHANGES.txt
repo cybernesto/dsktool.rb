@@ -1,7 +1,8 @@
 V0.1.4
 
 2007-07-17 bugfix - errors on case-sensitive platforms (require 'YAML'=>require'yaml')
-2007-07-17 Added support for opening URLs 
+2007-07-17 Added support for opening URLs (e.g. dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz)
+2007-07-17 Added "raw" mode (doesn't convert BASIC tokens to ASCII)
 
 V0.1.3
 
