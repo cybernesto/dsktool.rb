@@ -18,14 +18,14 @@
 #  -x | --explode               extract all files 
 #  -v | --version               show version number
 #
-# Currently only works with DOS 3.3 format DSK images 
-# Will uncompress gzipped files (with extension .gz)
-# input files can be URLs
+#	Currently only works with DOS 3.3 format DSK images 
+#	Will uncompress gzipped files (with extension .gz)
+#	input files can be URLs
 #
 # examples:
 #	dsktool.rb -c DOS3MASTR.dsk.gz
 #	dsktool.rb -l FID DOS3MASTR.dsk
-#	dsktool.rb --list fid -o fid.asm DOS3MASTR.dsk
+#	dsktool.rb --list fid -o fid.lst DOS3MASTR.dsk
 #	dsktool.rb --extract "COLOR DEMOSOFT" DOS3MASTR.dsk
 #	dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
 #	dsktool.rb -x DOS3MASTR.dsk.gz
