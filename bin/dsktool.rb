@@ -14,6 +14,7 @@
 #  -h | --help                  display this message
 #  -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
 #  -o | --output FILENAME       specify name to save extracted file as
+#  -r | --raw                   don't convert basic files to ASCII
 #  -x | --explode               extract all files 
 #  -v | --version               show version number
 #
@@ -67,6 +68,7 @@ end
 
 catalog=false
 explode=false
+raw_mode=false
 output_filename=nil
 extract_filename=nil
 list_filename=nil
@@ -77,6 +79,7 @@ opts.on("-v","--version") do
 	puts "dsktool.rb "+DSKTOOL_VERSION
 	exit
 end
+opts.on("-r","--raw") {raw_mode=true}
 opts.on("-c","--catalog") {catalog=true}
 opts.on("-x","--explode") {explode=true}
 opts.on("-l","--list FILENAME",String) {|val| list_filename=val.upcase}
@@ -111,8 +114,13 @@ if(explode) then
 	end
 			
 	dsk.files.each_value do |f|
-		output_filename=output_dir+"/"+f.filename+f.file_extension
-		File.open(output_filename,"wb") <<f
+		if (raw_mode) then
+			output_filename=output_dir+"/"+f.filename+".raw"
+			File.open(output_filename,"wb") <<f.contents
+		else
+			output_filename=output_dir+"/"+f.filename+f.file_extension
+			File.open(output_filename,"wb") <<f
+		end
 	end
 end
 
@@ -122,7 +130,11 @@ if (!extract_filename.nil?) then
 	if file.nil? then
 		puts "'#{extract_filename}' not found in #{filename}"
 	else
-		output_file<<file
+		if (raw_mode) then
+			output_file<<file.contents
+		else
+			output_file<<file
+		end
 	end
 end
 
