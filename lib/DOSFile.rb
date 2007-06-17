@@ -311,14 +311,20 @@ private
 			index+=2 #skip over the "next address" field
 			line_no=buffer[index]+buffer[index+1]*256
 			index+=2 #skip over the "line number" field
-			s+=sprintf("%u ",line_no)
+			s+=sprintf("%u",line_no)
 			done_line=false
-			while (!done_line)
+			last_char_space=false
+			while (!done_line)			
 				b=buffer[index]
 				if b>=0x80 then
+					if !last_char_space then
+						s+=" "
+					end
 					s+=APPLESOFT_TOKENS[b-0x80]+" "
+					last_char_space=true
 				else
 					s+=b.chr
+					last_char_space=false
 				end
 				index+=1
 				done_line=(index>=length)||(buffer[index]==0)
