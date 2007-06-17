@@ -1,11 +1,12 @@
-V0.1.4
+V0.1.5
+--explode now lets an output directory be specified by --output 
 
-2007-07-17 bugfix - errors on case-sensitive platforms (require 'YAML'=>require'yaml')
-2007-07-17 Added support for opening URLs (e.g. dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz)
-2007-07-17 Added "raw" mode (doesn't convert BASIC tokens to ASCII)
+V0.1.4
+bugfix - errors on case-sensitive platforms (require 'YAML'=>require'yaml')
+Added support for opening URLs (e.g. dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz)
+Added "raw" mode (doesn't convert BASIC tokens to ASCII)
 
 V0.1.3
-
-2007-07-16 Added support for gzipped files (assumes .gz extension)
-2007-07-16 Added support for S-C Assembler files
-2007-07-16 Added support for opening URIs
+Added support for gzipped files (assumes .gz extension)
+Added support for S-C Assembler files
+Added support for opening URIs

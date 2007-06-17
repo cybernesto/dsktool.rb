@@ -29,6 +29,7 @@
 #	dsktool.rb --extract "COLOR DEMOSOFT" DOS3MASTR.dsk
 #	dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
 #	dsktool.rb -x DOS3MASTR.dsk.gz
+#	dsktool.rb -x DOS3MASTR.dsk.gz -o /tmp/DOS3MASTR/
 #	dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
 
 DSKTOOL_VERSION="0.1.5"
@@ -39,7 +40,6 @@ $:.unshift(lib_path) unless $:.include?(lib_path)
 
 require 'optparse'
 require 'rdoc_patch' #RDoc::usage patched to work under gem executables
-
 
 catalog=false
 explode=false
@@ -67,7 +67,7 @@ RDoc::usage_from_file(__FILE__,'Usage') if (filename.nil?)
 require 'DSK'
 dsk=DSK.read(filename)
 output_file= case
-	when (output_filename.nil?) then STDOUT
+	when (output_filename.nil?) || (explode) then STDOUT
 	else File.open(output_filename,"wb")
 end
 	
@@ -80,7 +80,7 @@ if(catalog) then
 end
 
 if(explode) then
-	output_dir=File.basename(filename,".*")
+	output_dir=output_filename.nil??File.basename(filename,".*"):output_filename
 	if !(File.exists?(output_dir)) then
 		Dir.mkdir(output_dir)	
 	end
