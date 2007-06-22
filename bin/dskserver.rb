@@ -7,10 +7,10 @@
 # == Usage
 # dskserver.rb [switches] 
 #
-#  -h | --help                 display this message
-#  -d | --directory ROOT_DIR   root directory to explore from (default is current directory)
-#  -p | --port PORT_NUMBER     port number to listen on (default is 6052)
-#  -v | --version              show version number
+#  -h | --help               display this message
+#  -p | --port PORT_NUMBER   port number to listen on (default is 6052)
+#  -r | --root ROOT_DIR      root directory to explore from (default is current directory)
+#  -v | --version            show version number
 
 #make sure the relevant folder with our libraries is in the require path
 lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
@@ -18,7 +18,7 @@ $:.unshift(lib_path) unless $:.include?(lib_path)
 
 require 'optparse'
 require 'rdoc_patch' #RDoc::usage patched to work under gem executables
-
+require 'hpricot'
 DSKSERVER_VERSION="0.1.0"
 
 @listening_port=6502
@@ -30,7 +30,7 @@ opts.on("-v","--version") do
 	exit
 end
 opts.on("-p","--port PORT_NUMBER",Integer) {|val| @listening_port=val%0xFFFF}
-opts.on("-d","--directory ROOT_DIR",String) {|val| @@root_directory=val}
+opts.on("-r","--root ROOT_DIR",String) {|val| @@root_directory=val}
 
 filename=opts.parse(ARGV)[0] rescue RDoc::usage_from_file(__FILE__,'Usage')
 	
@@ -49,6 +49,21 @@ end
 def common_footer
 "
 "
+end
+
+
+def get_directories_and_files(absolute_path)
+	directories=[]
+	dsk_files=[]
+
+	if File.exist?(absolute_path) && (File.stat(absolute_path).directory?) then
+		dir=Dir.new(absolute_path)
+		dir.each do |f| 
+			directories<<f if (f[0].chr!=".") && (File.stat(absolute_path+"/"+f).directory?)
+			dsk_files<<f if (DSK.is_dsk_file?(f))
+		end
+	end
+	[directories,dsk_files]
 end
 
 def make_navigation_path(relative_path,filename=nil)
@@ -75,27 +90,22 @@ def make_navigation_path(relative_path,filename=nil)
 
 	absolute_path=@@root_directory+relative_path
 	#show the contents of the current directory
-	if File.exist?(absolute_path) && (File.stat(absolute_path).directory?) then
-		dir=Dir.new(absolute_path)
-		directories=[]
-		dsk_files=[]
-		dir.each do |f| 
-			directories<<f if (f[0].chr!=".") && (File.stat(absolute_path+"/"+f).directory?)
-			dsk_files<<f if (DSK.is_dsk_file?(f))
-		end
-		#list out the directories
-		s+="<ul>"
-		s+="<li>[dir] <a href=/#{CGI.escape('/dir/'+File.dirname(relative_path))}>..</a>\n"
-		directories.sort.each do |d|
-			s+="<li>[dir] <a href=/#{CGI.escape('/dir/'+relative_path+'/'+d)}>#{d}</a>\n"
-		end
-		
-		#list out the DSK files		
-		dsk_files.sort.each do |f|
-			s+="<li>[dsk] <a href=/#{CGI.escape('/catalog/'+relative_path+'/'+f)}>#{f}</a>\n"
-		end
-		s+="</ul>"
+	directories,dsk_files=get_directories_and_files(absolute_path)
+
+	#list out the directories
+	
+	s+="<ul>"
+	s+="<li>[dir] <a href=/#{CGI.escape('/dir/'+File.dirname(relative_path))}>..</a>\n"
+	directories.sort.each do |d|
+		s+="<li>[dir] <a href=/#{CGI.escape('/dir/'+relative_path+'/'+d)}>#{d}</a>\n"
 	end
+	
+	#list out the DSK files		
+	dsk_files.sort.each do |f|
+		s+="<li>[dsk] <a href=/#{CGI.escape('/catalog/'+relative_path+'/'+f)}>#{f}</a>\n"
+	end
+	s+="</ul>"
+
 	s
 end
 def make_catalog(relative_path)
