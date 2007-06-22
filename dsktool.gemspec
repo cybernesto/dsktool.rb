@@ -10,14 +10,13 @@ spec=Gem::Specification.new do |s|
 	candidates=Dir.glob("{bin,doc,lib,test}/**/*")
 	s.files=candidates.delete_if do |item|
 		item.include?(".svn") || item.include?("rdoc")
-
 	end
 	s.require_path="lib"
 	s.test_file="test/ts_test_all.rb"
 	s.has_rdoc=true
 	s.bindir = "bin"
 	s.executables = ["dsktool.rb"]
-
+	s.add_dependency('hpricot')
 end
 if $0 == __FILE__
 	Gem::manage_gems
