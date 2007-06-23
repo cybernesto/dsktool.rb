@@ -12,6 +12,7 @@
 #  -e | --extract FILENAME      extract file by name (either to stdout, 
 #                               or file specified by --output)
 #  -h | --help                  display this message
+#  -d | --dump FILENAME         hex dump
 #  -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
 #  -o | --output FILENAME       specify name to save extracted file as
 #  -r | --raw                   don't convert basic files to ASCII
@@ -43,10 +44,9 @@ require 'rdoc_patch' #RDoc::usage patched to work under gem executables
 
 catalog=false
 explode=false
-raw_mode=false
 output_filename=nil
 extract_filename=nil
-list_filename=nil
+extract_mode=:default
 explode_directory=nil
 opts=OptionParser.new
 opts.on("-h","--help") {RDoc::usage_from_file(__FILE__)}
@@ -54,10 +54,17 @@ opts.on("-v","--version") do
 		puts File.basename($0)+" "+DSKTOOL_VERSION
 	exit
 end
-opts.on("-r","--raw") {raw_mode=true}
+opts.on("-r","--raw") {extract_mode=:raw}
 opts.on("-c","--catalog") {catalog=true}
 opts.on("-x","--explode") {explode=true}
-opts.on("-l","--list FILENAME",String) {|val| list_filename=val.upcase}
+opts.on("-l","--list FILENAME",String) do |val| 
+	extract_filename=val.upcase
+	extract_mode=:list	
+end
+opts.on("-d","--dump FILENAME",String) do |val| 
+	extract_filename=val.upcase
+	extract_mode=:hex
+end
 opts.on("-e","--extract FILENAME",String) {|val| extract_filename=val.upcase}
 opts.on("-o","--output FILENAME",String) {|val| output_filename=val}
 filename=opts.parse(ARGV)[0] rescue RDoc::usage_from_file(__FILE__,'Usage')
@@ -102,23 +109,17 @@ if (!extract_filename.nil?) then
 	if file.nil? then
 		puts "'#{extract_filename}' not found in #{filename}"
 	else
-		if (raw_mode) then
-			output_file<<file.contents
-		else
-			output_file<<file
-		end
-	end
-end
-
-if (!list_filename.nil?) then
-	file=dsk.files[list_filename]
-	if file.nil? then
-		puts "'#{list_filename}' not found in #{filename}"
-	else
-		if file.instance_of?(BinaryFile)
-			output_file<<file.disassembly
-		else
-			puts "'#{list_filename}' is not a binary file"
+		output_file<< case extract_mode
+			when :raw then file.contents
+			when :hex then file.hex_dump
+			when :list then 	
+				if file.instance_of?(BinaryFile)
+					file.disassembly
+				else
+					puts "'#{extract_filename}' is not a binary file"
+					exit
+				end
+			else	file.to_s 
 		end
 	end
 end
