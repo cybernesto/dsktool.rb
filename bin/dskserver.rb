@@ -18,7 +18,6 @@ $:.unshift(lib_path) unless $:.include?(lib_path)
 
 require 'optparse'
 require 'rdoc_patch' #RDoc::usage patched to work under gem executables
-require 'hpricot'
 DSKSERVER_VERSION="0.1.0"
 
 @listening_port=6502
@@ -43,7 +42,7 @@ def common_header
 "
 	<html>
 	<body>
-
+<B>DSK Server</b><br>
 "
 end
 def common_footer
@@ -51,16 +50,33 @@ def common_footer
 "
 end
 
-
-def get_directories_and_files(absolute_path)
+def root_dir_is_website?
+	require 'hpricot'
+	require 'open-uri'
+	@@root_directory=~/^http[s]?:/?true : false
+end
+def get_directories_and_files(relative_path)
 	directories=[]
 	dsk_files=[]
-
-	if File.exist?(absolute_path) && (File.stat(absolute_path).directory?) then
-		dir=Dir.new(absolute_path)
-		dir.each do |f| 
-			directories<<f if (f[0].chr!=".") && (File.stat(absolute_path+"/"+f).directory?)
-			dsk_files<<f if (DSK.is_dsk_file?(f))
+	if root_dir_is_website? then
+		html=open(@@root_directory+relative_path).read
+		doc=Hpricot(html)
+		doc.search("a[@href]").each do |a|
+			href=CGI.unescape(a.attributes["href"])
+			if (href=~/\w\/$/) then #directories end with a /
+				directories<<File.basename(href)
+			elsif DSK.is_dsk_file?(href) then
+				dsk_files<<File.basename(href)
+			end
+		end
+	else 
+		if File.exist?(absolute_path) && (File.stat(absolute_path).directory?) then
+			absolute_path=@@root_directory+relative_path
+			dir=Dir.new(absolute_path)
+			dir.each do |f| 
+				directories<<f if (f[0].chr!=".") && (File.stat(absolute_path+"/"+f).directory?)
+				dsk_files<<f if (DSK.is_dsk_file?(f))
+			end
 		end
 	end
 	[directories,dsk_files]
@@ -70,17 +86,15 @@ def make_navigation_path(relative_path,filename=nil)
 	path_parts=relative_path.split("/")
 	#make the cookie-crumb-trail 
 	partial_path=""
-	s="<a href=/dir/>DSK Server</a>"
+	s="<a href=/dir/>#{@@root_directory}</a>"
 	path_parts.each do |p|
 		if p.length>0 then
-			partial_path+="/#{p}"
-			if File.exist?(@@root_directory+"/"+partial_path) then
-				if (File.stat(@@root_directory+"/"+partial_path).directory?) then
-					s+=" / <a href=/dir#{CGI.escape(partial_path)}> #{p}</a>"
-				else
-					s+=" / <a href=/catalog#{CGI.escape(partial_path)}> #{p}</a>"
-				end
-			end			
+			partial_path+="/#{p}"			
+			if DSK.is_dsk_file?(partial_path) then
+				s+=" / <a href=/catalog#{CGI.escape(partial_path)}> #{p}</a>"
+			else
+				s+=" / <a href=/dir#{CGI.escape(partial_path)}> #{p}</a>"
+			end
 		end
 	end
 	
@@ -88,9 +102,9 @@ def make_navigation_path(relative_path,filename=nil)
 		s+=" / <a href=/showfile/#{CGI.escape(relative_path)+'?filename='+CGI.escape(filename)}>#{filename}</a>"
 	end
 
-	absolute_path=@@root_directory+relative_path
+	
 	#show the contents of the current directory
-	directories,dsk_files=get_directories_and_files(absolute_path)
+	directories,dsk_files=get_directories_and_files(relative_path)
 
 	#list out the directories
 	
@@ -115,9 +129,9 @@ def make_catalog(relative_path)
 		dsk=DSK.read(absolute_path)
 		
 		if (dsk.is_dos33?) then
-			s+="<table>\n<th>TYPE</th><th>NAME</th><th>SECTORS</th></tr>\n"
+			s+="<table>\n<th>TYPE</th><th>SECTORS</th><th>NAME</th></tr>\n"
 			dsk.files.each_value do |f|
-				s+="<td>#{f.file_type}</td><td><a href=/showfile/#{CGI.escape(relative_path)+'?filename='+CGI.escape(f.filename)}>#{f.filename}</a></td><td>#{sprintf('%03d',f.sector_count)}</td></tr>\n"
+				s+="<td>#{f.file_type}</td><td>#{sprintf('%03d',f.sector_count)}</td><td><a href=/showfile/#{CGI.escape(relative_path)+'?filename='+CGI.escape(f.filename)}>#{f.filename}</a></td></tr>\n"
 			end
 			s+="</table>"
 		else
