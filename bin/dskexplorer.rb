@@ -57,7 +57,7 @@ def common_header
 "
 	<html>
 	<body>
-<B>DSK Server</b><br>
+<B>DSK Explorer</b><br>
 "
 end
 def common_footer
@@ -92,10 +92,12 @@ def get_directories_and_files(relative_path)
 		doc=Hpricot(html)
 		doc.search("a[@href]").each do |a|
 			href=URI.unescape(a.attributes["href"])
-			if (href=~/\w\/$/) then #directories end with a /
-				directories<<File.basename(href)
+			if (href=~/\w\/$/) 
+				if !(href=~/^\//) then 	#directories end with a /, but skip absolute paths
+					directories<<(href)
+				end
 			elsif DSK.is_dsk_file?(href) then
-				dsk_files<<File.basename(href)
+				dsk_files<<(href)
 			end
 		end
 	else 
@@ -118,7 +120,7 @@ def make_navigation_path(relative_path,filename=nil)
 	path_parts.each do |p|
 		if p.length>0 then
 			partial_path+="/#{p}"			
-			if DSK.is_dsk_file?(partial_path) then
+			if DSK.is_dsk_file?(partial_path) then				
 				s+="/<a href=/catalog#{uri_encode(partial_path)}>#{p}</a>"
 			else
 				s+="/<a href=/dir#{uri_encode(partial_path)}>#{p}</a>"
@@ -143,8 +145,8 @@ def make_navigation_path(relative_path,filename=nil)
 	end
 	
 	#list out the DSK files		
-	dsk_files.sort.each do |f|
-		s+="<li>[dsk] <a href=/catalog/#{uri_encode(relative_path)}/#{uri_encode(f)}>#{f}</a>\n"
+	dsk_files.sort.each do |f|		 
+		s+="<li>[dsk] <a href=/catalog/#{uri_encode(relative_path)}/#{uri_encode(f)}>#{f}</a> [ <a href=#{uri_encode(@@root_directory+relative_path+'/'+f)}>download</a> ]\n"
 	end
 	s+="</ul>"
 
