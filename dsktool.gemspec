@@ -9,7 +9,7 @@ spec=Gem::Specification.new do |s|
 	s.summary="a command line tool + libraries for manipulating DSK format images as used by Apple 2 emulators" 
 	candidates=Dir.glob("{bin,doc,lib,test}/**/*")
 	s.files=candidates.delete_if do |item|
-		item.include?(".svn") || item.include?("rdoc")
+		item.include?(".svn") 
 	end
 	s.require_path="lib"
 	s.test_file="test/ts_test_all.rb"
