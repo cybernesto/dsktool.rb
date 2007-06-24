@@ -1,16 +1,21 @@
 #!/usr/bin/ruby
-# dskserver.rb
+# dskexplorer.rb
 #
 # == Synopsis
 # A web-based DSK file explorer
 #
 # == Usage
-# dskserver.rb [switches] 
+# dskexplorer.rb [switches] 
 #
 #  -h | --help               display this message
-#  -p | --port PORT_NUMBER   port number to listen on (default is 6052)
+#  -p | --port PORT_NUMBER   port number to listen on (default is 6502)
 #  -r | --root ROOT_DIR      root directory to explore from (default is current directory)
 #  -v | --version            show version number
+#
+# Examples
+#     dskexplorer.rb -r http://www.apple2.org.za/mirrors/
+#     dskexplorer.rb -r c:\downloads\apple2\ -p 8080
+
 
 #make sure the relevant folder with our libraries is in the require path
 lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
@@ -18,14 +23,14 @@ $:.unshift(lib_path) unless $:.include?(lib_path)
 
 require 'optparse'
 require 'rdoc_patch' #RDoc::usage patched to work under gem executables
-DSKSERVER_VERSION="0.1.0"
+dskexplorer_VERSION="0.1.0"
 
 @listening_port=6502
 @@root_directory="."
 opts=OptionParser.new
 opts.on("-h","--help") {RDoc::usage_from_file(__FILE__)}
 opts.on("-v","--version") do
-	puts File.basename($0)+" "+DSKSERVER_VERSION
+	puts File.basename($0)+" "+dskexplorer_VERSION
 	exit
 end
 opts.on("-p","--port PORT_NUMBER",Integer) {|val| @listening_port=val%0xFFFF}
@@ -62,6 +67,7 @@ def common_header
 end
 def common_footer
 "
+<p><i>this is alpha software - please send feedback using the <a href=http://rubyforge.org/tracker/?group_id=3844> dsktool.rb forum</a><p>
 "
 end
 
@@ -226,6 +232,8 @@ class ShowFileServlet < HTTPServlet::AbstractServlet
 	end
 end
 
+
+
 s=HTTPServer.new(
 	:Port=>@listening_port
 )
@@ -234,6 +242,9 @@ trap("INT") {s.shutdown}
 s.mount("/dir",DirectoryServlet)
 s.mount("/catalog",CatalogServlet)
 s.mount("/showfile",ShowFileServlet)
+
+#default page - for now, just redirect to the default dir page
+s.mount("/",DirectoryServlet)
 
 puts "point your browser at http://localhost:#{@listening_port}/"
 s.start

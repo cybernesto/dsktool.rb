@@ -15,7 +15,7 @@ spec=Gem::Specification.new do |s|
 	s.test_file="test/ts_test_all.rb"
 	s.has_rdoc=true
 	s.bindir = "bin"
-	s.executables = ["dsktool.rb"]
+	s.executables = ["dsktool.rb","dskexplorer.rb"]
 	s.add_dependency('hpricot')
 end
 if $0 == __FILE__

@@ -1,3 +1,6 @@
+V0.1.6
+fixed errors in the gem package
+
 V0.1.5
 bugfix - the S-C Assembler file detect routine was sometimes getting into endless loop
 added 'dskexplorer.rb'
