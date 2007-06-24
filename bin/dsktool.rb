@@ -33,7 +33,7 @@
 #	dsktool.rb -x DOS3MASTR.dsk.gz -o /tmp/DOS3MASTR/
 #	dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
 
-DSKTOOL_VERSION="0.1.5"
+DSKTOOL_VERSION="0.1.6"
 
 #make sure the relevant folder with our libraries is in the require path
 lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
