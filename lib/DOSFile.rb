@@ -389,6 +389,9 @@ class SCAsmFile < DOSFile
 	end
 
 	def SCAsmFile.can_be_scasm_file?(buffer)
+		if buffer.length<2 then
+			return false
+		end
 		length=buffer[0]+buffer[1]*256
 		index=2
 		s=""

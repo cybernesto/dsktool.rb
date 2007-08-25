@@ -74,47 +74,56 @@ class DSK
 		@files
 	end
 
-	#print to stdout a formatted hex dump of a single 256 byte sector
+	#return a formatted hex dump of a single 256 byte sector
 	def dump_sector(track,sector)
+		start_byte=track.to_i*16*256+sector.to_i*256
+		s=hline
+		s<<sprintf("TRACK: $%02X SECTOR $%02X\ OFFSET $%04X\n",track,sector,start_byte)
+		s<< "\t"
 
-		start_byte=track*16*256+sector*256
-		s=@file_bytes[start_byte..start_byte+255]
-
-		print_hline
-		printf("TRACK: $%02X SECTOR $%02X\ OFFSET $%04X\n",track,sector,start_byte)
-		printf "\t"
-
-		(0..15).each {|x| printf("%02X ",x) }
-		puts
-		print_hline
+		(0..15).each {|x| s<<sprintf("%02X ",x) }
+		s<<"\n"
+		s<<hline
 		(0..15).each {|line_number|
 			 lhs=""
 			 rhs=""
 			 start_byte=line_number*16
-			 line=s[start_byte..start_byte+15]
+			 line=@file_bytes[start_byte..start_byte+15]
 			 line.each_byte {|byte|
-				  lhs+= sprintf("%02X ", byte)
-				  rhs+= (byte%128).chr.sub(/[\x00-\x1f]/,'.')
+				  lhs<< sprintf("%02X ", byte)
+				  rhs<< (byte%128).chr.sub(/[\x00-\x1f]/,'.')
 		 	}
-			 printf("%02X\t%s %s\n",start_byte,lhs,rhs)
+			s<<sprintf("%02X\t%s %s\n",start_byte,lhs,rhs)
 		}
-
+		s
 	end
 
-	#print to stdout a formatted hex dump of all sectors on all tracks
+	#return a formatted hex dump of a single 256 byte sector
+	def disassemble_sector(track,sector)
+		require 'D65'
+		sector_data=get_sector(track,sector)
+		if (track==0) && (sector==0) then
+			return D65.disassemble(sector_data[1..255],0x801)
+		else
+			return D65.disassemble(sector_data)
+		end
+	end
+
+	#return a formatted hex dump of all sectors on all tracks
 	def dump_disk
-	
+		s=""
 		(0..34).each {|track|
 			(0..15).each {|sector|
-				dump_sector(track,sector)
+				s<<dump_sector(track,sector)
 			}
 		}
+		s
 	end
 	
 private
 
-	def print_hline
-		puts "-"*79
+	def hline
+		"-"*79+"\n"
 	end
 
 

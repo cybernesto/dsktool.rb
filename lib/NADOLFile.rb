@@ -4,8 +4,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 require 'D65'
 
 #NADOL (Nibbles Away Disk Optimized Language) file
-class NADOLFile
-	
+class NADOLFile	
 	attr_accessor(:filename,:contents) 
 	def initialize(filename,contents)
 		@filename=filename
@@ -15,7 +14,10 @@ class NADOLFile
 	def to_s
 		@contents
 	end
-	
+
+	def file_extension
+		".bin"
+	end
 	def hex_dump
 		#assumes file is a multiple of 16 bytes, which it always should be
 		s=""
@@ -34,6 +36,15 @@ class NADOLFile
 	end
 end
 
+#a file on a NADOL dsk that does not appear to be in NADOL tokenised format
+class NADOLBinaryFile<NADOLFile
+	def disassembly(start_address=0x8000) 
+		require 'D65'
+		D65.disassemble(@contents,start_address)
+	end
+end
+
+
 #file packed by the NADOL EDITOR application.
 #format is a series of  unnumbered lines, where each line has the following format:
 #  <Length>     (8-bit: including length byte, line no, contents, zero>
@@ -45,7 +56,6 @@ end
 # $65-$70 - ??? unknown
 # $71 - $7f - 1 to F spaces
 # $80-$FF - ASCII character with high bit set
-
 class NADOLTokenisedFile < NADOLFile
 	NADOL_EDITOR_TOKENS = [
 	"?",		#00 (so we can use token as an index in to this array)
@@ -171,6 +181,9 @@ class NADOLTokenisedFile < NADOLFile
 	
 	def to_s
 		NADOLTokenisedFile.buffer_as_tokenised_file(@contents)
+	end
+	def file_extension
+		".nad"
 	end
 
 	private
