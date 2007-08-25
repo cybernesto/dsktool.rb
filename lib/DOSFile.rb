@@ -327,6 +327,8 @@ private
 		s=""
 		while (index<length)
 			index+=2 #skip over the "next address" field
+			break if buffer[index].nil?
+			break if buffer[index+1].nil?
 			line_no=buffer[index]+buffer[index+1]*256
 			index+=2 #skip over the "line number" field
 			s+=sprintf("%u",line_no)
@@ -334,6 +336,7 @@ private
 			last_char_space=false
 			while (!done_line)			
 				b=buffer[index]
+				break if b.nil?
 				if b>=0x80 then
 					if !last_char_space then
 						s+=" "

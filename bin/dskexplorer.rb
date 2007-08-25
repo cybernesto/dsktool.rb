@@ -84,10 +84,13 @@ def make_absolute_path(relative_path)
 	end	
 end
 
+def html_escape(s)
+	s.gsub("&","&amp;").gsub("<","&lt;")
+end
 def uri_encode(s)
 	#standard URI.escape appears to miss some important characters
 	require 'uri'
-	URI.escape(s).sub("[","%5b").sub("]","%5d")
+	URI.escape(s).gsub("[","%5b").gsub("]","%5d")
 end
 def get_directories_and_files(relative_path)
 	directories=[]
@@ -192,29 +195,51 @@ def make_catalog(relative_path)
 	end
 	s
 end
-def show_sector(relative_path,track,sector)
-		track=0 if track.nil?
-		sector=0 if sector.nil?
+def show_sector(relative_path,track,sector)		
+		track="0" if track.nil?
+		sector="0" if sector.nil?
+		track=("0"+track).to_i
+		sector=("0"+sector).to_i
 		absolute_path=make_absolute_path(relative_path)
 		dsk=get_dsk_from_cache(absolute_path)
+		uri="/showsector/#{uri_encode(relative_path)}"
 		s=""
+		s<<"<table><tr><th colspan=16>TRACK</th></tr>"
+		s<<"<tr>"
+		0.upto(0x22) do |track_no| 
+			if track_no==track then
+				s<<"<td><b>$#{sprintf('%02X',track)}</b></td>"
+			else
+				s<<"<td><a href=#{uri}?track=#{track_no}&sector=0>$#{sprintf('%02X',track_no)}</a></td>"
+			end
+			if track_no==0x0f ||track_no==0x1f then
+				s<<"</tr></tr>"
+			end
+		end
+		s<<"</tr>"
+		s<<"</table>"
+
+	s<<"<table><tr><th colspan=16>SECTOR</th></tr>"
+		s<<"<tr>"
+		0.upto(0x0F) do |sector_no| 
+			if sector_no==sector then
+				s<<"<td><b>$#{sprintf('%02X',sector)}</b></td>"
+			else
+				s<<"<td><a href=#{uri}?track=#{track}&sector=#{sector_no}>$#{sprintf('%02X',sector_no)}</a></td>"
+			end
+		end
+		s<<"</tr>"
+		s<<"</table>"
+
+		
 		s<<"<pre>\n"
-		s<<dsk.dump_sector(track.to_i,sector.to_i)
+		s<<html_escape(dsk.dump_sector(track,sector))
 		s<<"</pre>\n"
 		s<<"<p>"
 		s<<"<pre>\n"
-		s<<dsk.disassemble_sector(track.to_i,sector.to_i)
+		s<<html_escape(dsk.disassemble_sector(track,sector))
 		s<<"</pre>\n"
-		uri="/showsector/#{uri_encode(relative_path)}"
-		s<<"<table><tr><th>TRACK</th><th colspan=16>SECTOR</th></tr>"
-		0.upto(0x22) do |track| 
-			s<<"<tr><td><b>$#{sprintf('%02X',track)}</b></td>"
-			0.upto(0x0f) do |sector|
-				s<<"<td><a href=#{uri}?track=#{track}&sector=#{sector}>$#{sprintf('%02X',sector)}</a></td>"	
-			end
-			s<<"</tr>"
-		end
-		s<<"</table>"
+		
 end
 
 def show_file(relative_path,filename,display_mode)
@@ -226,11 +251,11 @@ def show_file(relative_path,filename,display_mode)
 	else 
 		s="<hl><pre>"
 		if display_mode=="hex" then
-			s<<file.hex_dump
+			s<<html_escape(file.hex_dump)
 		elsif display_mode=="list" && file.respond_to?(:disassembly)
-			then s<<file.disassembly 
+			then s<<html_escape(file.disassembly)
 		else 
-			s<< file.to_s
+			s<< (file.to_s)
 		end
 		s<<"\n</pre><hl>"
 	end
