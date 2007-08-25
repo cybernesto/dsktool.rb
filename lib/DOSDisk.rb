@@ -133,19 +133,19 @@ class DOSDisk < DSK
 							end
 						}
 					end
-
-					@files[filename]= case file_type_code
-						when 0x00 then TextFile.new(filename,locked,sector_count,contents)
-						when 0x01 then SCAsmFile.can_be_scasm_file?(contents)? SCAsmFile.new(filename,locked,sector_count,contents): IntegerBasicFile.new(filename,locked,sector_count,contents)
-						when 0x02 then AppleSoftFile.new(filename,locked,sector_count,contents)
-						when 0x04 then BinaryFile.new(filename,locked,sector_count,contents)
-#						when 0x08 then "S"	#S type file
-#						when 0x10 then "R"	#RELOCATABLE object module file
-#						when 0x20 then "a"	#??
-#						when 0x40 then "b"	#??
-						else DOSFile.new(filename,locked,sector_count,contents,sprintf("$%02X",file_type_code))
+					if contents.length>0 then
+						@files[filename]= case file_type_code
+							when 0x00 then TextFile.new(filename,locked,sector_count,contents)
+							when 0x01 then SCAsmFile.can_be_scasm_file?(contents)? SCAsmFile.new(filename,locked,sector_count,contents): IntegerBasicFile.new(filename,locked,sector_count,contents)
+							when 0x02 then AppleSoftFile.new(filename,locked,sector_count,contents)
+							when 0x04 then BinaryFile.new(filename,locked,sector_count,contents)
+	#						when 0x08 then "S"	#S type file
+	#						when 0x10 then "R"	#RELOCATABLE object module file
+	#						when 0x20 then "a"	#??
+	#						when 0x40 then "b"	#??
+							else DOSFile.new(filename,locked,sector_count,contents,sprintf("$%02X",file_type_code))
+						end
 					end
-	
 				end
 			}
 			next_track=catalog_sector[1]		

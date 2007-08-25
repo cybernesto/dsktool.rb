@@ -127,15 +127,15 @@ def make_navigation_path(relative_path,filename=nil)
 		if p.length>0 then
 			partial_path+="/#{p}"			
 			if DSK.is_dsk_file?(partial_path) then				
-				s+="/<a href=/catalog#{uri_encode(partial_path)}>#{p}</a>"
+				s<<"/<a href=/catalog#{uri_encode(partial_path)}>#{p}</a>"
 			else
-				s+="/<a href=/dir#{uri_encode(partial_path)}>#{p}</a>"
+				s<<"/<a href=/dir#{uri_encode(partial_path)}>#{p}</a>"
 			end
 		end
 	end
 	
 	if !filename.nil? then
-		s+="/<a href=/showfile/#{uri_encode(relative_path)+'?filename='+uri_encode(filename)}>#{filename}</a>"
+		s<<"/<a href=/showfile/#{uri_encode(relative_path)+'?filename='+uri_encode(filename)}>#{filename}</a>"
 	end
 
 	
@@ -144,17 +144,17 @@ def make_navigation_path(relative_path,filename=nil)
 
 	#list out the directories
 	
-	s+="<ul>"
-	#s+="<li>[dir] <a href=/#{uri_encode('/dir/'+File.dirname(relative_path))}>..</a>\n"
+	s<<"<ul>"
+	#s<<"<li>[dir] <a href=/#{uri_encode('/dir/'+File.dirname(relative_path))}>..</a>\n"
 	directories.sort.each do |d|
-		s+="<li>[dir] <a href=/dir/#{uri_encode(relative_path)}/#{uri_encode(d)}>#{d}</a>\n"
+		s<<"<li>[dir] <a href=/dir/#{uri_encode(relative_path)}/#{uri_encode(d)}>#{d}</a>\n"
 	end
 	
 	#list out the DSK files		
 	dsk_files.sort.each do |f|		 
-		s+="<li>[dsk] <a href=/catalog/#{uri_encode(relative_path)}/#{uri_encode(f)}>#{f}</a> [ <a href=#{uri_encode(@@root_directory+relative_path+'/'+f)}>download</a> ]\n"
+		s<<"<li>[dsk] <a href=/catalog/#{uri_encode(relative_path)}/#{uri_encode(f)}>#{f}</a> [ <a href=#{uri_encode(@@root_directory+relative_path+'/'+f)}>download</a> ]\n"
 	end
-	s+="</ul>"
+	s<<"</ul>"
 
 	s
 end
@@ -163,29 +163,60 @@ def make_catalog(relative_path)
 	begin
 		absolute_path=make_absolute_path(relative_path)
 		dsk=get_dsk_from_cache(absolute_path)
-		if (dsk.is_dos33?) then
-			s+="<table>\n<th>TYPE</th><th>SECTORS</th><th>NAME</th></tr>\n"
+		if (dsk.respond_to?(:files)) then
+			s<<"<table>\n<th>TYPE</th><th>SIZE (BYTES)</th><th>NAME</th></tr>\n"
 			dsk.files.each_value do |f|
 				display_url="/showfile/#{uri_encode(relative_path)+'?filename='+uri_encode(f.filename)}"
-				s+="<td>#{f.file_type}</td><td>#{sprintf('%03d',f.sector_count)}</td><td>#{f.filename}</td>"
-				s+="<td><a href=#{display_url}&mode=hex>hex dump</a></td>"
-				if f.file_type=="T" then
-					s+="<td><a href=#{display_url}&mode=text>text</a></td>"
-				else
-					s+="<td><a href=#{display_url}&mode=list>listing</a></td>"
+				if f.respond_to?(:file_type) then 
+					s<<"<td>#{f.file_type}</td>"
+				else 
+					s<<"<td></td>"
 				end
-				
-				s+="</tr>\n"
+				s<<"<td>#{sprintf('%03d',f.contents.length)}</td>"				
+				s<<"<td>#{f.filename}</td>"
+				s<<"<td><a href=#{display_url}&mode=hex>hex dump</a></td>"
+				if f.respond_to?(:disassembly)
+					s<<"<td><a href=#{display_url}&mode=list>disassembly</a></td>"
+				else 
+					s<<"<td><a href=#{display_url}&mode=text>text</a></td>"
+				end				
+				s<<"</tr>\n"
 			end
-			s+="</table>"
+			s<<"</table>"
 		else
-			s+="<i>not DOS 3.3 format</i>"
+			s<<"<i>not a recognised format</i>"
 		end
+		s<<"<p><a href=/showsector/#{uri_encode(relative_path)}>View Sectors</a>"
 	rescue Exception => exception
-		s+="<i>ERROR:#{exception}</i>"
+		s<<"<i>ERROR:#{exception}</i>"
 	end
 	s
 end
+def show_sector(relative_path,track,sector)
+		track=0 if track.nil?
+		sector=0 if sector.nil?
+		absolute_path=make_absolute_path(relative_path)
+		dsk=get_dsk_from_cache(absolute_path)
+		s=""
+		s<<"<pre>\n"
+		s<<dsk.dump_sector(track.to_i,sector.to_i)
+		s<<"</pre>\n"
+		s<<"<p>"
+		s<<"<pre>\n"
+		s<<dsk.disassemble_sector(track.to_i,sector.to_i)
+		s<<"</pre>\n"
+		uri="/showsector/#{uri_encode(relative_path)}"
+		s<<"<table><tr><th>TRACK</th><th colspan=16>SECTOR</th></tr>"
+		0.upto(0x22) do |track| 
+			s<<"<tr><td><b>$#{sprintf('%02X',track)}</b></td>"
+			0.upto(0x0f) do |sector|
+				s<<"<td><a href=#{uri}?track=#{track}&sector=#{sector}>$#{sprintf('%02X',sector)}</a></td>"	
+			end
+			s<<"</tr>"
+		end
+		s<<"</table>"
+end
+
 def show_file(relative_path,filename,display_mode)
 	absolute_path=make_absolute_path(relative_path)
 	dsk=get_dsk_from_cache(absolute_path)
@@ -195,13 +226,13 @@ def show_file(relative_path,filename,display_mode)
 	else 
 		s="<hl><pre>"
 		if display_mode=="hex" then
-			s+=file.hex_dump
-		elsif display_mode=="list" && file.file_type=='B'
-			then s+=file.disassembly 
+			s<<file.hex_dump
+		elsif display_mode=="list" && file.respond_to?(:disassembly)
+			then s<<file.disassembly 
 		else 
-			s+= file.to_s
+			s<< file.to_s
 		end
-		s+="\n</pre><hl>"
+		s<<"\n</pre><hl>"
 	end
 	s
 end
@@ -232,6 +263,15 @@ class ShowFileServlet < HTTPServlet::AbstractServlet
 	end
 end
 
+class ShowSectorServlet < HTTPServlet::AbstractServlet
+	def do_GET(req,res)
+		relative_path=URI.unescape(req.path).sub(/^\/showsector/,"")
+		track=req.query['track']
+		sector=req.query['sector']
+		res['Content-Type']="text/html"
+		res.body=common_header+make_navigation_path(relative_path)+show_sector(relative_path,track,sector)+common_footer
+	end
+end
 
 
 s=HTTPServer.new(
@@ -242,6 +282,7 @@ trap("INT") {s.shutdown}
 s.mount("/dir",DirectoryServlet)
 s.mount("/catalog",CatalogServlet)
 s.mount("/showfile",ShowFileServlet)
+s.mount("/showsector",ShowSectorServlet)
 
 #default page - for now, just redirect to the default dir page
 s.mount("/",DirectoryServlet)

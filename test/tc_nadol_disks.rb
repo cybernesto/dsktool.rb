@@ -22,11 +22,13 @@ class TestNADOLDisks <Test::Unit::TestCase
 		nadol_file=dsk.files["NADOL"]
 		assert(nadol_file!=nil,"#{dskname} should have a file called NADOL")
 		assert(nadol_file.to_s.length==16128,"NADOL should be 16128 bytes long")
+		assert(nadol_file.respond_to?(:disassembly),"NADOL can be disassembled")
 		assert(!NADOLTokenisedFile.can_be_nadol_tokenised_file?(nadol_file.contents),"NADOL should not be NADOL tokenised file")
 		brickout_file=dsk.files["BRICKOUT"]
 		assert(brickout_file!=nil,"#{dskname} should have a file called BRICKOUT")
 		assert(NADOLTokenisedFile.can_be_nadol_tokenised_file?(dsk.files["BRICKOUT"].contents),"BRICKOUT should be NADOL tokenised file")
-		s=brickout_file.to_s
+		assert(nadol_file.respond_to?(:disassembly),"BRICKOUT can't be disassembled")
+		s=brickout_file.to_s		
 		assert_equal("; LORES BRICK-OUT GAME",s[0..21],"BRICK-OUT source should detokenise")
 		assert_equal("; @ \"NAIII\"",dsk.files["NAIII"].to_s[0..10],"NAIII source should detokenise")
 	end

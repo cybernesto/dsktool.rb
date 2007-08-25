@@ -54,7 +54,7 @@ opts.on("-v","--version") do
 		puts File.basename($0)+" "+DSKTOOL_VERSION
 	exit
 end
-opts.on("-r","--raw") {extract_mode=:raw}
+opts.on("-r","--") {extract_mode=:raw}
 opts.on("-c","--catalog") {catalog=true}
 opts.on("-x","--explode") {explode=true}
 opts.on("-l","--list FILENAME",String) do |val| 
@@ -93,7 +93,7 @@ if(explode) then
 	end
 			
 	dsk.files.each_value do |f|
-		if (raw_mode) then
+		if (extract_mode==:raw) then
 			output_filename=output_dir+"/"+f.filename+".raw"
 			File.open(output_filename,"wb") <<f.contents
 		else
@@ -113,7 +113,7 @@ if (!extract_filename.nil?) then
 			when :raw then file.contents
 			when :hex then file.hex_dump
 			when :list then 	
-				if file.instance_of?(BinaryFile)
+				if file.respond_to?(:disassembly)
 					file.disassembly
 				else
 					puts "'#{extract_filename}' is not a binary file"
