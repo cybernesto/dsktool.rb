@@ -101,15 +101,16 @@ many Apple 2 emulators.
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000049">dump_disk</a>&nbsp;&nbsp;
-      <a href="#M000048">dump_sector</a>&nbsp;&nbsp;
-      <a href="#M000047">files</a>&nbsp;&nbsp;
-      <a href="#M000046">get_sector</a>&nbsp;&nbsp;
-      <a href="#M000042">is_dos33?</a>&nbsp;&nbsp;
-      <a href="#M000041">is_dsk_file?</a>&nbsp;&nbsp;
-      <a href="#M000043">is_nadol?</a>&nbsp;&nbsp;
-      <a href="#M000044">new</a>&nbsp;&nbsp;
-      <a href="#M000045">read</a>&nbsp;&nbsp;
+      <a href="#M000053">disassemble_sector</a>&nbsp;&nbsp;
+      <a href="#M000054">dump_disk</a>&nbsp;&nbsp;
+      <a href="#M000052">dump_sector</a>&nbsp;&nbsp;
+      <a href="#M000051">files</a>&nbsp;&nbsp;
+      <a href="#M000050">get_sector</a>&nbsp;&nbsp;
+      <a href="#M000046">is_dos33?</a>&nbsp;&nbsp;
+      <a href="#M000045">is_dsk_file?</a>&nbsp;&nbsp;
+      <a href="#M000047">is_nadol?</a>&nbsp;&nbsp;
+      <a href="#M000048">new</a>&nbsp;&nbsp;
+      <a href="#M000049">read</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -157,12 +158,12 @@ many Apple 2 emulators.
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000041" class="method-detail">
-        <a name="M000041"></a>
+      <div id="method-M000045" class="method-detail">
+        <a name="M000045"></a>
 
         <div class="method-heading">
-          <a href="DSK.src/M000041.html" target="Code" class="method-signature"
-            onclick="popupCode('DSK.src/M000041.html');return false;">
+          <a href="DSK.src/M000045.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000045.html');return false;">
           <span class="method-name">is_dsk_file?</span><span class="method-args">(filename)</span>
           </a>
         </div>
@@ -174,12 +175,12 @@ does this filename have a suitable extension?
         </div>
       </div>
 
-      <div id="method-M000044" class="method-detail">
-        <a name="M000044"></a>
+      <div id="method-M000048" class="method-detail">
+        <a name="M000048"></a>
 
         <div class="method-heading">
-          <a href="DSK.src/M000044.html" target="Code" class="method-signature"
-            onclick="popupCode('DSK.src/M000044.html');return false;">
+          <a href="DSK.src/M000048.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000048.html');return false;">
           <span class="method-name">new</span><span class="method-args">(file_bytes=&quot;\0&quot;*DSK_FILE_LENGTH)</span>
           </a>
         </div>
@@ -191,12 +192,12 @@ create a new <a href="DSK.html">DSK</a> structure (in memory, not on disk)
         </div>
       </div>
 
-      <div id="method-M000045" class="method-detail">
-        <a name="M000045"></a>
+      <div id="method-M000049" class="method-detail">
+        <a name="M000049"></a>
 
         <div class="method-heading">
-          <a href="DSK.src/M000045.html" target="Code" class="method-signature"
-            onclick="popupCode('DSK.src/M000045.html');return false;">
+          <a href="DSK.src/M000049.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000049.html');return false;">
           <span class="method-name">read</span><span class="method-args">(filename)</span>
           </a>
         </div>
@@ -210,47 +211,78 @@ read in an existing <a href="DSK.html">DSK</a> file (must exist)
 
       <h3 class="section-bar">Public Instance methods</h3>
 
-      <div id="method-M000049" class="method-detail">
-        <a name="M000049"></a>
+      <div id="method-M000053" class="method-detail">
+        <a name="M000053"></a>
 
         <div class="method-heading">
-          <a href="DSK.src/M000049.html" target="Code" class="method-signature"
-            onclick="popupCode('DSK.src/M000049.html');return false;">
+          <a href="DSK.src/M000053.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000053.html');return false;">
+          <span class="method-name">disassemble_sector</span><span class="method-args">(track,sector)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+return a formatted hex dump of a single 256 byte sector
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000054" class="method-detail">
+        <a name="M000054"></a>
+
+        <div class="method-heading">
+          <a href="DSK.src/M000054.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000054.html');return false;">
           <span class="method-name">dump_disk</span><span class="method-args">()</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-print to stdout a formatted hex dump of all sectors on all tracks
+return a formatted hex dump of all sectors on all tracks
 </p>
         </div>
       </div>
 
-      <div id="method-M000048" class="method-detail">
-        <a name="M000048"></a>
+      <div id="method-M000052" class="method-detail">
+        <a name="M000052"></a>
 
         <div class="method-heading">
-          <a href="DSK.src/M000048.html" target="Code" class="method-signature"
-            onclick="popupCode('DSK.src/M000048.html');return false;">
+          <a href="DSK.src/M000052.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000052.html');return false;">
           <span class="method-name">dump_sector</span><span class="method-args">(track,sector)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p>
-print to stdout a formatted hex dump of a single 256 byte sector
+return a formatted hex dump of a single 256 byte sector
 </p>
         </div>
       </div>
 
-      <div id="method-M000047" class="method-detail">
-        <a name="M000047"></a>
+      <div id="method-M000051" class="method-detail">
+        <a name="M000051"></a>
 
         <div class="method-heading">
-          <a href="DSK.src/M000047.html" target="Code" class="method-signature"
-            onclick="popupCode('DSK.src/M000047.html');return false;">
+          <a href="DSK.src/M000051.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000051.html');return false;">
           <span class="method-name">files</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000050" class="method-detail">
+        <a name="M000050"></a>
+
+        <div class="method-heading">
+          <a href="DSK.src/M000050.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000050.html');return false;">
+          <span class="method-name">get_sector</span><span class="method-args">(track,sector)</span>
           </a>
         </div>
       
@@ -264,20 +296,6 @@ print to stdout a formatted hex dump of a single 256 byte sector
         <div class="method-heading">
           <a href="DSK.src/M000046.html" target="Code" class="method-signature"
             onclick="popupCode('DSK.src/M000046.html');return false;">
-          <span class="method-name">get_sector</span><span class="method-args">(track,sector)</span>
-          </a>
-        </div>
-      
-        <div class="method-description">
-        </div>
-      </div>
-
-      <div id="method-M000042" class="method-detail">
-        <a name="M000042"></a>
-
-        <div class="method-heading">
-          <a href="DSK.src/M000042.html" target="Code" class="method-signature"
-            onclick="popupCode('DSK.src/M000042.html');return false;">
           <span class="method-name">is_dos33?</span><span class="method-args">()</span>
           </a>
         </div>
@@ -289,12 +307,12 @@ does this <a href="DSK.html">DSK</a> have a standard Apple DOS 3.3 VTOC?
         </div>
       </div>
 
-      <div id="method-M000043" class="method-detail">
-        <a name="M000043"></a>
+      <div id="method-M000047" class="method-detail">
+        <a name="M000047"></a>
 
         <div class="method-heading">
-          <a href="DSK.src/M000043.html" target="Code" class="method-signature"
-            onclick="popupCode('DSK.src/M000043.html');return false;">
+          <a href="DSK.src/M000047.html" target="Code" class="method-signature"
+            onclick="popupCode('DSK.src/M000047.html');return false;">
           <span class="method-name">is_nadol?</span><span class="method-args">()</span>
           </a>
         </div>

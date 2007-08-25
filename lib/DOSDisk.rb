@@ -99,10 +99,10 @@ class DOSDisk < DSK
 
 	def read_vtoc
 		vtoc_sector=get_sector(17,0)
-
 		catalog_sector=get_sector(vtoc_sector[01],vtoc_sector[02])
 		done=false
-		while !done 
+		while !done
+			break if catalog_sector.nil?
 			(0..6).each {|file_number|
 				file_descriptive_entry_start=11+file_number*35
 				file_descriptive_entry=catalog_sector[file_descriptive_entry_start..file_descriptive_entry_start+35]					

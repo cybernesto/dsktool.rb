@@ -23,6 +23,14 @@ class TestDOSDisks <Test::Unit::TestCase
 	end
 
 
+	def test_dump_sector
+		dskname=File.dirname(__FILE__)+"//AAL_1.DSK"
+		dsk=DSK.read(dskname)
+		assert_equal(dsk.dump_sector(0,0).length,dsk.dump_sector(0,2).length,"sector dumps should be consistent length")
+		puts dsk.dump_sector(0,0)
+		puts dsk.dump_sector(0,2)
+	end
+
 	def test_empty_dsk
 		dsk=DSK.new()
 		assert(!dsk.is_dos33?,"empty DSK should not be DOS 3.3 format")
