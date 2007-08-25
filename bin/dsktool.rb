@@ -19,7 +19,7 @@
 #  -x | --explode               extract all files 
 #  -v | --version               show version number
 #
-#	Currently only works with DOS 3.3 format DSK images 
+#	Currently only works with DOS 3.3 and NADOL format DSK images 
 #	Will uncompress gzipped files (with extension .gz)
 #	input files can be URLs
 #
@@ -33,7 +33,7 @@
 #	dsktool.rb -x DOS3MASTR.dsk.gz -o /tmp/DOS3MASTR/
 #	dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
 
-DSKTOOL_VERSION="0.1.6"
+DSKTOOL_VERSION="0.2.1"
 
 #make sure the relevant folder with our libraries is in the require path
 lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
@@ -79,10 +79,10 @@ output_file= case
 end
 	
 if(catalog) then	
-	if (dsk.is_dos33?) then
+	if (dsk.respond_to?(:dump_catalog)) then
 		dsk.dump_catalog
 	else
-		puts "#{filename} is not in DOS 3.3 format"
+		puts "#{filename} does not have a recognised file system"
 	end
 end
 
