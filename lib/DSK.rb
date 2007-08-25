@@ -23,6 +23,11 @@ class DSK
 		(@file_bytes[0x11001]<=34) && (@file_bytes[0x11002]<=15) && (@file_bytes[0x11003]==3)
 	end
 
+	def	is_nadol?
+		# track $00, sector $02 , bytes $11 - "NADOL"
+		(@file_bytes[0x00211..0x00215]=="NADOL")
+	end
+
 
 	#create a new DSK structure (in memory, not on disk)
 	def initialize(file_bytes="\0"*DSK_FILE_LENGTH)	
@@ -51,6 +56,12 @@ class DSK
 			require 'DOSDisk'
 			dsk=DOSDisk.new(file_bytes)
 		end
+		
+		if (dsk.is_nadol?) 
+			require 'NADOLDisk'
+			dsk=NADOLDisk.new(file_bytes)
+		end
+
 		dsk
 	end
 
