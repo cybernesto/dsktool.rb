@@ -48,14 +48,14 @@ end
 #file packed by the NADOL EDITOR application.
 #format is a series of  unnumbered lines, where each line has the following format:
 #  <Length>     (8-bit: including length byte, line no, contents, zero>
-#  <Tokens and/orCharacters>
+#  <Tokens and/or Characters>
 #  <Zero byte>  ($00, to mark the end of the S-C Asm source line)
 # each byte in the line is interpreted as follows:
 # $00 - end of line marker
 # $01 - $64 - NADOL tokens
-# $65-$70 - ??? unknown
+# $65 - $70 - ??? unknown
 # $71 - $7f - 1 to F spaces
-# $80-$FF - ASCII character with high bit set
+# $80 - $FF - ASCII character with high bit set
 class NADOLTokenisedFile < NADOLFile
 	NADOL_EDITOR_TOKENS = [
 	"?",		#00 (so we can use token as an index in to this array)
