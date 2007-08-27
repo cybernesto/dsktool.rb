@@ -1,0 +1,48 @@
+<h2><a href=http://dsktool.rubyforge.org/>dsktool.rb</a></h2>
+dsktool.rb is a command line tool + libraries (all in ruby) for manipulating DSK format images used by Apple 2 emulators. 
+Currently only DOS 3.3 and NADOL filesystems are supported. 
+<p>
+As of version 0.1.6, the dsktool package also includes <a href=dskexplorer.html>dskexplorer.rb</a>,
+a browser based DSK archive exploring tool that can explore both local disk and remote web archives.
+<pre>
+dsktool.rb 0.2.1
+
+Usage
+-----
+dsktool.rb [switches] <filename.dsk>
+
+ -c | --catalog               display catalog
+ -e | --extract FILENAME      extract file by name (either to stdout,
+                              or file specified by --output)
+ -h | --help                  display this message
+ -d | --dump FILENAME         hex dump
+ -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
+ -o | --output FILENAME       specify name to save extracted file as
+ -r | --raw                   don't convert basic files to ASCII
+ -x | --explode               extract all files
+ -v | --version               show version number
+
+       Currently only works with DOS 3.3 and NADOL format DSK images
+       Will uncompress gzipped files (with extension .gz)
+       input files can be URLs
+
+examples:
+
+       dsktool.rb -c DOS3MASTR.dsk.gz
+       dsktool.rb -l FID DOS3MASTR.dsk
+       dsktool.rb --list fid -o fid.lst DOS3MASTR.dsk
+       dsktool.rb --extract "COLOR DEMOSOFT" DOS3MASTR.dsk
+       dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
+       dsktool.rb -x DOS3MASTR.dsk.gz
+       dsktool.rb -x DOS3MASTR.dsk.gz -o /tmp/DOS3MASTR/
+       dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
+
+</pre>
+<ul>
+<li><a href=http://dsktool.rubyforge.org/doc>RDoc Documentation</a>
+<li><a href=http://rubyforge.org/pm/task.php?group_id=3844&group_project_id=6130>Task List</a>
+<li><a href=http://rubyforge.org/projects/dsktool>RubyForge project page</a>
+<li><a href=http://rubyforge.org/frs/?group_id=3844>Download</a>
+</ul>
+Jonno Downes - jonno at <a href=http://www.jamtronix.com/>jamtronix.com</a>
+<br><i>Sun Aug 26 09:20:32 AUS Eastern Standard Time 2007</i>
