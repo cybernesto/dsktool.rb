@@ -89,10 +89,13 @@ class DOSDisk < DSK
 			puts "#{file.locked ? '*':' '}#{file.file_type} #{sprintf('%03X',file.sector_count)} #{file.filename}"
 		}
 	end
+	
+	def file_system
+		:dos
+	end
 
-
-	def initialize(file_bytes)
-		super(file_bytes)
+	def initialize(file_bytes,sector_order)
+		super(file_bytes,sector_order)
 		self.read_vtoc
 	end
 	#reads the VTOC, and populate the "files" array with files

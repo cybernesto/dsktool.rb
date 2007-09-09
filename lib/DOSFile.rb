@@ -2,9 +2,10 @@ $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 require 'D65'
+require 'DSKFile'
 
 #Apple DOS 3.3 file
-class DOSFile
+class DOSFile < DSKFile
 	
 	attr_accessor(:filename,:locked,:file_type,:sector_count,:contents) 
 	def initialize(filename,locked,sector_count,contents,file_type=nil)
@@ -18,29 +19,7 @@ class DOSFile
 	#File type as displayed in Apple DOS 3.3 Catalog
 	def file_type
 		@file_type
-	end
-
-	def to_s
-		@contents
-	end
-	
-	def hex_dump
-		#assumes file is a multiple of 16 bytes, which it always should be
-		s=""
-		(0..(@contents.length/16)-1).each {|line_number|
-			 lhs=""
-			 rhs=""
-			 start_byte=line_number*16
-			 line=@contents[start_byte..start_byte+15]
-			 line.each_byte {|byte|
-				  lhs+= sprintf("%02X ", byte)
-				  rhs+= (byte%128).chr.sub(/[\x00-\x1f]/,'.')
-		 	}
-			s+=sprintf("%02X\t%s %s\n",start_byte,lhs,rhs)
-		}
-		s
-	end
-
+	end
 end
 
 class TextFile < DOSFile
@@ -270,19 +249,7 @@ INTEGER_BASIC_TOKENS=  [
 
 end
 
-# Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
-#
-#Applesoft file format:
-# <Length_of_file> (16-bit little endian)
-# <Line>
-# ......
-# <Line>
-# where <Line> is:
-# <Next addr>  (16-bit little endian)
-# <Line no>    (16-bit little endian: 0-65535)
-# <Tokens and/or characters>
-# <End-of-line marker: $00 >
-#
+
 class AppleSoftFile < DOSFile
 
 	
@@ -298,64 +265,7 @@ class AppleSoftFile < DOSFile
 		".bas"
 	end
 
-private
-
-	APPLESOFT_TOKENS = [
-	       "END","FOR","NEXT","DATA","INPUT","DEL","DIM","READ",
-		"GR","TEXT","PR#","IN#","CALL","PLOT","HLIN","VLIN",
-		"HGR2","HGR","HCOLOR=","HPLOT","DRAW","XDRAW","HTAB",
-		"HOME","ROT=","SCALE=","SHLOAD","TRACE","NOTRACE",
-		"NORMAL","INVERSE","FLASH","COLOR=","POP","VTAB",
-		"HIMEM=","LOMEM=","ONERR","RESUME","RECALL","STORE",
-		"SPEED=","LET","GOTO","RUN","IF","RESTORE","&","GOSUB",
-		"RETURN","REM","STOP","ON","WAIT","LOAD","SAVE","DEF",
-		"POKE","PRINT","CONT","LIST","CLEAR","GET","NEW",
-		"TAB(","TO","FN","SPC(","THEN","AT","NOT","STEP","+",
-		"-","*","/","^","AND","OR",">","=","<","SGN","INT",
-		"ABS","USR","FRE","SCRN(","PDL","POS","SQR","RND",
-		"LOG","EXP","COS","SIN","TAN","ATN","PEEK","LEN",
-		"STR$","VAL","ASC","CHR$", "LEFT$","RIGHT$","MID$","?",
-		"?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?"
-]
-
-
-
-	def buffer_as_applesoft_file(buffer)
-
-		length=buffer[0]+buffer[1]*256
-		index=2
-		s=""
-		while (index<length)
-			index+=2 #skip over the "next address" field
-			break if buffer[index].nil?
-			break if buffer[index+1].nil?
-			line_no=buffer[index]+buffer[index+1]*256
-			index+=2 #skip over the "line number" field
-			s+=sprintf("%u",line_no)
-			done_line=false
-			last_char_space=false
-			while (!done_line)			
-				b=buffer[index]
-				break if b.nil?
-				if b>=0x80 then
-					if !last_char_space then
-						s+=" "
-					end
-					s+=APPLESOFT_TOKENS[b-0x80]+" "
-					last_char_space=true
-				else
-					s+=b.chr
-					last_char_space=false
-				end
-				index+=1
-				done_line=(index>=length)||(buffer[index]==0)
-			end
-			s+="\n"
-			index+=1        # skip over "end of line" marker
-		end
-	       s
-	end
-end
+end
 
 # Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
 #

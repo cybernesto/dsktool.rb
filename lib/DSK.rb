@@ -8,34 +8,57 @@ require 'open-uri'
 #
 class DSK
 
+	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:unknown]
+	SECTOR_ORDERS=[:dos,:prodos]
+
+	INTERLEAVES={
+		:dos=>   [0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F],
+		:prodos=>[0x00,0x0E,0x0D,0x0C,0x0B,0x0A,0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x02,0x01,0x0F]
+	}
+
 	#does this filename have a suitable extension?
 	def DSK.is_dsk_file?(filename)
-		!(filename.upcase=~/\.DSK$|\.DSK\.GZ$|\.PO$|\.PO\.GZ$/).nil?
+		!(filename.upcase=~/\.DSK$|\.DSK\.GZ$|\.PO$|\.PO\.GZ$|\.DO$|\.DO\.GZ$/).nil?
 	end
 	DSK_FILE_LENGTH=143360
-	attr_accessor (:file_bytes)
+	attr_accessor :file_bytes,:sector_order
+
 	# does this DSK have a standard Apple DOS 3.3 VTOC?
-	def	is_dos33?
+	def	is_dos33?(sector_order)
+		#currently ignores sector order
 		# VTOC is at offset 0x11000
 		# bytes 1/2/3 are a track number, sector number and DOS version number
 		# see if these are reasonable values
-
+		
+		
 		(@file_bytes[0x11001]<=34) && (@file_bytes[0x11002]<=15) && (@file_bytes[0x11003]==3)
 	end
 
-	def	is_nadol?
+	def file_system
+		:unknown
+	end
+	def	is_nadol?(sector_order)
+		#currently ignores sector order
 		# track $00, sector $02 , bytes $11 - "NADOL"
 		(@file_bytes[0x00211..0x00215]=="NADOL")
 	end
 
+	def	is_prodos?(sector_order)
+		#track $00,sector $04 (block $02) - bytes $00/$01 are both $00, byte $04 is $F?, 
+		#bytes $29-$2A = $0118 (sectors on a 5.25" disk)
+		first_sector_in_block_2=INTERLEAVES[sector_order][4]
+		first_sector_in_block_2=get_sector(0,4,sector_order)
+		(first_sector_in_block_2[0..1]=="\x00\x00") && (first_sector_in_block_2[4]>=0xF0) && (first_sector_in_block_2[0x29..0x2a]=="\x18\x01")
+	end
 
 	#create a new DSK structure (in memory, not on disk)
-	def initialize(file_bytes="\0"*DSK_FILE_LENGTH)	
+	def initialize(file_bytes="\0"*DSK_FILE_LENGTH,sector_order=:dos)
 		if (file_bytes.length!=DSK_FILE_LENGTH) then
 			raise "DSK files must be #{DSK_FILE_LENGTH} bytes long (was #{file_bytes.length} bytes)"
 		end
 		@file_bytes=file_bytes
 		@files={}
+		@sector_order=sector_order
 	end
 	
 	#read in an existing DSK file (must exist)
@@ -51,22 +74,34 @@ class DSK
 			abort("#{filename} is not a valid DSK format file")
 		end
 		
-		dsk=DSK.new(file_bytes)		
-		if (dsk.is_dos33?) 
-			require 'DOSDisk'
-			dsk=DOSDisk.new(file_bytes)
-		end
-		
-		if (dsk.is_nadol?) 
-			require 'NADOLDisk'
-			dsk=NADOLDisk.new(file_bytes)
-		end
 
+		dsk=DSK.new(file_bytes)		
+		SECTOR_ORDERS.each do |sector_order|				
+			if (dsk.is_dos33?(sector_order)) 
+				require 'DOSDisk'
+				dsk=DOSDisk.new(file_bytes,sector_order)
+				break
+			end
+			
+			if (dsk.is_nadol?(sector_order)) 
+				require 'NADOLDisk'
+				dsk=NADOLDisk.new(file_bytes,sector_order)
+				break
+			end
+			
+			if (dsk.is_prodos?(sector_order))
+				require 'ProDOSDisk'
+				dsk=ProDOSDisk.new(file_bytes,sector_order)
+				break
+			end
+		end
 		dsk
 	end
 
-	def get_sector(track,sector)
-		start_byte=track*16*256+sector*256
+	def get_sector(track,requested_sector,sector_order=@sector_order)
+		raise "bad sector #{requested_sector}" unless requested_sector.between?(0,0x0F)
+		physical_sector=INTERLEAVES[sector_order][requested_sector]
+		start_byte=track*16*256+physical_sector*256
 		@file_bytes[start_byte..start_byte+255]
 	end
 

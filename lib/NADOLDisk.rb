@@ -23,9 +23,13 @@ class NADOLDisk < DSK
 		}
 	end
 
-	def initialize(file_bytes)
-		super(file_bytes)
+	def initialize(file_bytes,sector_order)
+		super(file_bytes,sector_order)
 		self.read_catalog
+	end
+
+	def file_system
+		:nadol
 	end
 	
 	#reads the catalog, and populate the "files" array with files
@@ -65,7 +69,7 @@ class NADOLDisk < DSK
 				if (NADOLTokenisedFile.can_be_nadol_tokenised_file?(contents)) then
 					@files[filename]= NADOLTokenisedFile.new(filename,contents)
 				else
-					@files[filename]= NADOLFile.new(filename,contents)
+					@files[filename]= NADOLBinaryFile.new(filename,contents)
 				end
 			end
 		end

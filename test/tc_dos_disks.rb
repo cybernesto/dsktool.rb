@@ -33,13 +33,13 @@ class TestDOSDisks <Test::Unit::TestCase
 
 	def test_empty_dsk
 		dsk=DSK.new()
-		assert(!dsk.is_dos33?,"empty DSK should not be DOS 3.3 format")
+		assert(dsk.file_system!=:dos,"empty DSK should not be DOS 3.3 format")
 	end
 
 	def test_open_url_to_compressed_dsk
 		dskname="http://www.apple2.org.za/mirrors/ftp.apple.asimov.net/images/games/adventure/vaults_of_zurich.dsk.gz"
 		dsk=DSK.read(dskname)
-		assert(dsk.is_dos33?,"#{dskname} should be DOS 3.3 format")
+		assert_equal(:dos,dsk.file_system,"#{dskname} should be DOS 3.3 format")
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
 		
 		hello_file=dsk.files["HELLO"]
@@ -50,7 +50,7 @@ class TestDOSDisks <Test::Unit::TestCase
 	def test_simple_dos_dsk
 		dskname=File.dirname(__FILE__)+"//dos33_with_adt.dsk"
 		dsk=DSK.read(dskname)
-		assert(dsk.is_dos33?,"#{dskname} should be DOS 3.3 format")
+		assert_equal(:dos,dsk.file_system,"#{dskname} should be DOS 3.3 format")
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
 		
 		hello_file=dsk.files["HELLO"]
@@ -77,9 +77,8 @@ class TestDOSDisks <Test::Unit::TestCase
 	def test_scasm_file
 		dskname=File.dirname(__FILE__)+"//AAL_1.DSK"
 		dsk=DSK.read(dskname)
-		assert(dsk.is_dos33?,"#{dskname} should be DOS 3.3 format")
-		assert(dsk.files.length>0,"#{dskname} should have at least one file")
-		
+		assert_equal(:dos,dsk.file_system,"#{dskname} should be DOS 3.3 format")
+		assert(dsk.files.length>0,"#{dskname} should have at least one file")		
 		asm_file=dsk.files["MORSE CODE"]
 		assert(asm_file!=nil,"#{dskname} should have a file called MORSE CODE")
 		assert(asm_file.instance_of?(SCAsmFile),"MORSE CODE should be an SCasm file")
