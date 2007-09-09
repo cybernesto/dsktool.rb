@@ -166,7 +166,7 @@ def make_catalog(relative_path)
 	begin
 		absolute_path=make_absolute_path(relative_path)
 		dsk=get_dsk_from_cache(absolute_path)
-		s<<"<br>file system: #{dsk.file_system}<br>sector order: #{dsk.sector_order}<br>"
+		s<<"<br>file system: #{dsk.file_system}<br>sector order: #{dsk.sector_order}<br>tracks: #{dsk.track_count}<br>"
 		if (dsk.respond_to?(:files)) then
 			s<<"<table>\n<th>TYPE</th><th>SIZE (BYTES)</th><th>NAME</th></tr>\n"
 			dsk.files.keys.sort.each do |full_path|
@@ -208,13 +208,13 @@ def show_sector(relative_path,track,sector)
 		s=""
 		s<<"<table><tr><th colspan=16>TRACK</th></tr>"
 		s<<"<tr>"
-		0.upto(0x22) do |track_no| 
+		0.upto(dsk.track_count-1) do |track_no| 
 			if track_no==track then
 				s<<"<td><b>$#{sprintf('%02X',track)}</b></td>"
 			else
 				s<<"<td><a href=#{uri}?track=#{track_no}&sector=0>$#{sprintf('%02X',track_no)}</a></td>"
 			end
-			if track_no==0x0f ||track_no==0x1f then
+			if track_no>0 && track_no%0x10==0 then
 				s<<"</tr></tr>"
 			end
 		end

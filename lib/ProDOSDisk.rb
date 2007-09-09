@@ -25,7 +25,7 @@ class ProDOSDisk < DSK
 	def get_block(block_no)
 		track=(block_no / 8).to_i
 		first_sector=2*(block_no % 8)
-		raise "illegal block no #{block_no}" if track>=35
+		raise "illegal block no #{block_no}" if track>=self.track_count
 		return self.get_sector(track,first_sector)+self.get_sector(track,first_sector+1)
 	end
 
