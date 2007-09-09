@@ -8,8 +8,9 @@ class ProDOSDisk < DSK
 	attr_accessor :volume_name
 
 	def dump_catalog
-		files.each_value { |file|		
-			puts "#{sprintf('% 6d',file.contents.length)}\t #{file.file_type} : $#{sprintf '%X',file.aux_type}\t#{file.filename}"
+		files.keys.sort.each { |file_name|		
+			file=files[file_name]
+			puts "#{sprintf('% 6d',file.contents.length)}\t #{file.file_type} : $#{sprintf '%X',file.aux_type}\t#{file_name}"
 		}
 	end
 
@@ -24,6 +25,7 @@ class ProDOSDisk < DSK
 	def get_block(block_no)
 		track=(block_no / 8).to_i
 		first_sector=2*(block_no % 8)
+		raise "illegal block no #{block_no}" if track>=35
 		return self.get_sector(track,first_sector)+self.get_sector(track,first_sector+1)
 	end
 
@@ -84,8 +86,8 @@ class ProDOSDisk < DSK
 		s
 	end
 
-	def read_catalog
-		next_block_no=2
+	def read_catalog(starting_block=2,dir_path="")
+		next_block_no=starting_block
 		while (next_block_no!=0)
 			block=get_block(next_block_no)
 			offset=4
@@ -100,16 +102,16 @@ class ProDOSDisk < DSK
 				file_length=directory_entry[0x15]+directory_entry[0x16]*0x100+directory_entry[0x17]*0x10000
 				aux_type=directory_entry[0x1f]+directory_entry[0x20]*0x100
 				case storage_type
-					when 0x0F then 	#it's a volume						
-						@volume_name=name 
+					when 0x00 then
+						#nop
 					when 0x01 then  #it's a seedling
 						file_contents=get_block(key_pointer)
 						files[name]=ProDOSFile.new(name,file_contents,file_type,aux_type)
-					when 0x02 then  #it's a sapling						
+					when 0x02 then  #it's a sapling
 						index_block=get_block(key_pointer)
 						file_contents=""
 						0.upto((file_length/0x200)) do |i|
-							next_block_number=index_block[i]+(index_block[i+0x100]*0x100)
+							next_block_number=index_block[i]#+(index_block[i+0x100]*0x100)
 							if next_block_number==0 then
 								file_contents+="\x00"*0x200
 							else
@@ -117,9 +119,18 @@ class ProDOSDisk < DSK
 							end
 						end
 						file_contents=file_contents[0..file_length-1]
-						files[name]=ProDOSFile.new(name,file_contents,file_type,aux_type)						
+						files["#{dir_path}#{name}"]=ProDOSFile.new(name,file_contents,file_type,aux_type)						
 					when 0x03 then  #it's a tree
 						raise "'Tree' structures not yet supported"
+					when 0x0D then 	#it's a subdirectory pointer
+						read_catalog(key_pointer,"#{dir_path}#{name}/")
+					when 0x0E then 	#it's a subdirectory header
+						#do nothing 
+					when 0x0F then 	#it's a volume						
+						@volume_name=name 
+
+					else 
+						raise "unknown storage_type #{sprintf '%02X',storage_type}"
 				end			
 				offset+=0x27
 			end

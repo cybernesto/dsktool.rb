@@ -166,17 +166,19 @@ def make_catalog(relative_path)
 	begin
 		absolute_path=make_absolute_path(relative_path)
 		dsk=get_dsk_from_cache(absolute_path)
+		s<<"<br>file system: #{dsk.file_system}<br>sector order: #{dsk.sector_order}<br>"
 		if (dsk.respond_to?(:files)) then
 			s<<"<table>\n<th>TYPE</th><th>SIZE (BYTES)</th><th>NAME</th></tr>\n"
-			dsk.files.each_value do |f|
-				display_url="/showfile/#{uri_encode(relative_path)+'?filename='+uri_encode(f.filename)}"
+			dsk.files.keys.sort.each do |full_path|
+				f=dsk.files[full_path]
+				display_url="/showfile/#{uri_encode(relative_path)+'?filename='+uri_encode(full_path)}"
 				if f.respond_to?(:file_type) then 
 					s<<"<td>#{f.file_type}</td>"
 				else 
 					s<<"<td></td>"
 				end
 				s<<"<td>#{sprintf('%03d',f.contents.length)}</td>"				
-				s<<"<td>#{f.filename}</td>"
+				s<<"<td>#{full_path}</td>"
 				s<<"<td><a href=#{display_url}&mode=hex>hex dump</a></td>"
 				if f.respond_to?(:disassembly)
 					s<<"<td><a href=#{display_url}&mode=list>disassembly</a></td>"
