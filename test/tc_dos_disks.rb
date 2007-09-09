@@ -83,5 +83,12 @@ class TestDOSDisks <Test::Unit::TestCase
 		assert(asm_file.to_s.length>0,"MORSE CODE should have non-zero length")
 		assert(!(asm_file.to_s=~/930\W*.LIST OFF/).nil?,"MORSE CODE should start '930        .LIST OFF'")
 	end
-
+	
+	def test_40_track_file
+		dskname=File.dirname(__FILE__)+"//white_03b.dsk"
+		dsk=DSK.read(dskname)
+		assert_equal(:dos,dsk.file_system,"#{dskname} should be DOS 3.3 format")
+		assert(dsk.files.length>0,"#{dskname} should have at least one file")
+		assert_equal(40,dsk.track_count,"#{dskname} should have 40 tracks")			
+	end
 end

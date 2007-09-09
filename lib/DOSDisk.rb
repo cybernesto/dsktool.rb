@@ -152,7 +152,7 @@ class DOSDisk < DSK
 				end
 			}
 			next_track=catalog_sector[1]		
-			next_sector=catalog_sector[2]
+			next_sector=catalog_sector[2]%0x10
 			if (next_track==0) &&( next_sector==0) then
 				done=true
 			else 

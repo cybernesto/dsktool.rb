@@ -21,7 +21,7 @@ class DSK
 		!(filename.upcase=~/\.DSK$|\.DSK\.GZ$|\.PO$|\.PO\.GZ$|\.DO$|\.DO\.GZ$/).nil?
 	end
 	DSK_FILE_LENGTH=143360
-	attr_accessor :file_bytes,:sector_order
+	attr_accessor :file_bytes,:sector_order,:track_count
 
 	# does this DSK have a standard Apple DOS 3.3 VTOC?
 	def	is_dos33?(sector_order)
@@ -45,20 +45,22 @@ class DSK
 
 	def	is_prodos?(sector_order)
 		#block $02 - bytes $00/$01 are both $00, byte $04 is $F?, 
-		#bytes $29-$2A = $0118 (sectors on a 5.25" disk)
+		#bytes $29-$2A = sectors ( 0x118 on a 35 track 5.25" disk)
 		first_sector_in_block_2=INTERLEAVES[sector_order][4]
 		first_sector_in_block_2=get_sector(0,4,sector_order)
-		(first_sector_in_block_2[0..1]=="\x00\x00") && (first_sector_in_block_2[4]>=0xF0) && (first_sector_in_block_2[0x29..0x2a]=="\x18\x01")
+		(first_sector_in_block_2[0..1]=="\x00\x00") && (first_sector_in_block_2[4]>=0xF0) && (first_sector_in_block_2[0x29]+first_sector_in_block_2[0x2a]*0x100==track_count*8)
 	end
 
 	#create a new DSK structure (in memory, not on disk)
 	def initialize(file_bytes="\0"*DSK_FILE_LENGTH,sector_order=:physical)
-		if (file_bytes.length!=DSK_FILE_LENGTH) then
+		#file must be a multiple of (16 sectors * 256 bytes) = 4096
+		if (file_bytes.length%4096!=0) then
 			raise "DSK files must be #{DSK_FILE_LENGTH} bytes long (was #{file_bytes.length} bytes)"
 		end
 		@file_bytes=file_bytes
 		@files={}
 		@sector_order=sector_order
+		@track_count=file_bytes.length/4096
 	end
 	
 	#read in an existing DSK file (must exist)
@@ -69,9 +71,6 @@ class DSK
 			file_bytes=Zlib::GzipReader.new(open(filename,"rb")).read
 		else
 			file_bytes=open(filename,"rb").read
-		end
-		if (file_bytes.length!=DSK_FILE_LENGTH) then
-			abort("#{filename} is not a valid DSK format file")
 		end
 		
 

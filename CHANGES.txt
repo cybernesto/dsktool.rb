@@ -2,6 +2,7 @@ v0.3.1
 Added support for ProDOS disks
 Added support for interleaved sectors (e.g. ProDOS disks imaged with ADT)
 Added support for AWP files
+Added support for DSKs with more than 35 tracks (modifed DOS or ProDOS volumes)
 
 V0.2.1
 Added support for NADOL disks (Nibbles Away Disk Optimized Language)
