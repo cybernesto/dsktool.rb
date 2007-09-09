@@ -10,13 +10,13 @@ class TestNADOLDisks <Test::Unit::TestCase
 
 	def test_empty_dsk
 		dsk=DSK.new()
-		assert(!dsk.is_nadol?,"empty DSK should not be NADOL format")
+		assert(dsk.file_system!=:nadol,"empty DSK should not be NADOL format")
 	end
 
 	def test_simple_nadol_dsk
 		dskname=File.dirname(__FILE__)+"//nadol.dsk"
 		dsk=DSK.read(dskname)
-		assert(dsk.is_nadol?,"#{dskname} should be NADOL format")
+		assert_equal(:nadol,dsk.file_system,"#{dskname} should be NADOL format")
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
 		dsk.dump_catalog
 		nadol_file=dsk.files["NADOL"]
