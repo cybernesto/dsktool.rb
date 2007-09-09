@@ -18,7 +18,6 @@ class TestNADOLDisks <Test::Unit::TestCase
 		dsk=DSK.read(dskname)
 		assert_equal(:nadol,dsk.file_system,"#{dskname} should be NADOL format")
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
-		dsk.dump_catalog
 		nadol_file=dsk.files["NADOL"]
 		assert(nadol_file!=nil,"#{dskname} should have a file called NADOL")
 		assert(nadol_file.to_s.length==16128,"NADOL should be 16128 bytes long")

@@ -19,18 +19,20 @@ class DSKFile
 		".bin"
 	end
 	def hex_dump
-		#assumes file is a multiple of 16 bytes, which it always should be
 		s=""
-		(0..(@contents.length/16)-1).each {|line_number|
+		(0..(@contents.length/16)).each {|line_number|
 			 lhs=""
 			 rhs=""
 			 start_byte=line_number*16
 			 line=@contents[start_byte..start_byte+15]
-			 line.each_byte {|byte|
-				  lhs+= sprintf("%02X ", byte)
-				  rhs+= (byte%128).chr.sub(/[\x00-\x1f]/,'.')
-		 	}
-			s+=sprintf("%02X\t%s %s\n",start_byte,lhs,rhs)
+			if line.length>0 then
+				 line.each_byte {|byte|
+					  lhs+= sprintf("%02X ", byte)
+					  rhs+= (byte%128).chr.sub(/[\x00-\x1f]/,'.')
+			 	}
+				lhs+=" "*(16-line.length)*3
+				s+=sprintf("%02X\t%s %s\n",start_byte,lhs,rhs)
+			end
 		}
 		s
 	end
