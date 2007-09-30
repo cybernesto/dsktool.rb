@@ -81,10 +81,10 @@
   <div id="contextContent">
     <div id="diagram">
       <map id="map" name="map">
-  <area shape="RECT" coords="13,101,88,149"      href="DOSDisk.html" alt="DOSDisk">
-  <area shape="RECT" coords="15,5,87,53"      href="DSK.html" alt="DSK">
+  <area shape="rect" coords="5,104,83,152"      href="DOSDisk.html" alt="DOSDisk" />
+  <area shape="rect" coords="8,5,80,53"      href="DSK.html" alt="DSK" />
 </map>
-<img src="../dot/f_3.png" usemap="#map" border=0 alt="TopLevel">
+<img src="../dot/f_6.png" usemap="#map" border="0" alt="dot/f_6.png">
     </div>
 
     <div id="description">
@@ -186,9 +186,10 @@ TRACK/SECTOR LIST FORMAT (from Beneath Apple DOS p 4-6)
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000041">dump_catalog</a>&nbsp;&nbsp;
-      <a href="#M000042">new</a>&nbsp;&nbsp;
-      <a href="#M000043">read_vtoc</a>&nbsp;&nbsp;
+      <a href="#M000050">dump_catalog</a>&nbsp;&nbsp;
+      <a href="#M000051">file_system</a>&nbsp;&nbsp;
+      <a href="#M000052">new</a>&nbsp;&nbsp;
+      <a href="#M000053">read_vtoc</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -210,13 +211,13 @@ TRACK/SECTOR LIST FORMAT (from Beneath Apple DOS p 4-6)
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000042" class="method-detail">
-        <a name="M000042"></a>
+      <div id="method-M000052" class="method-detail">
+        <a name="M000052"></a>
 
         <div class="method-heading">
-          <a href="DOSDisk.src/M000042.html" target="Code" class="method-signature"
-            onclick="popupCode('DOSDisk.src/M000042.html');return false;">
-          <span class="method-name">new</span><span class="method-args">(file_bytes)</span>
+          <a href="DOSDisk.src/M000052.html" target="Code" class="method-signature"
+            onclick="popupCode('DOSDisk.src/M000052.html');return false;">
+          <span class="method-name">new</span><span class="method-args">(file_bytes,sector_order)</span>
           </a>
         </div>
       
@@ -226,12 +227,12 @@ TRACK/SECTOR LIST FORMAT (from Beneath Apple DOS p 4-6)
 
       <h3 class="section-bar">Public Instance methods</h3>
 
-      <div id="method-M000041" class="method-detail">
-        <a name="M000041"></a>
+      <div id="method-M000050" class="method-detail">
+        <a name="M000050"></a>
 
         <div class="method-heading">
-          <a href="DOSDisk.src/M000041.html" target="Code" class="method-signature"
-            onclick="popupCode('DOSDisk.src/M000041.html');return false;">
+          <a href="DOSDisk.src/M000050.html" target="Code" class="method-signature"
+            onclick="popupCode('DOSDisk.src/M000050.html');return false;">
           <span class="method-name">dump_catalog</span><span class="method-args">()</span>
           </a>
         </div>
@@ -240,12 +241,26 @@ TRACK/SECTOR LIST FORMAT (from Beneath Apple DOS p 4-6)
         </div>
       </div>
 
-      <div id="method-M000043" class="method-detail">
-        <a name="M000043"></a>
+      <div id="method-M000051" class="method-detail">
+        <a name="M000051"></a>
 
         <div class="method-heading">
-          <a href="DOSDisk.src/M000043.html" target="Code" class="method-signature"
-            onclick="popupCode('DOSDisk.src/M000043.html');return false;">
+          <a href="DOSDisk.src/M000051.html" target="Code" class="method-signature"
+            onclick="popupCode('DOSDisk.src/M000051.html');return false;">
+          <span class="method-name">file_system</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+        </div>
+      </div>
+
+      <div id="method-M000053" class="method-detail">
+        <a name="M000053"></a>
+
+        <div class="method-heading">
+          <a href="DOSDisk.src/M000053.html" target="Code" class="method-signature"
+            onclick="popupCode('DOSDisk.src/M000053.html');return false;">
           <span class="method-name">read_vtoc</span><span class="method-args">()</span>
           </a>
         </div>

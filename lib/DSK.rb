@@ -8,35 +8,37 @@ require 'open-uri'
 #
 class DSK
 
-	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:unknown]
+	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:pascal,:unknown]
 	SECTOR_ORDERS=[:physical,:prodos_from_dos]
 
 	INTERLEAVES={
 		:physical=>   [0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F],
 		:prodos_from_dos=>[0x00,0x0E,0x0D,0x0C,0x0B,0x0A,0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x02,0x01,0x0F]
 	}
-
+  
 	#does this filename have a suitable extension?
 	def DSK.is_dsk_file?(filename)
-		!(filename.upcase=~/\.DSK$|\.DSK\.GZ$|\.PO$|\.PO\.GZ$|\.DO$|\.DO\.GZ$/).nil?
+		!(filename.upcase=~/\.DSK$|\.DSK\.GZ$|\.HDV$|\.HDV\.GZ$|\.PO$|\.PO\.GZ$|\.DO$|\.DO\.GZ$/).nil?
 	end
 	DSK_FILE_LENGTH=143360
 	attr_accessor :file_bytes,:sector_order,:track_count
 
+	def file_system
+		:unknown
+	end
+  
 	# does this DSK have a standard Apple DOS 3.3 VTOC?
 	def	is_dos33?(sector_order)
 		#currently ignores sector order
 		# VTOC is at offset 0x11000
-		# bytes 1/2/3 are a track number, sector number and DOS version number
+		# bytes 1 & 2 are a track number, sector number and DOS version number
+    # byte 27  is maximum number of track/sector pairs which will fit in one file track/sector list sector (122 for 256 byte sectors)
+    # 35    number of sectors per track (16)
 		# see if these are reasonable values
-		
-		
-		(@file_bytes[0x11001]<=34) && (@file_bytes[0x11002]<=15) && (@file_bytes[0x11003]==3)
+    vtoc_sector=get_sector(0x11,0)
+		(vtoc_sector[01]<=34) && (vtoc_sector[02]<=15) && (vtoc_sector[0x27]==0x7A) && (vtoc_sector[0x35]==0x10)
 	end
 
-	def file_system
-		:unknown
-	end
 	def	is_nadol?(sector_order)
 		#currently ignores sector order
 		# track $00, sector $02 , bytes $11 - "NADOL"
@@ -51,6 +53,14 @@ class DSK
 		(first_sector_in_block_2[0..1]=="\x00\x00") && (first_sector_in_block_2[4]>=0xF0) && (first_sector_in_block_2[0x29]+first_sector_in_block_2[0x2a]*0x100==track_count*8)
 	end
 
+  def is_pascal?(sector_order)
+	 #block $02 - bytes $00..$01 are both $00, byte $06 is < 8 and 
+		#bytes $0E-$0F = sectors ( 0x118 on a 35 track 5.25" disk)
+		first_sector_in_block_2=INTERLEAVES[sector_order][4]
+		first_sector_in_block_2=get_sector(0,4,sector_order)
+		(first_sector_in_block_2[0..1]=="\x00\x00") && (first_sector_in_block_2[6]<=7) && (first_sector_in_block_2[0x0E]+first_sector_in_block_2[0x0F]*0x100==track_count*8)
+		end
+  
 	#create a new DSK structure (in memory, not on disk)
 	def initialize(file_bytes="\0"*DSK_FILE_LENGTH,sector_order=:physical)
 		#file must be a multiple of (16 sectors * 256 bytes) = 4096
@@ -93,6 +103,14 @@ class DSK
 				dsk=ProDOSDisk.new(file_bytes,sector_order)
 				break
 			end
+      
+      if (dsk.is_pascal?(sector_order))
+				require 'PascalDisk'
+				dsk=PascalDisk.new(file_bytes,sector_order)
+				break
+			end
+
+      
 		end
 		dsk
 	end
@@ -103,6 +121,13 @@ class DSK
 		physical_sector=INTERLEAVES[sector_order][requested_sector]
 		start_byte=track*16*256+physical_sector*256
 		@file_bytes[start_byte..start_byte+255]
+	end
+
+	def get_block(block_no)
+		track=(block_no / 8).to_i
+		first_sector=2*(block_no % 8)
+		raise "illegal block no #{block_no}" if track>=self.track_count
+		return self.get_sector(track,first_sector)+self.get_sector(track,first_sector+1)
 	end
 
 	def files
@@ -145,7 +170,7 @@ class DSK
 	end
 
 	#return a formatted hex dump of all sectors on all tracks
-	def dump_disk
+	def hex_dump
 		s=""
 		(0..34).each {|track|
 			(0..15).each {|sector|

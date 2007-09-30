@@ -81,14 +81,15 @@
   <div id="contextContent">
     <div id="diagram">
       <map id="map" name="map">
-  <area shape="RECT" coords="5,101,109,149"      href="IntegerBasicFile.html" alt="IntegerBasicFile">
-  <area shape="RECT" coords="133,101,227,149"      href="AppleSoftFile.html" alt="AppleSoftFile">
-  <area shape="RECT" coords="251,101,333,149"      href="SCAsmFile.html" alt="SCAsmFile">
-  <area shape="RECT" coords="357,101,432,149"      href="BinaryFile.html" alt="BinaryFile">
-  <area shape="RECT" coords="256,5,328,53"      href="DOSFile.html" alt="DOSFile">
-  <area shape="RECT" coords="456,101,528,149"      href="TextFile.html" alt="TextFile">
+  <area shape="rect" coords="6,203,120,251"      href="IntegerBasicFile.html" alt="IntegerBasicFile" />
+  <area shape="rect" coords="144,203,246,251"      href="AppleSoftFile.html" alt="AppleSoftFile" />
+  <area shape="rect" coords="270,203,355,251"      href="SCAsmFile.html" alt="SCAsmFile" />
+  <area shape="rect" coords="379,203,462,251"      href="BinaryFile.html" alt="BinaryFile" />
+  <area shape="rect" coords="276,104,348,152"      href="DOSFile.html" alt="DOSFile" />
+  <area shape="rect" coords="486,203,558,251"      href="TextFile.html" alt="TextFile" />
+  <area shape="rect" coords="276,6,348,54"      href="DSKFile.html" alt="DSKFile" />
 </map>
-<img src="../dot/f_4.png" usemap="#map" border=0 alt="TopLevel">
+<img src="../dot/f_8.png" usemap="#map" border="0" alt="dot/f_8.png">
     </div>
 
     <div id="description">
@@ -155,9 +156,9 @@ Integer Basic file format:
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000025">file_extension</a>&nbsp;&nbsp;
-      <a href="#M000024">file_type</a>&nbsp;&nbsp;
-      <a href="#M000026">to_s</a>&nbsp;&nbsp;
+      <a href="#M000028">file_extension</a>&nbsp;&nbsp;
+      <a href="#M000027">file_type</a>&nbsp;&nbsp;
+      <a href="#M000029">to_s</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -202,7 +203,7 @@ Integer Basic file format:
         <tr class="top-aligned-row context-row">
           <td class="context-item-name">INTEGER_BASIC_TOKENS</td>
           <td>=</td>
-          <td class="context-item-value">[         # $00-$0F          &quot;HIMEM:&quot;,&quot;&lt;$01&gt;&quot;, &quot;_&quot;,     &quot; : &quot;,         &quot;LOAD&quot;,  &quot;SAVE&quot;,  &quot;CON&quot;,   &quot;RUN&quot;,  #  Direct commands          &quot;RUN&quot;,   &quot;DEL&quot;,   &quot;,&quot;,     &quot;NEW&quot;,         &quot;CLR&quot;,   &quot;AUTO&quot;,  &quot;,&quot;,     &quot;MAN&quot;,          # $10-$1F          &quot;HIMEM:&quot;,&quot;LOMEM:&quot;,&quot;+&quot;,     &quot;-&quot;,     # Binary ops          &quot;*&quot;,     &quot;/&quot;,     &quot;=&quot;,     &quot;#&quot;,         &quot;&gt;=&quot;,    &quot;&gt;&quot;,     &quot;&lt;=&quot;,    &quot;&lt;&gt;&quot;,         &quot;&lt;&quot;,     &quot;AND&quot;,   &quot;OR&quot;,    &quot;MOD&quot;,          # $20-$2F         &quot;^&quot;,     &quot;+&quot;,     &quot;(&quot;,     &quot;,&quot;,         &quot;THEN&quot;,  &quot;THEN&quot;,  &quot;,&quot;,     &quot;,&quot;,         &quot;\&quot;&quot;,    &quot;\&quot;&quot;,    &quot;(&quot;,     &quot;!&quot;,         &quot;!&quot;,     &quot;(&quot;,     &quot;PEEK&quot;,  &quot;RND&quot;,          # $30-$3F          &quot;SGN&quot;,   &quot;ABS&quot;,   &quot;PDL&quot;,   &quot;RNDX&quot;,         &quot;(&quot;,     &quot;+&quot;,     &quot;-&quot;,     &quot;NOT&quot;,   # Unary ops          &quot;(&quot;,     &quot;=&quot;,     &quot;#&quot;,     &quot;LEN(&quot;,         &quot;ASC(&quot;,  &quot;SCRN(&quot;, &quot;,&quot;,     &quot;(&quot;,          # $40-$4F         &quot;$&quot;,     &quot;$&quot;,     &quot;(&quot;,     &quot;,&quot;,         &quot;,&quot;,     &quot;;&quot;,     &quot;;&quot;,     &quot;;&quot;,         &quot;,&quot;,     &quot;,&quot;,     &quot;,&quot;,     &quot;TEXT&quot;,  # Statements          &quot;GR&quot;,    &quot;CALL&quot;,  &quot;DIM&quot;,   &quot;DIM&quot;,          # $50-$5F          &quot;TAB&quot;,   &quot;END&quot;,   &quot;INPUT&quot;, &quot;INPUT&quot;,         &quot;INPUT&quot;, &quot;FOR&quot;,   &quot;=&quot;,     &quot;TO&quot;,         &quot;STEP&quot;,  &quot;NEXT&quot;,  &quot;,&quot;,     &quot;RETURN&quot;,         &quot;GOSUB&quot;, &quot;REM&quot;,   &quot;LET&quot;,   &quot;GOTO&quot;,          # $60-$6F         &quot;IF&quot;,    &quot;PRINT&quot;, &quot;PRINT&quot;, &quot;PRINT&quot;,         &quot;POKE&quot;,  &quot;,&quot;,     &quot;COLOR=&quot;,&quot;PLOT&quot;,         &quot;,&quot;,     &quot;HLIN&quot;,  &quot;,&quot;,     &quot;AT&quot;,         &quot;VLIN&quot;,  &quot;,&quot;,     &quot;AT&quot;,    &quot;VTAB&quot;,          # $70-$7F          &quot;=&quot;,     &quot;=&quot;,     &quot;)&quot;,     &quot;)&quot;,         &quot;LIST&quot;,  &quot;,&quot;,     &quot;LIST&quot;,  &quot;POP&quot;,         &quot;NODSP&quot;, &quot;DSP&quot;,  &quot;NOTRACE&quot;,&quot;DSP&quot;,         &quot;DSP&quot;,   &quot;TRACE&quot;, &quot;PR#&quot;,   &quot;IN#&quot;,     ]</td>
+          <td class="context-item-value">[         # $00-$0F          &quot;HIMEM:&quot;,&quot;&lt;$01&gt;&quot;, &quot;_&quot;,     &quot; : &quot;,         &quot;LOAD&quot;,  &quot;SAVE&quot;,  &quot;CON&quot;,   &quot;RUN&quot;,  #  Direct commands          &quot;RUN&quot;,   &quot;DEL&quot;,   &quot;,&quot;,     &quot;NEW&quot;,         &quot;CLR&quot;,   &quot;AUTO&quot;,  &quot;,&quot;,     &quot;MAN&quot;,          # $10-$1F          &quot;HIMEM:&quot;,&quot;LOMEM:&quot;,&quot;+&quot;,     &quot;-&quot;,     # Binary ops          &quot;*&quot;,     &quot;/&quot;,     &quot;=&quot;,     &quot;#&quot;,         &quot;&gt;=&quot;,    &quot;&gt;&quot;,     &quot;&lt;=&quot;,    &quot;&lt;&gt;&quot;,         &quot;&lt;&quot;,     &quot;AND&quot;,   &quot;OR&quot;,    &quot;MOD&quot;,          # $20-$2F         &quot;^&quot;,     &quot;+&quot;,     &quot;(&quot;,     &quot;,&quot;,         &quot;THEN&quot;,  &quot;THEN&quot;,  &quot;,&quot;,     &quot;,&quot;,         &quot;\&quot;&quot;,    &quot;\&quot;&quot;,    &quot;(&quot;,     &quot;!&quot;,         &quot;!&quot;,     &quot;(&quot;,     &quot;PEEK&quot;,  &quot;RND&quot;,          # $30-$3F          &quot;SGN&quot;,   &quot;ABS&quot;,   &quot;PDL&quot;,   &quot;RNDX&quot;,         &quot;(&quot;,     &quot;+&quot;,     &quot;-&quot;,     &quot;NOT&quot;,   # Unary ops          &quot;(&quot;,     &quot;=&quot;,     &quot;#&quot;,     &quot;LEN(&quot;,         &quot;ASC(&quot;,  &quot;SCRN(&quot;, &quot;,&quot;,     &quot;(&quot;,          # $40-$4F         &quot;$&quot;,     &quot;$&quot;,     &quot;(&quot;,     &quot;,&quot;,         &quot;,&quot;,     &quot;;&quot;,     &quot;;&quot;,     &quot;;&quot;,         &quot;,&quot;,     &quot;,&quot;,     &quot;,&quot;,     &quot;TEXT&quot;,  # Statements          &quot;GR&quot;,    &quot;CALL&quot;,  &quot;DIM&quot;,   &quot;DIM&quot;,          # $50-$5F          &quot;TAB&quot;,   &quot;END&quot;,   &quot;INPUT&quot;, &quot;INPUT&quot;,         &quot;INPUT&quot;, &quot;FOR&quot;,   &quot;=&quot;,     &quot;TO&quot;,         &quot;STEP&quot;,  &quot;NEXT&quot;,  &quot;,&quot;,     &quot;RETURN&quot;,         &quot;GOSUB&quot;, &quot;REM&quot;,   &quot;LET&quot;,   &quot;GOTO&quot;,          # $60-$6F         &quot;IF&quot;,    &quot;PRINT&quot;, &quot;PRINT&quot;, &quot;PRINT&quot;,         &quot;POKE&quot;,  &quot;,&quot;,     &quot;COLOR=&quot;,&quot;PLOT&quot;,         &quot;,&quot;,     &quot;HLIN&quot;,  &quot;,&quot;,     &quot;AT&quot;,         &quot;VLIN&quot;,  &quot;,&quot;,     &quot;AT&quot;,    &quot;VTAB&quot;,          # $70-$7F          &quot;=&quot;,     &quot;=&quot;,     &quot;)&quot;,     &quot;)&quot;,         &quot;LIST&quot;,  &quot;,&quot;,     &quot;LIST&quot;,  &quot;POP&quot;,         &quot;NODSP&quot;, &quot;DSP&quot;,  &quot;NOTRACE&quot;,&quot;DSP&quot;,         &quot;DSP&quot;,   &quot;TRACE&quot;, &quot;PR#&quot;,   &quot;IN#&quot;,     ]</td>
         </tr>
         </table>
       </div>
@@ -217,12 +218,12 @@ Integer Basic file format:
     <div id="methods">
       <h3 class="section-bar">Public Instance methods</h3>
 
-      <div id="method-M000025" class="method-detail">
-        <a name="M000025"></a>
+      <div id="method-M000028" class="method-detail">
+        <a name="M000028"></a>
 
         <div class="method-heading">
-          <a href="IntegerBasicFile.src/M000025.html" target="Code" class="method-signature"
-            onclick="popupCode('IntegerBasicFile.src/M000025.html');return false;">
+          <a href="IntegerBasicFile.src/M000028.html" target="Code" class="method-signature"
+            onclick="popupCode('IntegerBasicFile.src/M000028.html');return false;">
           <span class="method-name">file_extension</span><span class="method-args">()</span>
           </a>
         </div>
@@ -231,12 +232,12 @@ Integer Basic file format:
         </div>
       </div>
 
-      <div id="method-M000024" class="method-detail">
-        <a name="M000024"></a>
+      <div id="method-M000027" class="method-detail">
+        <a name="M000027"></a>
 
         <div class="method-heading">
-          <a href="IntegerBasicFile.src/M000024.html" target="Code" class="method-signature"
-            onclick="popupCode('IntegerBasicFile.src/M000024.html');return false;">
+          <a href="IntegerBasicFile.src/M000027.html" target="Code" class="method-signature"
+            onclick="popupCode('IntegerBasicFile.src/M000027.html');return false;">
           <span class="method-name">file_type</span><span class="method-args">()</span>
           </a>
         </div>
@@ -245,12 +246,12 @@ Integer Basic file format:
         </div>
       </div>
 
-      <div id="method-M000026" class="method-detail">
-        <a name="M000026"></a>
+      <div id="method-M000029" class="method-detail">
+        <a name="M000029"></a>
 
         <div class="method-heading">
-          <a href="IntegerBasicFile.src/M000026.html" target="Code" class="method-signature"
-            onclick="popupCode('IntegerBasicFile.src/M000026.html');return false;">
+          <a href="IntegerBasicFile.src/M000029.html" target="Code" class="method-signature"
+            onclick="popupCode('IntegerBasicFile.src/M000029.html');return false;">
           <span class="method-name">to_s</span><span class="method-args">()</span>
           </a>
         </div>

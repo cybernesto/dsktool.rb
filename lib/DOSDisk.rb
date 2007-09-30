@@ -85,14 +85,18 @@ require 'DOSFile'
 class DOSDisk < DSK
 
 	def dump_catalog
-		files.each_value { |file|		
-			puts "#{file.locked ? '*':' '}#{file.file_type} #{sprintf('%03X',file.sector_count)} #{file.filename}"
+		s=""
+	files.keys.sort.each { |file_name|		
+			file=files[file_name]	
+			s<< "#{file.locked ? '*':' '}#{file.file_type} #{sprintf('%03X',file.sector_count)} #{file.filename}\n"
 		}
+		s
 	end
 	
 	def file_system
 		:dos
 	end
+
 
 	def initialize(file_bytes,sector_order)
 		super(file_bytes,sector_order)

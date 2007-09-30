@@ -18,9 +18,12 @@ require 'NADOLFile'
 class NADOLDisk < DSK
 
 	def dump_catalog
-		files.each_value { |file|		
-			puts "#{sprintf('% 6d',file.contents.length)} #{file.filename}"
+		s=""
+		files.keys.sort.each { |file_name|		
+			file=files[file_name]	
+			s<< "#{sprintf('% 6d',file.contents.length)} #{file.filename}\n"
 		}
+		s
 	end
 
 	def initialize(file_bytes,sector_order)
