@@ -10,7 +10,7 @@ class DSK
 
 	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:pascal,:unknown]
 	SECTOR_ORDERS=[:physical,:prodos_from_dos]
-
+	DSK_IMAGE_EXTENSIONS=[".dsk",".po",".do",".hdv"]
 	INTERLEAVES={
 		:physical=>   [0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F],
 		:prodos_from_dos=>[0x00,0x0E,0x0D,0x0C,0x0B,0x0A,0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x02,0x01,0x0F]
@@ -18,7 +18,8 @@ class DSK
   
 	#does this filename have a suitable extension?
 	def DSK.is_dsk_file?(filename)
-		!(filename.upcase=~/\.DSK$|\.DSK\.GZ$|\.HDV$|\.HDV\.GZ$|\.PO$|\.PO\.GZ$|\.DO$|\.DO\.GZ$/).nil?
+		extension=File.extname(File.basename(filename,".gz")).downcase
+		DSK_IMAGE_EXTENSIONS.include?(extension)
 	end
 	DSK_FILE_LENGTH=143360
 	attr_accessor :file_bytes,:sector_order,:track_count
@@ -104,7 +105,7 @@ class DSK
 				break
 			end
       
-      if (dsk.is_pascal?(sector_order))
+			if (dsk.is_pascal?(sector_order))
 				require 'PascalDisk'
 				dsk=PascalDisk.new(file_bytes,sector_order)
 				break
