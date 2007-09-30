@@ -8,10 +8,12 @@ class ProDOSDisk < DSK
 	attr_accessor :volume_name
 
 	def dump_catalog
+		s=""
 		files.keys.sort.each { |file_name|		
 			file=files[file_name]
-			puts "#{sprintf('% 6d',file.contents.length)}\t #{file.file_type} : $#{sprintf '%X',file.aux_type}\t#{file_name}"
+			s<< "#{sprintf('% 6d',file.contents.length)}\t #{file.file_type} : $#{sprintf '%X',file.aux_type}\t#{file_name}\n"
 		}
+		s
 	end
 
 	def initialize(file_bytes,sector_order)
@@ -21,12 +23,6 @@ class ProDOSDisk < DSK
 
 	def file_system
 		:prodos
-	end
-	def get_block(block_no)
-		track=(block_no / 8).to_i
-		first_sector=2*(block_no % 8)
-		raise "illegal block no #{block_no}" if track>=self.track_count
-		return self.get_sector(track,first_sector)+self.get_sector(track,first_sector+1)
 	end
 
 
@@ -108,29 +104,58 @@ class ProDOSDisk < DSK
 						file_contents=get_block(key_pointer)
 						files[name]=ProDOSFile.new(name,file_contents,file_type,aux_type)
 					when 0x02 then  #it's a sapling
+						block_list=[]
 						index_block=get_block(key_pointer)
-						file_contents=""
 						0.upto((file_length/0x200)) do |i|
-							next_block_number=index_block[i]#+(index_block[i+0x100]*0x100)
-							if next_block_number==0 then
+							block_list<<index_block[i]+(index_block[i+0x100]*0x100)
+						end
+						file_contents=""
+						block_list.each do |next_block_no|
+							if next_block_no==0 then
 								file_contents+="\x00"*0x200
 							else
-								file_contents+=get_block(next_block_number)
+								file_contents+=get_block(next_block_no)
 							end
 						end
 						file_contents=file_contents[0..file_length-1]
 						files["#{dir_path}#{name}"]=ProDOSFile.new(name,file_contents,file_type,aux_type)						
 					when 0x03 then  #it's a tree
-						raise "'Tree' structures not yet supported"
+						master_index_block=get_block(key_pointer)
+						block_list=[]
+						number_of_index_entries=1+(file_length/0x200)
+						number_of_index_blocks=1+(number_of_index_entries/0x100)
+						number_of_index_entries_in_last_block=number_of_index_entries-(number_of_index_blocks-1)*0x100
+						0.upto(number_of_index_blocks-1) do |i|
+							index_block_no=master_index_block[i]+master_index_block[i+0x100]*0x100
+							index_block=get_block(index_block_no)
+							if i==number_of_index_blocks-1 then 
+								entries_in_this_index_block=number_of_index_entries_in_last_block
+							else 
+								entries_in_this_index_block=256
+							end
+							0.upto(entries_in_this_index_block-1) do |j|
+								block_list<<index_block[j]+(index_block[j+0x100]*0x100)
+							end
+						end
+						file_contents=""
+						block_list.each do |next_block_no|
+							if next_block_no==0 then
+								file_contents+="\x00"*0x200
+							else
+								file_contents+=get_block(next_block_no)
+							end
+						end
+						file_contents=file_contents[0..file_length-1]
+						files["#{dir_path}#{name}"]=ProDOSFile.new(name,file_contents,file_type,aux_type)						
 					when 0x0D then 	#it's a subdirectory pointer
 						read_catalog(key_pointer,"#{dir_path}#{name}/")
 					when 0x0E then 	#it's a subdirectory header
 						#do nothing 
 					when 0x0F then 	#it's a volume						
 						@volume_name=name 
-
 					else 
-						raise "unknown storage_type #{sprintf '%02X',storage_type}"
+#						raise "unknown storage_type #{sprintf '%02X',storage_type}"
+						puts "skipping unknown storage_type #{sprintf '%02X',storage_type} for #{dir_path}#{name}"
 				end			
 				offset+=0x27
 			end

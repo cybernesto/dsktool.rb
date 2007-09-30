@@ -54,13 +54,25 @@ class TestProDOSDisks <Test::Unit::TestCase
 		assert_equal("MOVE13",dsk.volume_name)
 
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
-#		dsk.dump_catalog
+#		puts dsk.dump_catalog
 		awp_file=dsk.files["AW.INITS/NARNIA.KNAVES"]
 		assert(bas_file!=nil,"#{dskname} should have a file called  AW.INITS/NARNIA.KNAVES")
 		assert_equal("This bonus screen blanker",awp_file.to_s[0..24])
 		
+	end
+	
+	def test_tree_structures
+		dskname=File.dirname(__FILE__)+"//Geos (1988)(Berkeley Softworks)(Disk 1 of 4 Side A).dsk.gz"
+		dsk=DSK.read(dskname)
+		assert_equal(:prodos,dsk.file_system,"#{dskname} should have ProDOS file system")
+		assert_equal(:prodos_from_dos,dsk.sector_order,"#{dskname} should have DOS sector order")
+		assert_equal("GEOS.BOOT",dsk.volume_name)
 
-		
+		assert(dsk.files.length>0,"#{dskname} should have at least one file")
+		tree_file=dsk.files["SYSTEM/Mouse"]
+		assert(tree_file!=nil,"#{dskname} should have a file called SYSTEM/Mouse")
+		assert_equal(645,tree_file.contents.length,"SYSTEM/Mouse should be 645 bytes long")
+
 	end
 
 end

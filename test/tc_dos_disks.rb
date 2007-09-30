@@ -91,4 +91,5 @@ class TestDOSDisks <Test::Unit::TestCase
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
 		assert_equal(40,dsk.track_count,"#{dskname} should have 40 tracks")			
 	end
+  
 end

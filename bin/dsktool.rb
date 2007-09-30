@@ -13,17 +13,19 @@
 #                               or file specified by --output)
 #  -h | --help                  display this message
 #  -d | --dump FILENAME         hex dump
+#  -D | --diskdump              hex dump of entire disk
 #  -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
 #  -o | --output FILENAME       specify name to save extracted file as
-#  -r | --raw                   don't convert basic files to ASCII
-#  -x | --explode               extract all files 
+#  -r | --raw                   don't convert files to ASCII
 #  -v | --version               show version number
+#  -x | --explode               extract all files 
 #
 #	Currently supported filesystems:
+#		Apple Pascal
 #		DOS 3.3
 #		NADOL 
-#		ProDOS
-#	Supports 16 sector, 35 track 5.25" DSK images 
+#		ProDOS 8
+#	Supports 16 sector DSK images 
 #	Will uncompress gzipped files (with extension .gz)
 #	input files can be URLs
 #
@@ -48,6 +50,7 @@ require 'rdoc_patch' #RDoc::usage patched to work under gem executables
 
 catalog=false
 explode=false
+diskdump=false
 output_filename=nil
 extract_filename=nil
 extract_mode=:default
@@ -60,6 +63,7 @@ opts.on("-v","--version") do
 end
 opts.on("-r","--") {extract_mode=:raw}
 opts.on("-c","--catalog") {catalog=true}
+opts.on("-D","--diskdump") {diskdump=true}
 opts.on("-x","--explode") {explode=true}
 opts.on("-l","--list FILENAME",String) do |val| 
 	extract_filename=val.upcase
@@ -81,10 +85,18 @@ output_file= case
 	when (output_filename.nil?) || (explode) then STDOUT
 	else File.open(output_filename,"wb")
 end
-	
+
+puts "#{filename}\nsector order:\t#{dsk.sector_order}\nfilesystem:\t#{dsk.file_system}"
+if (dsk.respond_to?(:volume_name)) then    
+	puts "volume name:\t#{dsk.volume_name}"
+end 
+if (diskdump) then
+  puts dsk.hex_dump
+end
+
 if(catalog) then	
-	if (dsk.respond_to?(:dump_catalog)) then
-		dsk.dump_catalog
+	if (dsk.respond_to?(:dump_catalog)) then    
+		puts dsk.dump_catalog
 	else
 		puts "#{filename} does not have a recognised file system"
 	end

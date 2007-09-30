@@ -81,36 +81,17 @@
   <div id="contextContent">
     <div id="diagram">
       <map id="map" name="map">
-  <area shape="RECT" coords="5,101,109,149"      href="IntegerBasicFile.html" alt="IntegerBasicFile">
-  <area shape="RECT" coords="133,101,227,149"      href="AppleSoftFile.html" alt="AppleSoftFile">
-  <area shape="RECT" coords="251,101,333,149"      href="SCAsmFile.html" alt="SCAsmFile">
-  <area shape="RECT" coords="357,101,432,149"      href="BinaryFile.html" alt="BinaryFile">
-  <area shape="RECT" coords="256,5,328,53"      href="DOSFile.html" alt="DOSFile">
-  <area shape="RECT" coords="456,101,528,149"      href="TextFile.html" alt="TextFile">
+  <area shape="rect" coords="6,203,120,251"      href="IntegerBasicFile.html" alt="IntegerBasicFile" />
+  <area shape="rect" coords="144,203,246,251"      href="AppleSoftFile.html" alt="AppleSoftFile" />
+  <area shape="rect" coords="270,203,355,251"      href="SCAsmFile.html" alt="SCAsmFile" />
+  <area shape="rect" coords="379,203,462,251"      href="BinaryFile.html" alt="BinaryFile" />
+  <area shape="rect" coords="276,104,348,152"      href="DOSFile.html" alt="DOSFile" />
+  <area shape="rect" coords="486,203,558,251"      href="TextFile.html" alt="TextFile" />
+  <area shape="rect" coords="276,6,348,54"      href="DSKFile.html" alt="DSKFile" />
 </map>
-<img src="../dot/f_4.png" usemap="#map" border=0 alt="TopLevel">
+<img src="../dot/f_8.png" usemap="#map" border="0" alt="dot/f_8.png">
     </div>
 
-    <div id="description">
-      <pre>
- Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
-</pre>
-<p>
-Applesoft file format:
-</p>
-<pre>
- &lt;Length_of_file&gt; (16-bit little endian)
- &lt;Line&gt;
- ......
- &lt;Line&gt;
- where &lt;Line&gt; is:
- &lt;Next addr&gt;  (16-bit little endian)
- &lt;Line no&gt;    (16-bit little endian: 0-65535)
- &lt;Tokens and/or characters&gt;
- &lt;End-of-line marker: $00 &gt;
-</pre>
-
-    </div>
 
 
    </div>
@@ -119,9 +100,9 @@ Applesoft file format:
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000040">file_extension</a>&nbsp;&nbsp;
-      <a href="#M000038">file_type</a>&nbsp;&nbsp;
-      <a href="#M000039">to_s</a>&nbsp;&nbsp;
+      <a href="#M000045">file_extension</a>&nbsp;&nbsp;
+      <a href="#M000043">file_type</a>&nbsp;&nbsp;
+      <a href="#M000044">to_s</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -133,19 +114,6 @@ Applesoft file format:
     <div id="section">
 
 
-    <div id="constants-list">
-      <h3 class="section-bar">Constants</h3>
-
-      <div class="name-list">
-        <table summary="Constants">
-        <tr class="top-aligned-row context-row">
-          <td class="context-item-name">APPLESOFT_TOKENS</td>
-          <td>=</td>
-          <td class="context-item-value">[                &quot;END&quot;,&quot;FOR&quot;,&quot;NEXT&quot;,&quot;DATA&quot;,&quot;INPUT&quot;,&quot;DEL&quot;,&quot;DIM&quot;,&quot;READ&quot;,                 &quot;GR&quot;,&quot;TEXT&quot;,&quot;PR#&quot;,&quot;IN#&quot;,&quot;CALL&quot;,&quot;PLOT&quot;,&quot;HLIN&quot;,&quot;VLIN&quot;,                 &quot;HGR2&quot;,&quot;HGR&quot;,&quot;HCOLOR=&quot;,&quot;HPLOT&quot;,&quot;DRAW&quot;,&quot;XDRAW&quot;,&quot;HTAB&quot;,                 &quot;HOME&quot;,&quot;ROT=&quot;,&quot;SCALE=&quot;,&quot;SHLOAD&quot;,&quot;TRACE&quot;,&quot;NOTRACE&quot;,                 &quot;NORMAL&quot;,&quot;INVERSE&quot;,&quot;FLASH&quot;,&quot;COLOR=&quot;,&quot;POP&quot;,&quot;VTAB&quot;,                 &quot;HIMEM=&quot;,&quot;LOMEM=&quot;,&quot;ONERR&quot;,&quot;RESUME&quot;,&quot;RECALL&quot;,&quot;STORE&quot;,                 &quot;SPEED=&quot;,&quot;LET&quot;,&quot;GOTO&quot;,&quot;RUN&quot;,&quot;IF&quot;,&quot;RESTORE&quot;,&quot;&amp;&quot;,&quot;GOSUB&quot;,                 &quot;RETURN&quot;,&quot;REM&quot;,&quot;STOP&quot;,&quot;ON&quot;,&quot;WAIT&quot;,&quot;LOAD&quot;,&quot;SAVE&quot;,&quot;DEF&quot;,                 &quot;POKE&quot;,&quot;PRINT&quot;,&quot;CONT&quot;,&quot;LIST&quot;,&quot;CLEAR&quot;,&quot;GET&quot;,&quot;NEW&quot;,                 &quot;TAB(&quot;,&quot;TO&quot;,&quot;FN&quot;,&quot;SPC(&quot;,&quot;THEN&quot;,&quot;AT&quot;,&quot;NOT&quot;,&quot;STEP&quot;,&quot;+&quot;,                 &quot;-&quot;,&quot;*&quot;,&quot;/&quot;,&quot;^&quot;,&quot;AND&quot;,&quot;OR&quot;,&quot;&gt;&quot;,&quot;=&quot;,&quot;&lt;&quot;,&quot;SGN&quot;,&quot;INT&quot;,                 &quot;ABS&quot;,&quot;USR&quot;,&quot;FRE&quot;,&quot;SCRN(&quot;,&quot;PDL&quot;,&quot;POS&quot;,&quot;SQR&quot;,&quot;RND&quot;,                 &quot;LOG&quot;,&quot;EXP&quot;,&quot;COS&quot;,&quot;SIN&quot;,&quot;TAN&quot;,&quot;ATN&quot;,&quot;PEEK&quot;,&quot;LEN&quot;,                 &quot;STR$&quot;,&quot;VAL&quot;,&quot;ASC&quot;,&quot;CHR$&quot;, &quot;LEFT$&quot;,&quot;RIGHT$&quot;,&quot;MID$&quot;,&quot;?&quot;,                 &quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;</td>
-        </tr>
-        </table>
-      </div>
-    </div>
 
 
 
@@ -156,12 +124,12 @@ Applesoft file format:
     <div id="methods">
       <h3 class="section-bar">Public Instance methods</h3>
 
-      <div id="method-M000040" class="method-detail">
-        <a name="M000040"></a>
+      <div id="method-M000045" class="method-detail">
+        <a name="M000045"></a>
 
         <div class="method-heading">
-          <a href="AppleSoftFile.src/M000040.html" target="Code" class="method-signature"
-            onclick="popupCode('AppleSoftFile.src/M000040.html');return false;">
+          <a href="AppleSoftFile.src/M000045.html" target="Code" class="method-signature"
+            onclick="popupCode('AppleSoftFile.src/M000045.html');return false;">
           <span class="method-name">file_extension</span><span class="method-args">()</span>
           </a>
         </div>
@@ -170,12 +138,12 @@ Applesoft file format:
         </div>
       </div>
 
-      <div id="method-M000038" class="method-detail">
-        <a name="M000038"></a>
+      <div id="method-M000043" class="method-detail">
+        <a name="M000043"></a>
 
         <div class="method-heading">
-          <a href="AppleSoftFile.src/M000038.html" target="Code" class="method-signature"
-            onclick="popupCode('AppleSoftFile.src/M000038.html');return false;">
+          <a href="AppleSoftFile.src/M000043.html" target="Code" class="method-signature"
+            onclick="popupCode('AppleSoftFile.src/M000043.html');return false;">
           <span class="method-name">file_type</span><span class="method-args">()</span>
           </a>
         </div>
@@ -184,12 +152,12 @@ Applesoft file format:
         </div>
       </div>
 
-      <div id="method-M000039" class="method-detail">
-        <a name="M000039"></a>
+      <div id="method-M000044" class="method-detail">
+        <a name="M000044"></a>
 
         <div class="method-heading">
-          <a href="AppleSoftFile.src/M000039.html" target="Code" class="method-signature"
-            onclick="popupCode('AppleSoftFile.src/M000039.html');return false;">
+          <a href="AppleSoftFile.src/M000044.html" target="Code" class="method-signature"
+            onclick="popupCode('AppleSoftFile.src/M000044.html');return false;">
           <span class="method-name">to_s</span><span class="method-args">()</span>
           </a>
         </div>

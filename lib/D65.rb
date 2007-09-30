@@ -139,12 +139,12 @@ end
 			end
 
 			
-			s+=sprintf("%04X:  %s %s %s  ; ",current_address,instruction_bytes,opcode_name,operand.ljust(10))
+			s<<sprintf("%04X:  %s %s %s  ; ",current_address,instruction_bytes,opcode_name,operand.ljust(10))
 			annotation=annotations[operand_address]
 			if (annotation && (operand_type!=:imm)) then
-				s+="  "+annotation.to_s
+				s<<"  "+annotation.to_s
 			end
-			s+= "\n"
+			s<< "\n"
 			index+=opcode_size
 		end
 	
