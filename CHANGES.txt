@@ -5,7 +5,10 @@ Added support for interleaved sectors (e.g. ProDOS disks imaged with ADT)
 Added support for AWP files
 Added support for DSKs with more than 35 tracks (modifed DOS or ProDOS volumes)
 Added support for HDV images
-CHANGE - dsk.dump_catalog now returns a string rather than printing to stdout, catalog is now sorted by file name
+Added support for displaying hi-res graphic files as PNGs
+
+CHANGE - dsk.dump_catalog now returns a string rather than printing to stdout
+CHANGE - all catalogs now show file size in decimal bytes not blocks or sectors
 
 V0.2.1
 Added support for NADOL disks (Nibbles Away Disk Optimized Language)

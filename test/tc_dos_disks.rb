@@ -63,6 +63,7 @@ class TestDOSDisks <Test::Unit::TestCase
 		assert(binary_file.to_s.length>0,"MUFFIN should have non-zero length")		
 		assert(binary_file.disassembly.length>0,"MUFFIN disassembly should have non-zero length")
 		assert(binary_file.disassembly[0..4]=="0803:","MUFFIN disassembly should start at $803")
+		assert(!binary_file.can_be_picture?,"MUFFIN should NOT be viewable as a picture")
 
 		
 		integer_file=dsk.files["APPLESOFT"]
@@ -70,6 +71,8 @@ class TestDOSDisks <Test::Unit::TestCase
 		assert(integer_file.instance_of?(IntegerBasicFile),"HELLO should be an IntegetBasic file")
 		assert(integer_file.to_s.length>0,"APPLESOFT should have non-zero length")
 		assert(integer_file.to_s[0..5]=="10 REM","APPLESOFT should start '10 REM'")		
+		assert(!integer_file.can_be_picture?,"APPLESOFT should NOT be viewable as a picture")
+
 	end
 
 	def test_scasm_file
@@ -80,8 +83,10 @@ class TestDOSDisks <Test::Unit::TestCase
 		asm_file=dsk.files["MORSE CODE"]
 		assert(asm_file!=nil,"#{dskname} should have a file called MORSE CODE")
 		assert(asm_file.instance_of?(SCAsmFile),"MORSE CODE should be an SCasm file")
+		assert(!asm_file.can_be_picture?,"MORSE CODE should NOT be viewable as a picture")
 		assert(asm_file.to_s.length>0,"MORSE CODE should have non-zero length")
 		assert(!(asm_file.to_s=~/930\W*.LIST OFF/).nil?,"MORSE CODE should start '930        .LIST OFF'")
+
 	end
 	
 	def test_40_track_file
@@ -89,7 +94,13 @@ class TestDOSDisks <Test::Unit::TestCase
 		dsk=DSK.read(dskname)
 		assert_equal(:dos,dsk.file_system,"#{dskname} should be DOS 3.3 format")
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
-		assert_equal(40,dsk.track_count,"#{dskname} should have 40 tracks")			
+		assert_equal(40,dsk.track_count,"#{dskname} should have 40 tracks")
+
+		pic_file=dsk.files["RIP.PIC"]
+		assert(pic_file!=nil,"#{dskname} should have a file called RIP.PIC")
+		assert(pic_file.instance_of?(BinaryFile),"RIP.PIC should be a binary file")
+		assert(pic_file.can_be_picture?,"RIP.PIC should be viewable as a picture")
+		assert_equal("\211PNG\r\n\032\n",pic_file.to_png[0..7])
 	end
   
 end

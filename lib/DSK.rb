@@ -65,7 +65,8 @@ class DSK
 	#create a new DSK structure (in memory, not on disk)
 	def initialize(file_bytes="\0"*DSK_FILE_LENGTH,sector_order=:physical)
 		#file must be a multiple of (16 sectors * 256 bytes) = 4096
-		if (file_bytes.length%4096!=0) then
+		#some dsks on Asimov appear to have an extra byte at the end so allow for 1 extra byte
+		if (file_bytes.length%4096>1) then
 			raise "DSK files must be #{DSK_FILE_LENGTH} bytes long (was #{file_bytes.length} bytes)"
 		end
 		@file_bytes=file_bytes

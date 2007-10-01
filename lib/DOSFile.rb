@@ -3,6 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 require 'D65'
 require 'DSKFile'
+require 'HGR'
 
 #Apple DOS 3.3 file
 class DOSFile < DSKFile
@@ -15,6 +16,7 @@ class DOSFile < DSKFile
 		@file_type= file_type
 		@contents=contents
 	end
+
 
 	#File type as displayed in Apple DOS 3.3 Catalog
 	def file_type
@@ -49,7 +51,16 @@ class BinaryFile < DOSFile
 
 	def disassembly
 			start_address=(@contents[0]+@contents[1]*256)
-			D65.disassemble(@contents[2..@contents.length-1],start_address)
+			D65.disassemble(@contents[4..@contents.length-1],start_address)
+	end
+
+	def can_be_picture?
+		start_address=(@contents[0]+@contents[1]*256)
+		HGR.can_be_hgr_screen?(@contents[4..@contents.length-1],start_address)
+	end
+
+	def to_png(pallete_mode=:amber)
+		HGR.buffer_to_png(contents[4..@contents.length-1],pallete_mode)
 	end
 end
 

@@ -121,7 +121,7 @@ def get_directories_and_files(relative_path)
 	[directories,dsk_files]
 end
 
-def make_navigation_path(relative_path,filename=nil)
+def make_navigation_path(relative_path,filename=nil,display_mode=nil)
 	path_parts=relative_path.split("/")
 	#make the cookie-crumb-trail 
 	partial_path=""
@@ -137,8 +137,12 @@ def make_navigation_path(relative_path,filename=nil)
 		end
 	end
 	
+	mode_param=""	
+	if !display_mode.nil? then
+		mode_param="&mode=#{display_mode}"
+	end
 	if !filename.nil? then
-		s<<"/<a href=/showfile/#{uri_encode(relative_path)+'?filename='+uri_encode(filename)}>#{filename}</a>"
+		s<<"/<a href=/showfile/#{uri_encode(relative_path)+'?filename='+uri_encode(filename)}#{mode_param}>#{filename}</a>"
 	end
 
 	
@@ -180,9 +184,11 @@ def make_catalog(relative_path)
 				s<<"<td>#{sprintf('%03d',f.contents.length)}</td>"				
 				s<<"<td>#{full_path}</td>"
 				s<<"<td><a href=#{display_url}&mode=hex>hex dump</a></td>"
-				if f.respond_to?(:disassembly)
+				if f.can_be_picture? then
+					s<<"<td><a href=#{display_url}&mode=png>picture</a></td>"
+				elsif f.respond_to?(:disassembly)
 					s<<"<td><a href=#{display_url}&mode=list>disassembly</a></td>"
-				else 
+				else 					
 					s<<"<td><a href=#{display_url}&mode=text>text</a></td>"
 				end				
 				s<<"</tr>\n"
@@ -254,8 +260,11 @@ def show_file(relative_path,filename,display_mode)
 		s="<hl><pre>"
 		if display_mode=="hex" then
 			s<<html_escape(file.hex_dump)
-		elsif display_mode=="list" && file.respond_to?(:disassembly)
-			then s<<html_escape(file.disassembly)
+		elsif display_mode=="list" && file.respond_to?(:disassembly) then
+			s<<html_escape(file.disassembly)
+		elsif display_mode=="png" && file.respond_to?(:to_png) then
+			png_url="/png/#{uri_encode(relative_path)}?filename=#{uri_encode(filename)}"
+			s<<"<IMG SRC=#{png_url} HEIGHT=384 WIDTH=560>"
 		else 
 			s<< (file.to_s)
 		end
@@ -286,10 +295,23 @@ class ShowFileServlet < HTTPServlet::AbstractServlet
 		filename=URI.unescape(req.query['filename'])
 		display_mode=req.query['mode']
 		res['Content-Type']="text/html"
-		res.body=common_header+make_navigation_path(relative_path,filename)+show_file(relative_path,filename,display_mode)+common_footer
+		res.body=common_header+make_navigation_path(relative_path,filename,display_mode)+show_file(relative_path,filename,display_mode)+common_footer
 	end
 end
 
+class ShowPNGServlet < HTTPServlet::AbstractServlet
+	def do_GET(req,res)
+		relative_path=URI.unescape(req.path).sub(/^\/png/,"")
+		filename=URI.unescape(req.query['filename'])
+		pallete_mode=req.query['pallete_mode']
+		pallete_mode=:"#{pallete_mode}" unless pallete_mode.nil? #convert string to symbol
+		absolute_path=make_absolute_path(relative_path)
+		dsk=get_dsk_from_cache(absolute_path)
+		file=dsk.files[filename]
+		res['Content-Type']="image/png"
+		res.body=file.to_png(pallete_mode)
+	end
+end
 class ShowSectorServlet < HTTPServlet::AbstractServlet
 	def do_GET(req,res)
 		relative_path=URI.unescape(req.path).sub(/^\/showsector/,"")
@@ -310,7 +332,7 @@ s.mount("/dir",DirectoryServlet)
 s.mount("/catalog",CatalogServlet)
 s.mount("/showfile",ShowFileServlet)
 s.mount("/showsector",ShowSectorServlet)
-
+s.mount("/png",ShowPNGServlet)
 #default page - for now, just redirect to the default dir page
 s.mount("/",DirectoryServlet)
 

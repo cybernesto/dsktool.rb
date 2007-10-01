@@ -44,7 +44,7 @@ DSKTOOL_VERSION="0.3.1"
 #make sure the relevant folder with our libraries is in the require path
 lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
 $:.unshift(lib_path) unless $:.include?(lib_path)
-
+require 'rubygems'
 require 'optparse'
 require 'rdoc_patch' #RDoc::usage patched to work under gem executables
 
