@@ -88,7 +88,7 @@ class DOSDisk < DSK
 		s=""
 	files.keys.sort.each { |file_name|		
 			file=files[file_name]	
-			s<< "#{file.locked ? '*':' '}#{file.file_type} #{sprintf('%03X',file.sector_count)} #{file.filename}\n"
+			s<< "#{file.locked ? '*':' '}#{file.file_type} #{sprintf('%04d',file.contents.length)} #{file.filename}\n"
 		}
 		s
 	end

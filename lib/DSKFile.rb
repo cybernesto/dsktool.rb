@@ -37,6 +37,11 @@ class DSKFile
 		s
 	end
 
+	#default is files can NOT be displayed as a picture
+	def can_be_picture?
+		false
+	end
+
 # Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
 #
 #Applesoft file format:
