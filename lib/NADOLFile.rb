@@ -3,7 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 require 'D65'
 require 'DSKFile'
-
+require 'HGR'
 #NADOL (Nibbles Away Disk Optimized Language) file
 class NADOLFile	< DSKFile
 	def file_extension
@@ -16,6 +16,14 @@ class NADOLBinaryFile<NADOLFile
 	def disassembly(start_address=0x8000) 
 		require 'D65'
 		D65.disassemble(@contents,start_address)
+	end
+
+	def can_be_picture?
+		HGR.can_be_hgr_screen?(@contents)
+	end
+
+	def to_png(pallete_mode=:amber)
+		HGR.buffer_to_png(@contents)
 	end
 end
 

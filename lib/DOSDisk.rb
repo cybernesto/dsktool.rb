@@ -108,6 +108,7 @@ class DOSDisk < DSK
 		vtoc_sector=get_sector(17,0)
 		catalog_sector=get_sector(vtoc_sector[01],vtoc_sector[02])
 		done=false
+		visited_sectors={}
 		while !done
 			break if catalog_sector.nil?
 			(0..6).each {|file_number|
@@ -116,7 +117,8 @@ class DOSDisk < DSK
 				break if (file_descriptive_entry[0]==0xFF) # skip deleted files
 				filename=""
 				file_descriptive_entry[3..32].to_s.each_byte{|b| filename+=(b.%128).chr}
-				filename.sub!(/ *$/,"") #strip off trailing spaces
+				filename.gsub!(/ *$/,"") #strip off trailing spaces
+				filename.tr!("\x00-\x1f","\x40-\x5f") #convert non-printable chars to corresponding uppercase letter
 				locked=(file_descriptive_entry[2]>=0x80)
 				sector_count=file_descriptive_entry[0x21]+file_descriptive_entry[0x22]*256
 		
@@ -160,6 +162,12 @@ class DOSDisk < DSK
 			if (next_track==0) &&( next_sector==0) then
 				done=true
 			else 
+				#check we haven't got into an endless loop
+				s="#{next_track}/#{next_sector}"
+				if (!visited_sectors[s].nil?) then
+					done=true
+				end
+				visited_sectors[s]=true
 				catalog_sector=get_sector(next_track,next_sector)
 			end
 		end

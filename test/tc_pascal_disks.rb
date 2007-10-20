@@ -30,5 +30,18 @@ class TestPascalDisks <Test::Unit::TestCase
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
 	end
 
+	def test_pascal_foto_disk
+
+		dskname=File.dirname(__FILE__)+"//camps.dsk.gz"
+		dsk=DSK.read(dskname)
+		assert_equal(:pascal,dsk.file_system,"#{dskname} should have Pascal file system")
+		assert_equal("DIARRHE",dsk.volume_name)
+		assert(dsk.files.length>0,"#{dskname} should have at least one file")
+		non_foto_file=dsk.files["SYSTEM.MISCINFO"]
+		assert(!non_foto_file.can_be_picture?)
+		foto_file=dsk.files["CAMPS.FOTO"]
+		assert(foto_file.can_be_picture?)
+	end
+
 
 end

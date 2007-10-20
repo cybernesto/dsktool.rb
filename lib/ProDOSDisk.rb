@@ -6,7 +6,11 @@ require 'ProDOSFile'
 # for now, assumes 'ProDOS order'
 class ProDOSDisk < DSK
 	attr_accessor :volume_name
-
+	
+	#what is the last block on this disk?
+	def last_block
+		(self.track_count*8)-1
+	end
 	def dump_catalog
 		s=""
 		files.keys.sort.each { |file_name|		
@@ -112,6 +116,9 @@ class ProDOSDisk < DSK
 						file_contents=""
 						block_list.each do |next_block_no|
 							if next_block_no==0 then
+								file_contents+="\x00"*0x200
+							elsif next_block_no>self.last_block then
+								STDERR<<"file #{name} attempted to read bad block # #{next_block_no}\n"
 								file_contents+="\x00"*0x200
 							else
 								file_contents+=get_block(next_block_no)
