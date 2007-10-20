@@ -87,32 +87,42 @@ class DSK
 		
 
 		dsk=DSK.new(file_bytes)		
-		SECTOR_ORDERS.each do |sector_order|				
-			if (dsk.is_dos33?(sector_order)) 
-				require 'DOSDisk'
-				dsk=DOSDisk.new(file_bytes,sector_order)
-				break
-			end
-			
-			if (dsk.is_nadol?(sector_order)) 
-				require 'NADOLDisk'
-				dsk=NADOLDisk.new(file_bytes,sector_order)
-				break
-			end
-			
-			if (dsk.is_prodos?(sector_order))
-				require 'ProDOSDisk'
-				dsk=ProDOSDisk.new(file_bytes,sector_order)
-				break
-			end
-      
-			if (dsk.is_pascal?(sector_order))
-				require 'PascalDisk'
-				dsk=PascalDisk.new(file_bytes,sector_order)
-				break
-			end
+		SECTOR_ORDERS.each do |sector_order|
+			begin
+				candidate_filesystem="unknown"
+				if (dsk.is_dos33?(sector_order)) 
+					require 'DOSDisk'
+					candidate_filesystem="DOS 3.3"
+					dsk=DOSDisk.new(file_bytes,sector_order)
+					break
+				end
+				
+				if (dsk.is_nadol?(sector_order)) 
+					require 'NADOLDisk'
+					candidate_filesystem="NADOL"
+					dsk=NADOLDisk.new(file_bytes,sector_order)
+					break
+				end
+				
+				if (dsk.is_prodos?(sector_order))
+					require 'ProDOSDisk'
+					candidate_filesystem="ProDOS"
+					dsk=ProDOSDisk.new(file_bytes,sector_order)
+					break
+				end
+	      
+				if (dsk.is_pascal?(sector_order))
+					require 'PascalDisk'
+					candidate_filesystem="Pascal"
+					dsk=PascalDisk.new(file_bytes,sector_order)
+					break
+				end
 
-      
+			rescue Exception=>e
+				STDERR<<"error while parsing #{filename} as #{candidate_filesystem} (sector order #{sector_order}\n"
+				STDERR<<"#{e}\n"
+				STDERR<<e.backtrace.join("\n")
+			end
 		end
 		dsk
 	end

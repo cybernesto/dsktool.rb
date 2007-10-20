@@ -3,6 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 require 'rubygems'
+require_gem 'png', '= 1.0.0'
 require 'png'
 #need to add a new method to PNG to get at the raw bytes as the png library only writes to disk
 class PNG
@@ -72,6 +73,7 @@ end
 		if ((memory_location.nil?) || (memory_location==0) || (memory_location==0x2000) || (memory_location==0x4000)) then
 		#because only 120 out of every 128 bytes are shown, the last 8 bytes are not needed
 		#in order to save a sector under dos 3.3 it was common to only store 8192=8184 (0x1FF8) bytes
+		#sometimes an extra sector was included by mistake
 			if (buffer.length>=8184 && buffer.length<=8192)
 				return true
 			end
@@ -83,7 +85,7 @@ private
 	def HGR.set_pixel(canvas,x,y,colour)
 		0.upto(SCALE-1) do |row|
 			0.upto(SCALE-1) do |col|
-				canvas.point(x*SCALE+col, y*SCALE+row, colour)
+				canvas[x*SCALE+col, y*SCALE+row]= colour
 			end
 		end
 	end
@@ -112,7 +114,7 @@ public
 								else
 									pallete=[HGR_VIOLET,HGR_GREEN]
 								end
-								this_pixel_colour=pallete[x_bit%2]
+								this_pixel_colour=pallete[x%2]
 								set_pixel(canvas,x,y,this_pixel_colour)
 							end
 						else

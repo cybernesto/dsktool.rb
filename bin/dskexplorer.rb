@@ -266,7 +266,7 @@ def show_file(relative_path,filename,display_mode)
 			png_url="/png/#{uri_encode(relative_path)}?filename=#{uri_encode(filename)}"
 			s<<"<IMG SRC=#{png_url} HEIGHT=384 WIDTH=560>"
 		else 
-			s<< (file.to_s)
+			s<<html_escape(file.to_s)
 		end
 		s<<"\n</pre><hl>"
 	end

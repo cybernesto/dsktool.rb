@@ -2,7 +2,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 require 'DSKFile'
-
+require 'HGR'
 #Pascal file
 class PascalFile < DSKFile
 	attr_accessor :file_type
@@ -16,14 +16,23 @@ class PascalFile < DSKFile
 		@file_type=PASCAL_FILE_TYPES[file_type]
 	end
   
-  def to_s
-    s=""
-    @contents.each_byte{|b| s<<(b%0x80).chr.tr(0x0D.chr,"\n")}
-    s
-  end
+	def to_s
+		s=""
+		@contents.each_byte{|b| s<<(b%0x80).chr.tr(0x0D.chr,"\n")}
+		s
+	end
   
 	def file_extension
 		return "."+@file_type.downcase
+	end
+
+	def can_be_picture?
+		
+		file_type==:foto && HGR.can_be_hgr_screen?(@contents)
+	end
+
+	def to_png(pallete_mode=:amber)
+		HGR.buffer_to_png(@contents,pallete_mode)
 	end
 end
 

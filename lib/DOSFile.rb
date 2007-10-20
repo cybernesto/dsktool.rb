@@ -49,18 +49,22 @@ class BinaryFile < DOSFile
 		".bin"
 	end
 
+	def contents_without_header
+		file_length=contents[2]+contents[3]*256
+		@contents[4..file_length+3]
+	end
 	def disassembly
-			start_address=(@contents[0]+@contents[1]*256)
-			D65.disassemble(@contents[4..@contents.length-1],start_address)
+		start_address=(@contents[0]+@contents[1]*256)
+		D65.disassemble(contents_without_header,start_address)
 	end
 
 	def can_be_picture?
 		start_address=(@contents[0]+@contents[1]*256)
-		HGR.can_be_hgr_screen?(@contents[4..@contents.length-1],start_address)
+		HGR.can_be_hgr_screen?(contents_without_header,start_address)
 	end
 
 	def to_png(pallete_mode=:amber)
-		HGR.buffer_to_png(contents[4..@contents.length-1],pallete_mode)
+		HGR.buffer_to_png(contents_without_header,pallete_mode)
 	end
 end
 
