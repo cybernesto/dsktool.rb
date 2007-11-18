@@ -83,10 +83,7 @@ def make_absolute_path(relative_path)
 		@@root_directory+relative_path
 	end	
 end
-
-def html_escape(s)
-	s.gsub("&","&amp;").gsub("<","&lt;")
-end
+def html_escape(s)	s.gsub("&","&amp;").gsub("<","&lt;")end
 def uri_encode(s)
 	#standard URI.escape appears to miss some important characters
 	require 'uri'
@@ -203,7 +200,7 @@ def make_catalog(relative_path)
 	end
 	s
 end
-def show_sector(relative_path,track,sector)		
+def show_sector(relative_path,track,sector)
 		track="0" if track.nil?
 		sector="0" if sector.nil?
 		track=("0"+track).to_i
@@ -211,11 +208,11 @@ def show_sector(relative_path,track,sector)
 		absolute_path=make_absolute_path(relative_path)
 		dsk=get_dsk_from_cache(absolute_path)
 		uri="/showsector/#{uri_encode(relative_path)}"
-		s=""
+		s=""		
 		s<<"<table><tr><th colspan=16>TRACK</th></tr>"
 		s<<"<tr>"
-		0.upto(dsk.track_count-1) do |track_no| 
-			if track_no==track then
+		0.upto(dsk.track_count-1) do |track_no|
+ 			if track_no==track then
 				s<<"<td><b>$#{sprintf('%02X',track)}</b></td>"
 			else
 				s<<"<td><a href=#{uri}?track=#{track_no}&sector=0>$#{sprintf('%02X',track_no)}</a></td>"
@@ -226,28 +223,25 @@ def show_sector(relative_path,track,sector)
 		end
 		s<<"</tr>"
 		s<<"</table>"
-
-	s<<"<table><tr><th colspan=16>SECTOR</th></tr>"
+		s<<"<table><tr><th colspan=16>SECTOR</th></tr>"
 		s<<"<tr>"
-		0.upto(0x0F) do |sector_no| 
-			if sector_no==sector then
+		0.upto(0x0F) do |sector_no|
+ 			if sector_no==sector then
 				s<<"<td><b>$#{sprintf('%02X',sector)}</b></td>"
 			else
 				s<<"<td><a href=#{uri}?track=#{track}&sector=#{sector_no}>$#{sprintf('%02X',sector_no)}</a></td>"
+
 			end
 		end
 		s<<"</tr>"
 		s<<"</table>"
-
-		
 		s<<"<pre>\n"
 		s<<html_escape(dsk.dump_sector(track,sector))
 		s<<"</pre>\n"
 		s<<"<p>"
 		s<<"<pre>\n"
 		s<<html_escape(dsk.disassemble_sector(track,sector))
-		s<<"</pre>\n"
-		
+		s<<"</pre>\n"		
 end
 
 def show_file(relative_path,filename,display_mode)
