@@ -67,14 +67,17 @@ end
 end
 	#HGR screen is 8192 bytes stored at either $2000 (page 1) or $4000 (page 2)
 	def HGR.can_be_hgr_screen?(buffer,memory_location=nil)
-		if ((memory_location.nil?) || (memory_location==0) || (memory_location==0x2000) || (memory_location==0x4000)) then
-		#because only 120 out of every 128 bytes are shown, the last 8 bytes are not needed
+	
+	#because only 120 out of every 128 bytes are shown, the last 8 bytes are not needed
 		#in order to save a sector under dos 3.3 it was common to only store 8192=8184 (0x1FF8) bytes
 		#sometimes an extra sector was included by mistake
-			if (buffer.length>=8184 && buffer.length<=8192)
+			if (buffer.length>=8184 && buffer.length<=8192) && ((memory_location.nil?) || (memory_location==0))
 				return true
 			end
-		end
+      
+      if (buffer.length>=8184) && ((memory_location==0x2000) || (memory_location==0x4000))
+				return true
+			end
 		false
 	end
 
