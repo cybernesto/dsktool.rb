@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+
 # dsktool.rb
 #
 # == Synopsis
@@ -80,14 +81,21 @@ RDoc::usage_from_file(__FILE__,'Usage') if (filename.nil?)
 
 	
 require 'DSK'
-begin 
+begin
+ 
 	dsk=DSK.read(filename)
-rescue 
-	#if we run dsktool.rb in a batch or shell file iterating over a bunch of dsk files, we may not know what file
-	#has the error
+
+	rescue 
+	
+		#if we run dsktool.rb in a batch or shell file iterating over a bunch of dsk files, we may not know what file
+	
+		#has the error
+	
 	STDERR << "error while parsing #{filename}\n"
+	
 	raise
-end
+
+	end
 output_file= case
 	when (output_filename.nil?) || (explode) then STDOUT
 	else File.open(output_filename,"wb")
