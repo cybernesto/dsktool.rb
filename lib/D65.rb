@@ -84,8 +84,8 @@ OPCODE_SIZE={
 	:zpx,2,
 	:zpy,2,
 	:ind,3,
-	:inx,2,
-	:iny,2,
+	:inx,3,
+	:iny,3,
 	:inz,2,
 	:rel,2
 } 

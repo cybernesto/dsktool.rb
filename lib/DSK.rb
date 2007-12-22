@@ -148,25 +148,13 @@ class DSK
 
 	#return a formatted hex dump of a single 256 byte sector
 	def dump_sector(track,sector)
+    require 'DumpUtilities'
 		start_byte=track.to_i*16*256+sector.to_i*256
 		s=hline
 		s<<sprintf("TRACK: $%02X SECTOR $%02X\ OFFSET $%04X\n",track,sector,start_byte)
 		s<< "\t"
 		sector_data=get_sector(track,sector)
-		(0..15).each {|x| s<<sprintf("%02X ",x) }
-		s<<"\n"
-		s<<hline
-		(0..15).each {|line_number|
-			 lhs=""
-			 rhs=""
-			 start_byte=line_number*16
-			 line=sector_data[start_byte..start_byte+15]
-			 line.each_byte {|byte|
-				  lhs<< sprintf("%02X ", byte)
-				  rhs<< (byte%128).chr.sub(/[\x00-\x1f]/,'.')
-		 	}
-			s<<sprintf("%02X\t%s %s\n",start_byte,lhs,rhs)
-		}
+		s<< DumpUtilities.hex_dump(sector_data)
 		s
 	end
 

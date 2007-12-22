@@ -2,7 +2,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 
-
+require 'DumpUtilities'
 #Generic Apple II file
 class DSKFile	
 	attr_accessor(:filename,:contents) 
@@ -19,22 +19,7 @@ class DSKFile
 		".bin"
 	end
 	def hex_dump
-		s=""
-		(0..(@contents.length/16)).each {|line_number|
-			 lhs=""
-			 rhs=""
-			 start_byte=line_number*16
-			 line=@contents[start_byte..start_byte+15]
-			if line.length>0 then
-				 line.each_byte {|byte|
-					  lhs+= sprintf("%02X ", byte)
-					  rhs+= (byte%128).chr.sub(/[\x00-\x1f]/,'.')
-			 	}
-				lhs+=" "*(16-line.length)*3
-				s+=sprintf("%02X\t%s %s\n",start_byte,lhs,rhs)
-			end
-		}
-		s
+    DumpUtilities.hex_dump(@contents)
 	end
 
 	#default is files can NOT be displayed as a picture
