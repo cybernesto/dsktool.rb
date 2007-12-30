@@ -9,8 +9,8 @@ a browser based DSK archive exploring tool that can explore both local disk and 
 <pre>
 FIRST_BIT
 #now the usage
-puts `ruby ..\\dsktool\\bin\\dsktool.rb -v`
-puts `ruby ..\\dsktool\\bin\\dsktool.rb`
+puts `ruby ../bin/dsktool.rb -v`
+puts `ruby ../bin/dsktool.rb`
 
 #now the last bit
 puts <<LAST_BIT

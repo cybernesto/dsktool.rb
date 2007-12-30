@@ -1,3 +1,5 @@
+# first the header
+puts <<FIRST_BIT
 dskexplorer.rb is a browser based DSK archive exploring tool. It can 
 explore both local disk and remote web archives. It is
 part of the <a href=http://dsktool.rubyforge.org/>dsktool.rb</a> 
@@ -29,29 +31,15 @@ src="http://farm2.static.flickr.com/1026/606885613_0d1f30b620_o.png"
 width="640" height="455"/></a>
 <p>
 <pre>
-dskexplorer.rb
+FIRST_BIT
 
+#now the usage
+puts `ruby ../bin/dskexplorer.rb -h`
 
-Synopsis
---------
-A web-based DSK file explorer
-
-
-Usage
------
-dskexplorer.rb [switches]
-
- -h | --help               display this message
- -p | --port PORT_NUMBER   port number to listen on (default is 6502)
- -r | --root ROOT_DIR      root directory to explore from (default is current directory)
- -v | --version            show version number
-
-Examples
-
-    dskexplorer.rb -r http://www.apple2.org.za/mirrors/
-    dskexplorer.rb -r c:\downloads\apple2\ -p 8080
-
+#now the last bit
+puts <<LAST_BIT
 </pre>
 Jonno Downes - jonno at <a 
 href=http://www.jamtronix.com/>jamtronix.com</a>
-<br><i>Sun Dec 30 16:22:50 +1100 2007</i>
+LAST_BIT
+puts "<br><i>#{Time.now}</i>"
