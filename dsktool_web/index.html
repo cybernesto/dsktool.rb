@@ -5,7 +5,65 @@ Currently only DOS 3.3 and NADOL filesystems are supported.
 As of version 0.1.6, the dsktool package also includes <a href=dskexplorer.html>dskexplorer.rb</a>,
 a browser based DSK archive exploring tool that can explore both local disk and remote web archives.
 <pre>
+dsktool.rb 0.4.1
 
+Usage
+-----
+dsktool.rb [switches] <filename.dsk>
+
+ -a | --add FILENAME       (*) add file
+ -b | --base BASE          use BASE as address to load Binary File
+                           this will add 2 bytes to the start of file
+                           BASE should be a hex number
+                           (can be prefixed with $, 0x, or nothing)
+ -B | --bootcode FILENAME  FILENAME gets written to track 0, sector 0
+                           FILENAME should be compiled to run at $0801
+                           FILENAME can be up to 4Kb in size.
+ -c | --catalog            display catalog
+ -d | --dump FILENAME      hex dump
+ -D | --diskdump           hex dump of entire disk
+      --delete FILENAME    (*) delete named file
+ -e | --extract FILENAME   extract file by name (either to stdout,
+                           or file specified by --output)
+ -h | --help               display this message
+ -I | --init FILESYSTEM    initialise the disk with the specified filesytem
+                           DSK will be created if it doesn't exist.
+                           FILESYSTEM can be : prodos,dos33,nadol,pascal,none
+ -l | --list FILENAME      monitor style listing (disassembles 65C02 opcodes)
+ -o | --output FILENAME    specify name to save extracted file as
+ -r | --raw                don't convert files to ASCII
+ -S | --showtrace          show full stack trace on any error
+ -t | --filetype FILETYPE  file type for file being added.
+                           Can be a single letter (A/I/B/T) or number.
+                           Default for DOS 3.3 is 0x00 (Text)
+ -T | --tokenise           (*) tokenise input file before adding
+ -v | --version            show version number
+ -x | --explode            extract all files
+
+  (*) options marked with an asterisk are only available for
+      file systems that have READ/WRITE support.
+
+       Currently supported filesystems:
+               Apple Pascal         (read only)
+               DOS 3.3              (READ/WRITE)
+               NADOL                (READ/WRITE)
+               ProDOS 8             (read only)
+
+       Supports 16 sector DSK images
+       files with extension .gz will be read & written using gzip
+       input files can be URLs
+
+examples:
+
+       dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
+       dsktool.rb --list fid -o fid.lst DOS3MASTR.dsk
+       dsktool.rb --extract "COLOR DEMOSOFT" DOS3MASTR.dsk
+       dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
+       dsktool.rb -x DOS3MASTR.dsk.gz -o /tmp/DOS3MASTR/
+       dsktool.rb --add STARTUP -T nadol.po
+       dsktool.rb --add c:\src\dosdemo\a.out -t B -b $2000 dosdemo.dsk
+       dsktool.rb --init dos33 new_dos_disk.dsk.gz
+       dsktool.rb --I none -B /tmp/a.out demo1.dsk
 
 </pre>
 <ul>
@@ -15,4 +73,4 @@ a browser based DSK archive exploring tool that can explore both local disk and 
 <li><a href=http://rubyforge.org/frs/?group_id=3844>Download</a>
 </ul>
 Jonno Downes - jonno at <a href=http://www.jamtronix.com/>jamtronix.com</a>
-<br><i>Sun Dec 30 15:58:38 +1100 2007</i>
+<br><i>Sun Dec 30 16:22:50 +1100 2007</i>
