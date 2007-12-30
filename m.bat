@@ -1,5 +1,4 @@
 del dsktool-*.gem
 call gem uninstall dsktool
-REM call rdoc -d
-call rdoc
+call rdoc -d
 ruby dsktool.gemspec
