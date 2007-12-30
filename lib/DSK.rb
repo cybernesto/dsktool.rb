@@ -2,13 +2,15 @@ $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 require 'open-uri'
 
+
+
 #
 # For manipulating DSK files, as created by ADT (http://adt.berlios.de) and ADTPRo (http://adtpro.sourceforge.net)
 # used by many Apple 2 emulators.
 #
 class DSK
 
-	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:pascal,:unknown]
+	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:pascal,:unknown,:none]
 	SECTOR_ORDERS=[:physical,:prodos_from_dos]
 	DSK_IMAGE_EXTENSIONS=[".dsk",".po",".do",".hdv"]
 	INTERLEAVES={
@@ -27,7 +29,28 @@ class DSK
 	def file_system
 		:unknown
 	end
+
   
+#add_file takes a *File object (of a type compatible with the underlying file system) and adds it to the in-memory image of this DSK
+#this should be overridden in each  *Disk type that has write support enabled
+  def add_file(new_file)
+    raise "add files to #{file_system} file system not yet supported"
+  end
+
+#make_file creates a *File object (of a type compatible with the underlying file system) from filename, contents and options required
+#for the underlying file system. The file is NOT added to the in-memory image of this DSK (call add_file to do that)
+  def make_file(filename,contents,file_options={})
+    raise "creating files for #{file_system} file system not yet supported"
+  end
+
+  def delete_file(filename)
+    raise "deleting from #{file_system} file system not yet supported"
+  end
+  
+  def free_sector_list
+    raise "listing free sectors on #{file_system} file system not yet supported"
+  end
+
 	# does this DSK have a standard Apple DOS 3.3 VTOC?
 	def	is_dos33?(sector_order)
 		#currently ignores sector order
@@ -75,6 +98,37 @@ class DSK
 		@track_count=file_bytes.length/4096
 	end
 	
+  #write out DSK to file
+  def save_as(filename)
+    if !(filename=~/\.gz$/).nil? then
+			require 'zlib'
+      f=Zlib::GzipWriter.new(open(filename,"wb"))
+    else
+      f=open(filename,"wb")
+    end    
+    f<<@file_bytes
+    f.close
+  end
+			
+
+  #create a new DSK initialised with specified filesystem
+  def DSK.create_new(filesystem)
+     
+    filesystem=:dos33 if filesystem==:dos 
+    
+    case filesystem 
+      when :none
+        return DSK.new()
+      when :nadol
+        return DSK.read(File.dirname(__FILE__)+"/nadol_blank.po.gz")
+      when :dos33 
+        return DSK.read(File.dirname(__FILE__)+"/dos33_blank.dsk.gz")
+    else 
+        raise "initialisation of #{filesystem} file system not currently supported"
+    end
+  end
+  
+  
 	#read in an existing DSK file (must exist)
 	def DSK.read(filename)
 		#is the file extension .gz?
@@ -135,6 +189,27 @@ class DSK
 		@file_bytes[start_byte..start_byte+255]
 	end
 
+ def set_sector(track,sector,contents)
+    physical_sector=INTERLEAVES[@sector_order][sector]
+    start_byte=track*16*256+physical_sector*256
+    (0..255).each do |byte|
+      c=(contents[byte] || 0)
+      @file_bytes[start_byte+byte]=c  
+    end  
+end
+
+  #write supplied code to track 0 (from sector 0 to whatever is required)
+  #code should run from $0801 and can be up to 4KB (16 sectors) in length
+  def set_boot_track(contents)
+    sectors_needed=(contents.length / 256)+1
+    raise "boot code can't exceed 16 sectors" if sectors_needed>16
+    s=sectors_needed.chr+contents
+    for sector in 0..sectors_needed-1
+      sector_data=s[sector*256..255+sector*256]
+      set_sector(0,sector,sector_data)
+    end
+  end
+  
 	def get_block(block_no)
 		track=(block_no / 8).to_i
 		first_sector=2*(block_no % 8)
@@ -146,13 +221,12 @@ class DSK
 		@files
 	end
 
-	#return a formatted hex dump of a single 256 byte sector
+  #return a formatted hex dump of a single 256 byte sector
 	def dump_sector(track,sector)
     require 'DumpUtilities'
 		start_byte=track.to_i*16*256+sector.to_i*256
 		s=hline
 		s<<sprintf("TRACK: $%02X SECTOR $%02X\ OFFSET $%04X\n",track,sector,start_byte)
-		s<< "\t"
 		sector_data=get_sector(track,sector)
 		s<< DumpUtilities.hex_dump(sector_data)
 		s
@@ -186,8 +260,28 @@ private
 		"-"*79+"\n"
 	end
 
-
 end
+
+
+class DSKTrackSector
+  attr_accessor :track_no,:sector_no,:offset
+  def initialize(track_no,sector_no,offset=0x00)
+    @track_no=track_no
+    @sector_no=sector_no
+    @offset=offset
+  end
+  def to_s 
+    sprintf "TRACK $%02X SECTOR $%02X OFFSET $02X",track_no,sector_no,offset
+  end
+  
+  def <=>(other)
+    return -1 unless other.kind_of?DSKTrackSector
+    return track_no<=>other.track_no unless track_no==other.track_no
+    return sector_no<=>other.sector_no unless sector_no==other.sector_no
+    return offset<=>other.offset
+  end
+end
+
 # == Author
 # Jonno Downes (jonno@jamtronix.com)
 #

@@ -9,6 +9,25 @@ class NADOLFile	< DSKFile
 	def file_extension
 		".bin"
 	end
+  
+  def catalog_filename
+    NADOLFile.catalog_filename(filename)
+  end
+  
+  #render the filename in form suitable for inclusion in a NADOL catalog
+  def  NADOLFile.catalog_filename(filename)
+    s=""
+    for i in 0..0X0B
+      c=(filename[i])
+      if c.nil? then
+        c=0xA0        
+        else 
+        c=(c|0x80)
+      end
+      s+=c.chr
+    end
+    s
+  end
 end
 
 #a file on a NADOL dsk that does not appear to be in NADOL tokenised format
@@ -30,9 +49,9 @@ end
 
 #file packed by the NADOL EDITOR application.
 #format is a series of  unnumbered lines, where each line has the following format:
-#  <Length>     (8-bit: including length byte, line no, contents, zero>
+#  <Length>     (8-bit: including length byte,  contents, zero>
 #  <Tokens and/or Characters>
-#  <Zero byte>  ($00, to mark the end of the S-C Asm source line)
+#  <Zero byte>  ($00, to mark the end of the line)
 # each byte in the line is interpreted as follows:
 # $00 - end of line marker
 # $01 - $64 - NADOL tokens
@@ -147,7 +166,7 @@ class NADOLTokenisedFile < NADOLFile
 
 	#check whether a given series of bytes can be a valid NADOL tokenised file
 	#heuristics are:
-	# - bytes 
+	#that each line starts with a line length and ends with a "0"
 	def  NADOLTokenisedFile.can_be_nadol_tokenised_file?(buffer)
 		r=true
 		i=0
@@ -161,10 +180,46 @@ class NADOLTokenisedFile < NADOLFile
 		end
 		r
 	end
-	
+	#
+  def NADOLTokenisedFile.tokenise(buffer)
+   
+    s=""
+    buffer.each("\n") do |line|
+      #trim the trailing \n
+      line.chomp!
+      #first set the high bit in each char
+      for i in 0..line.length-1
+      line[i]=line[i]|0x80
+      end
+
+      #now replace token strings with token number
+      for i in 1..0x64
+        token=" "*NADOL_EDITOR_TOKENS[i].length
+        for j in 0..token.length-1
+          token[j]=NADOL_EDITOR_TOKENS[i][j]|0x80
+        end
+        line.gsub!(token,i.chr)
+      end
+
+      #replace 2 to 15 spaces with a run-length-encoding
+      0x0f.downto(2) do |i|
+      line.gsub!(" "*i,(0x70+i).chr)
+      end
+
+      #now add length to each line
+      s+=((line.length+2).chr)+line+"\0"
+    end
+    
+    if ! NADOLTokenisedFile.can_be_nadol_tokenised_file?(s)
+      raise "tokenisation appears to have failed!"
+  end
+  s
+  end
+  
 	def to_s
 		NADOLTokenisedFile.buffer_as_tokenised_file(@contents)
 	end
+  
 	def file_extension
 		".nad"
 	end

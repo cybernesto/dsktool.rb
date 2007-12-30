@@ -1,30 +1,29 @@
+v0.4.1 
+Added write support to NADOLDisk
+Added write support to DOSDisk
+Added "--add" option to dsktool.rb
+Added "--delete" option to dsktool.rb
+Added "--tokenise" option to dsktool.rb
+Added "--init" option to dsktool.rb
+Added "--bootcode" option to dsktool.rb
+Added "--filetype" option to dsktool.rb
+
 v0.3.1 
-
 Added support for ProDOS disks
-
 Added support for Pascal disks
 Added support for interleaved sectors (e.g. ProDOS disks imaged with ADT)
-
 Added support for AWP files
 Added support for DSKs with more than 35 tracks (modifed DOS or ProDOS volumes)
-
 Added support for HDV images
 Added support for displaying hi-res graphic files as PNGs
 Added romdump.rb
 CHANGE - dsk.dump_catalog now returns a string rather than printing to stdout
-
-CHANGE - all catalogs now show file size in decimal bytes not blocks or sectors
-bugfix - disassembly of X and Y indexed opcodes was displaying 3 bytes but only advancing 2 in buffer
-
-
-
-
+CHANGE - all catalogs now show file size in decimal bytes not blocks or sectorsbugfix - disassembly of X and Y indexed opcodes was displaying 3 bytes but only advancing 2 in buffer
 
 V0.2.1
 Added support for NADOL disks (Nibbles Away Disk Optimized Language)
 Added sector viewer to dskexplorer.rb
 DOS 3.3 support now more robust
-fixed 
 
 V0.1.6
 fixed errors in the gem package
@@ -45,3 +44,4 @@ V0.1.3
 Added support for gzipped files (assumes .gz extension)
 Added support for S-C Assembler files
 Added support for opening URIs
+

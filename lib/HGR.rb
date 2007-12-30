@@ -2,7 +2,7 @@
 $:.unshift(File.dirname(__FILE__)) unless	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 require 'rubygems'
-require_gem 'png', '= 1.0.0'
+gem 'png', '= 1.0.0'
 require 'png'
 #need to add a new method to PNG to get at the raw bytes as the png library only writes to disk
 class PNG
