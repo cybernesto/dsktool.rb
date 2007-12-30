@@ -10,7 +10,7 @@ class DumpUtilities
 			if line.length>0 then
 				 line.each_byte {|byte|
 					  lhs+= sprintf("%02X ", byte)
-					  rhs+= (64+byte%64).chr.sub(/[\x00-\x1f]/,'.')
+					  rhs+= (byte%128).chr.sub(/[\x00-\x1f]/,'.')
 			 	}
 				lhs+=" "*(16-line.length)*3
 				s+=sprintf("%02X\t%s %s\n",start_byte,lhs,rhs)

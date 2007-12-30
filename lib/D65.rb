@@ -84,8 +84,8 @@ OPCODE_SIZE={
 	:zpx,2,
 	:zpy,2,
 	:ind,3,
-	:inx,3,
-	:iny,3,
+	:inx,2,
+	:iny,2,
 	:inz,2,
 	:rel,2
 } 
@@ -123,9 +123,9 @@ end
 				when :zpx then ["$%02X,X",next_byte]
 				when :zpy then ["$%02X,Y",next_byte]
 				when :ind then ["($%04X)",next_word]
-				when :inx then ["($%04X),X",next_word]
-				when :iny then ["($%04X),Y",next_word]
-				when :inz then ["($%02X),Y",next_byte]
+				when :inx then ["($%02X),X",next_byte]
+				when :iny then ["($%02X),Y",next_byte]
+				when :inz then ["($%02X)",next_byte]
 				when :rel then ["$%04X",(current_address+next_byte.chr.unpack("c")[0]+2)%0x10000]
 				else 
 					abort("unknown symbol #{operand_type}")

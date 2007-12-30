@@ -8,25 +8,52 @@ require 'HGR'
 #Apple DOS 3.3 file
 class DOSFile < DSKFile
 	
-	attr_accessor(:filename,:locked,:file_type,:sector_count,:contents) 
-	def initialize(filename,locked,sector_count,contents,file_type=nil)
+	attr_accessor(:filename,:contents,:locked,:file_type_byte) 
+	def initialize(filename,contents,locked=false,file_type_byte=nil)
 		@filename=filename
 		@locked=locked
-		@sector_count=sector_count
-		@file_type= file_type
 		@contents=contents
-	end
+    @file_type_byte=file_type_byte
+    @file_type=sprintf("$%02X",file_type_byte)
+  end
 
 
 	#File type as displayed in Apple DOS 3.3 Catalog
 	def file_type
 		@file_type
 	end
+  def file_type_byte
+		@file_type_byte
+	end
+  
+#render a filename in form suitable for inclusion in a DOS catalog
+  def  DOSFile.catalog_filename(filename)
+    s=""
+    for i in 0..29
+      c=(filename[i])
+      if c.nil? then
+        c=0xA0        
+        else 
+        c=(c|0x80)
+      end
+      s+=c.chr
+    end
+    s
+  end
+
+  def catalog_filename
+    DOSFile.catalog_filename(filename)
+  end
+
 end
 
 class TextFile < DOSFile
 	def file_type
 		"T"
+	end
+  
+  def file_type_byte
+		0x00
 	end
 
 	def file_extension
@@ -35,16 +62,21 @@ class TextFile < DOSFile
 
 	def to_s
 		s=""
-		@contents.each_byte{|b| s+=(b%0x80).chr.tr(0x0D.chr,"\n")}
-		s
+		@contents.each_byte{|b| s+=(b%0x80).chr.tr(0x0D.chr,"\n")}    
+    return s.sub(/\0*$/,"")    
 	end
+
 end
 
 class BinaryFile < DOSFile
 	def file_type
 		"B"
 	end
-	
+  
+	def file_type_byte
+		0x04
+	end
+
 	def file_extension
 		".bin"
 	end
@@ -124,6 +156,10 @@ class IntegerBasicFile < DOSFile
 		".bas"
 	end
 	
+  def file_type_byte
+		0x01
+	end
+
 	#display file with all INTEGER BASIC tokens expanded to ASCII
 	def to_s
 		buffer_as_integer_basic_file(@contents)
@@ -271,6 +307,11 @@ class AppleSoftFile < DOSFile
 	def file_type
 		"A"
 	end
+
+  def file_type_byte
+		0x02
+	end
+
 	#display file with all AppleSoft BASIC tokens expanded to ASCII
 	def to_s
 		buffer_as_applesoft_file(@contents)
@@ -307,6 +348,11 @@ class SCAsmFile < DOSFile
 	def file_type
 		"I"
 	end
+
+  def file_type_byte
+		0x01
+	end
+
 	#display file with all tokens expanded
 	def to_s
 		SCAsmFile.buffer_as_scasm_file(@contents)

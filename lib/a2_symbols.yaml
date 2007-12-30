@@ -78,8 +78,8 @@
 0x3FD: NMI handler - byte 3
 0x3FE: IRQ vector address - (low byte)
 0x3FB: IRQ vector address - (high byte)
-0xC000: 80STOREOFF - Allow page2 to switch video page1 page2 
-0xC001: 80STOREON - Allow page2 to switch main & aux video memory 
+0xC000: KEYBOARD/CLR80COL - read = latched keyboard data, write=disable 80 column memory mapping
+0xC001: SET80COL - enable 80 column memory mapping
 0xC002: RAMRDOFF - Read enable main memory from $0200-$BFFF 
 0xC003: RAMDRON - Read enable aux memory from $0200-$BFFF 
 0xC004: RAMWRTOFF - Write enable main memory from $0200-$BFFF 

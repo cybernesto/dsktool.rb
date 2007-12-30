@@ -15,9 +15,21 @@ class DSKFile
 		@contents
 	end
 
+  def ==(other_object)
+    if  !other_object.kind_of? DSKFile then
+      return false
+    end
+     if self.filename!=other_object.filename then
+       return false
+     end
+    
+    return self.to_s==other_object.to_s
+  end
+  
 	def file_extension
 		".bin"
 	end
+  
 	def hex_dump
     DumpUtilities.hex_dump(@contents)
 	end
@@ -26,6 +38,12 @@ class DSKFile
 	def can_be_picture?
 		false
 	end
+  
+  #how many 256 byte sectors does this file require?
+  #excludes any catalog entry or T/S list
+  def length_in_sectors
+    ((255+contents.length)/256)
+  end
 
 # Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
 #

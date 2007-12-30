@@ -1,0 +1,21 @@
+* Copy files between DSKs 
+
+* NADOL tokenisation - check how NADOL handles tokens appearing inside strings
+
+* Applesoft BASIC Tokenisation
+
+* Integer BASIC Tokenisation
+
+* add/delete DOS files > 122 sectors (i.e. where track/sector list spans more than 1 sector)
+
+* write support for ProDOS
+
+* CP/M file system support (which would also need Z80 disassembly)
+
+* Speed up HGR code
+
+* "native" GUI
+
+* make dskexplorer interface suck less
+
+

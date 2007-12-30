@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Sun Sep 30 11:44:21 +1000 2007</td>
+      <td>Thu Dec 27 15:18:56 +1100 2007</td>
     </tr>
     </table>
   </div>
@@ -67,11 +67,6 @@
 
 
   <div id="contextContent">
-    <div id="diagram">
-      <map id="map" name="map">
-</map>
-<img src="../../dot/f_0.png" usemap="#map" border="0" alt="dot/f_0.png">
-    </div>
 
     <div id="description">
       <p>
@@ -87,23 +82,30 @@ by Apple 2 emulators)
 dsktool.rb [switches] &lt;filename.dsk&gt;
 </p>
 <pre>
+ -a | --add FILENAME          (*) add file
  -c | --catalog               display catalog
+ -d | --dump FILENAME         hex dump
+ -D | --diskdump              hex dump of entire disk
+      --delete FILENAME       (*) delete named file
  -e | --extract FILENAME      extract file by name (either to stdout,
                               or file specified by --output)
  -h | --help                  display this message
- -d | --dump FILENAME         hex dump
- -D | --diskdump              hex dump of entire disk
  -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
  -o | --output FILENAME       specify name to save extracted file as
  -r | --raw                   don't convert files to ASCII
  -v | --version               show version number
+ -T | --tokenise              (*) tokenise input file before adding
  -x | --explode               extract all files
 
+  (*) options marked with an asterisk are only available for
+      file systems that have READ/WRITE support.
+
       Currently supported filesystems:
-              Apple Pascal
-              DOS 3.3
-              NADOL
-              ProDOS 8
+              Apple Pascal         (read only)
+              DOS 3.3              (read only)
+              NADOL                (READ/WRITE)
+              ProDOS 8             (read only)
+
       Supports 16 sector DSK images
       Will uncompress gzipped files (with extension .gz)
       input files can be URLs
@@ -113,13 +115,14 @@ examples:
 </p>
 <pre>
       dsktool.rb -c DOS3MASTR.dsk.gz
+      dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
       dsktool.rb -l FID DOS3MASTR.dsk
       dsktool.rb --list fid -o fid.lst DOS3MASTR.dsk
       dsktool.rb --extract &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
       dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
       dsktool.rb -x DOS3MASTR.dsk.gz
       dsktool.rb -x DOS3MASTR.dsk.gz -o /tmp/DOS3MASTR/
-      dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
+      dsktool.rb --add /tmp/a.out nadol.po
 </pre>
 
     </div>
@@ -128,6 +131,7 @@ examples:
       <h3 class="section-bar">Required files</h3>
 
       <div class="name-list">
+      rubygems&nbsp;&nbsp;
       optparse&nbsp;&nbsp;
       rdoc_patch&nbsp;&nbsp;
       <a href="../../classes/DSK.html">DSK</a>&nbsp;&nbsp;
@@ -153,7 +157,7 @@ examples:
         <tr class="top-aligned-row context-row">
           <td class="context-item-name">DSKTOOL_VERSION</td>
           <td>=</td>
-          <td class="context-item-value">&quot;0.3.1&quot;</td>
+          <td class="context-item-value">&quot;0.4.1&quot;</td>
           <td width="3em">&nbsp;</td>
           <td class="context-item-desc">
 dsktool.rb
@@ -168,23 +172,30 @@ by Apple 2 emulators)
 dsktool.rb [switches] &lt;filename.dsk&gt;
 </p>
 <pre>
+ -a | --add FILENAME          (*) add file
  -c | --catalog               display catalog
+ -d | --dump FILENAME         hex dump
+ -D | --diskdump              hex dump of entire disk
+      --delete FILENAME       (*) delete named file
  -e | --extract FILENAME      extract file by name (either to stdout,
                               or file specified by --output)
  -h | --help                  display this message
- -d | --dump FILENAME         hex dump
- -D | --diskdump              hex dump of entire disk
  -l | --list FILENAME         monitor style listing (disassembles 65C02 opcodes)
  -o | --output FILENAME       specify name to save extracted file as
  -r | --raw                   don't convert files to ASCII
  -v | --version               show version number
+ -T | --tokenise              (*) tokenise input file before adding
  -x | --explode               extract all files
 
+  (*) options marked with an asterisk are only available for
+      file systems that have READ/WRITE support.
+
       Currently supported filesystems:
-              Apple Pascal
-              DOS 3.3
-              NADOL
-              ProDOS 8
+              Apple Pascal         (read only)
+              DOS 3.3              (read only)
+              NADOL                (READ/WRITE)
+              ProDOS 8             (read only)
+
       Supports 16 sector DSK images
       Will uncompress gzipped files (with extension .gz)
       input files can be URLs
@@ -194,13 +205,14 @@ examples:
 </p>
 <pre>
       dsktool.rb -c DOS3MASTR.dsk.gz
+      dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
       dsktool.rb -l FID DOS3MASTR.dsk
       dsktool.rb --list fid -o fid.lst DOS3MASTR.dsk
       dsktool.rb --extract &quot;COLOR DEMOSOFT&quot; DOS3MASTR.dsk
       dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
       dsktool.rb -x DOS3MASTR.dsk.gz
       dsktool.rb -x DOS3MASTR.dsk.gz -o /tmp/DOS3MASTR/
-      dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
+      dsktool.rb --add /tmp/a.out nadol.po
 </pre>
 </td>
         </tr>
