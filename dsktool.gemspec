@@ -9,13 +9,13 @@ spec=Gem::Specification.new do |s|
 	s.summary="a command line tool + libraries for manipulating DSK format images as used by Apple 2 emulators" 
 	candidates=Dir.glob("{bin,doc,lib,test}/**/*")
 	s.files=candidates.delete_if do |item|
-		item.include?(".svn") 
+		item.include?(".svn")  || item.include?(".HDV.gz") 
 	end
 	s.require_path="lib"
 	s.test_file="test/ts_test_all.rb"
 	s.has_rdoc=true
 	s.bindir = "bin"
-	s.executables = ["dsktool.rb","dskexplorer.rb"]
+	s.executables = ["dsktool.rb","dskexplorer.rb","romdump.rb"]
 	s.add_dependency('hpricot')
 	s.add_dependency('png','=1.0.0')
 end
