@@ -20,7 +20,7 @@
 #  -c | --catalog            display catalog
 #  -d | --dump FILENAME      hex dump
 #  -D | --diskdump           hex dump of entire disk
-#       --delete FILENAME    (*) delete named file
+#  -L | --delete FILENAME    (*) delete named file
 #  -e | --extract FILENAME   extract file by name (either to stdout, 
 #                            or file specified by --output)
 #  -h | --help               display this message
@@ -114,7 +114,7 @@ opts.on("-I","--init FILESYSTEM",String) {|val| init_filesystem=val}
 opts.on("-B","--bootcode FILENAME",String) {|val| boot_filename=val}
 opts.on("-t","--filetype FILETYPE",String) {|val| add_file_options[:filetype]=val}
 opts.on("-T","--tokenise") {add_file_options[:tokenise]=true}
-opts.on("-delete","--delete FILENAME",String) {|val| delete_filename=val}
+opts.on("-L","--delete FILENAME",String) {|val| delete_filename=val}
 opts.on("-b","--base BASE",String) {|val| add_file_options[:base]=val}
 
 filename=opts.parse(ARGV)[0] rescue RDoc::usage_from_file(__FILE__,'Usage')
