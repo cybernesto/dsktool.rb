@@ -1,3 +1,8 @@
+v0.4.2
+CHANGE - dsktool.rb - only show disk info on --catalog, not every command
+CHANGE - rename sector orders
+CHANGE - dskexplorer.rb - show full path names
+
 v0.4.1 
 Added write support to NADOLDisk
 Added write support to DOSDisk
