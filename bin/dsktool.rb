@@ -63,7 +63,7 @@
 #	dsktool.rb --I none -B /tmp/a.out demo1.dsk
 
 
-DSKTOOL_VERSION="0.4.1"
+DSKTOOL_VERSION="0.4.2"
 
 #make sure the relevant folder with our libraries is in the require path
 lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
@@ -146,7 +146,6 @@ begin #to wrap a rescue clause
     else File.open(output_filename,"wb")
   end
 
-  puts "#{filename}\nsector order:\t#{dsk.sector_order}\nfilesystem:\t#{dsk.file_system}"
   if (dsk.respond_to?(:volume_name)) then    
     puts "volume name:\t#{dsk.volume_name}"
   end 
@@ -177,6 +176,8 @@ begin #to wrap a rescue clause
   end
 
   if(catalog) then	
+    puts "#{filename}\nsector order:\t#{dsk.sector_order}\nfilesystem:\t#{dsk.file_system}"
+  
     if (dsk.respond_to?(:dump_catalog)) then    
       puts dsk.dump_catalog
     else

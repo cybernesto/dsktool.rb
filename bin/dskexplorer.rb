@@ -37,7 +37,7 @@ opts.on("-p","--port PORT_NUMBER",Integer) {|val| @listening_port=val%0xFFFF}
 opts.on("-r","--root ROOT_DIR",String) {|val| @@root_directory=val}
 
 filename=opts.parse(ARGV)[0] rescue RDoc::usage_from_file(__FILE__,'Usage')
-	
+@@root_directory=File.expand_path(@@root_directory)
 require 'webrick'
 require 'DSK'
 include WEBrick
