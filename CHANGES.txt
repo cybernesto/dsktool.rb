@@ -1,4 +1,5 @@
 v0.4.2
+BUG - "-d" had become "delete" instead of "dump"
 CHANGE - dsktool.rb - only show disk info on --catalog, not every command
 CHANGE - rename sector orders
 CHANGE - dskexplorer.rb - show full path names
