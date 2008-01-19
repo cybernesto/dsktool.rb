@@ -1,3 +1,7 @@
+v0.4.3
+Added ability to read .nib files
+BUG - dskexplorer.rb - remote (http) browsing was busted
+
 v0.4.2
 BUG - "-d" had become "delete" instead of "dump"
 CHANGE - dsktool.rb - only show disk info on --catalog, not every command

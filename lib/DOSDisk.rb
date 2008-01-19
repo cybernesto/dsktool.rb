@@ -84,6 +84,7 @@ require 'DOSFile'
 
 class DOSDisk < DSK
 
+  attr_accessor :vtoc_track_no,:vtoc_sector_no  
 	def dump_catalog
 		s=""
 	files.keys.sort.each { |file_name|		
@@ -94,12 +95,15 @@ class DOSDisk < DSK
 	end
 	
 	def file_system
-		:dos
+		return :dos if (vtoc_track_no==0x11) && (vtoc_sector_no==0)
+    :modified_dos
 	end
 
 
-	def initialize(file_bytes,sector_order)
+	def initialize(file_bytes,sector_order,vtoc_track_no=0x11,vtoc_sector_no=0)
 		super(file_bytes,sector_order)
+    @vtoc_track_no=vtoc_track_no
+    @vtoc_sector_no=vtoc_sector_no
 		self.read_vtoc
 	end
   
@@ -132,7 +136,7 @@ end
 	#reads the VTOC, and populate the "files" array with files
 	def read_vtoc
     @files={}
-		vtoc_sector=get_sector(17,0)
+		vtoc_sector=get_sector(vtoc_track_no,vtoc_sector_no)
 		catalog_sector=get_sector(vtoc_sector[01],vtoc_sector[02])
 		done=false
 		visited_sectors={}
@@ -202,7 +206,7 @@ end
 	end
 #iterate through the CATALOG to find either the named file or (if nil is passed in) an empty slot
 def find_catalog_slot(filename)
-  vtoc_sector=get_sector(17,0)
+  vtoc_sector=get_sector(vtoc_track_no,vtoc_sector_no)
   catalog_filename=DOSFile.catalog_filename(filename.upcase) unless filename.nil?
   catalog_track_no=vtoc_sector[01]
   catalog_sector_no=vtoc_sector[02]
@@ -228,7 +232,7 @@ end
 #iterate through the sector usage bitmap, return a list of [track,sector] for sectors marked available
 def free_sector_list
   end_of_sector_usage_bitmap=(track_count*4+0x38)-1
-  sector_usage_bitmap=get_sector(0x11,0)[0x38..end_of_sector_usage_bitmap]
+  sector_usage_bitmap=get_sector(vtoc_track_no,vtoc_sector_no)[0x38..end_of_sector_usage_bitmap]
   free_sectors=[]
   #skip track 0 - even if sectors there are unused, we can't include them in a catalog or track/sector list
     (1..track_count-1).each do |track|
@@ -268,7 +272,7 @@ end
     file_descriptive_entry=get_sector(this_files_catalog_slot.track_no,this_files_catalog_slot.sector_no)[this_files_catalog_slot.offset..this_files_catalog_slot.offset+0x22]
     
     #mark sector as free in sector usage list
-    sector_usage_bitmap_sector=get_sector(0x11,0)  
+    sector_usage_bitmap_sector=get_sector(vtoc_track_no,vtoc_sector_no)
     sectors_to_mark_available=get_track_sector_list(file_descriptive_entry[0x00],file_descriptive_entry[0x01])
     sectors_to_mark_available<<DSKTrackSector.new(file_descriptive_entry[0x01],file_descriptive_entry[0x00])      
     
@@ -281,7 +285,7 @@ end
       byte_containing_this_sector=byte_containing_this_sector|(2**(ts.sector_no%8))
       sector_usage_bitmap_sector[offset_of_byte_containing_this_sector]=byte_containing_this_sector
     end
-    set_sector(0x11,0,sector_usage_bitmap_sector)
+    set_sector(vtoc_track_no,vtoc_sector_no,sector_usage_bitmap_sector)
     
     #mark slot as available in catalog
     catalog_sector=get_sector(this_files_catalog_slot.track_no,this_files_catalog_slot.sector_no)
@@ -295,8 +299,8 @@ end
   super(track,sector,contents)  
   
   #now mark sector as used in sector usage list  
-  if ((track!=0x11) || (sector!=00)) then #don't bother marking the VTOC sectors used
-    sector_usage_bitmap_sector=get_sector(0x11,0)  
+  if ((track!=vtoc_track_no) || (sector!=vtoc_sector_no)) then #don't bother marking the VTOC sectors used
+    sector_usage_bitmap_sector=get_sector(vtoc_track_no,vtoc_sector_no)  
     offset_of_byte_containing_this_sector=0x38+(track*4)
     if sector<8 then 
         offset_of_byte_containing_this_sector+=1
@@ -304,7 +308,7 @@ end
     byte_containing_this_sector=sector_usage_bitmap_sector[offset_of_byte_containing_this_sector]
     byte_containing_this_sector=byte_containing_this_sector&(0xff-(2**(sector%8)))
     sector_usage_bitmap_sector[offset_of_byte_containing_this_sector]=byte_containing_this_sector
-    set_sector(0x11,0,sector_usage_bitmap_sector)
+    set_sector(vtoc_track_no,vtoc_sector_no,sector_usage_bitmap_sector)
   end
 end
 
