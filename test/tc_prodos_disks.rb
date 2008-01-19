@@ -39,7 +39,7 @@ class TestProDOSDisks <Test::Unit::TestCase
 		dskname=File.dirname(__FILE__)+"//ADTPRO-1.0.1.DSK"
 		dsk=DSK.read(dskname)
 		assert_equal(:prodos,dsk.file_system,"#{dskname} should have ProDOS file system")
-		assert_equal(:prodos_from_dos,dsk.sector_order,"#{dskname} should have DOS sector order")
+		assert_equal(:dos,dsk.sector_order,"#{dskname} should have DOS sector order")
 		assert_equal("ADTPRO.1.0.1",dsk.volume_name)
 
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
@@ -50,7 +50,7 @@ class TestProDOSDisks <Test::Unit::TestCase
 		dskname=File.dirname(__FILE__)+"//Apple Works V5.0 (1993)(Beagle Bros)(Disks 5 of 6).dsk.gz"
 		dsk=DSK.read(dskname)
 		assert_equal(:prodos,dsk.file_system,"#{dskname} should have ProDOS file system")
-		assert_equal(:prodos_from_dos,dsk.sector_order,"#{dskname} should have DOS sector order")
+		assert_equal(:dos,dsk.sector_order,"#{dskname} should have DOS sector order")
 		assert_equal("MOVE13",dsk.volume_name)
 
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
@@ -65,7 +65,7 @@ class TestProDOSDisks <Test::Unit::TestCase
 		dskname=File.dirname(__FILE__)+"//Geos (1988)(Berkeley Softworks)(Disk 1 of 4 Side A).dsk.gz"
 		dsk=DSK.read(dskname)
 		assert_equal(:prodos,dsk.file_system,"#{dskname} should have ProDOS file system")
-		assert_equal(:prodos_from_dos,dsk.sector_order,"#{dskname} should have DOS sector order")
+		assert_equal(:dos,dsk.sector_order,"#{dskname} should have DOS sector order")
 		assert_equal("GEOS.BOOT",dsk.volume_name)
 
 		assert(dsk.files.length>0,"#{dskname} should have at least one file")
