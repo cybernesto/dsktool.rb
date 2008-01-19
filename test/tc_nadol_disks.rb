@@ -62,7 +62,6 @@ class TestNADOLDisks <Test::Unit::TestCase
     #make sure we can overwrite the same file (which also tests we are freeing sectors when files are deleted)
     for i in 0..250
       t=dsk.make_file("MULTICOPY","TEST #{i} ")
-      puts "iteratio #{i}"
       dsk.add_file(t)
       assert_equal(t,dsk.files[t.filename])
     end   
