@@ -10,12 +10,12 @@ require 'open-uri'
 #
 class DSK
 
-	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:pascal,:unknown,:none]
+	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:pascal,:modified_dos,:unknown,:none]
 	SECTOR_ORDERS=[:physical,:dos]
 	DSK_IMAGE_EXTENSIONS=[".dsk",".po",".do",".hdv"]
 	INTERLEAVES={
 		:physical=>   [0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F],
-		:dos=>[0x00,0x0E,0x0D,0x0C,0x0B,0x0A,0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x02,0x01,0x0F]
+		:dos=>[0x00,0x0E,0x0D,0x0C,0x0B,0x0A,0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x02,0x01,0x0F],
 	}
   
 	#does this filename have a suitable extension?
@@ -24,7 +24,8 @@ class DSK
 		DSK_IMAGE_EXTENSIONS.include?(extension)
 	end
 	DSK_FILE_LENGTH=143360
-	attr_accessor :file_bytes,:sector_order,:track_count
+  NIB_FILE_LENGTH=232960
+	attr_accessor :file_bytes,:sector_order,:track_count,:source_filename
 
 	def file_system
 		:unknown
@@ -63,6 +64,11 @@ class DSK
 		(vtoc_sector[01]<=34) && (vtoc_sector[02]<=15) && (vtoc_sector[0x27]==0x7A) && (vtoc_sector[0x35]==0x10)
 	end
 
+  def is_modified_dos?(vtoc_track_no,vtoc_sector_no)
+    vtoc_sector=get_sector(vtoc_track_no,vtoc_sector_no)
+		(vtoc_sector[01]<=34) && (vtoc_sector[02]<=15) && (vtoc_sector[0x27]==0x7A) && (vtoc_sector[0x35]==0x10)
+  end
+  
 	def	is_nadol?(sector_order)
 		#currently ignores sector order
 		# track $00, sector $02 , bytes $11 - "NADOL"
@@ -96,8 +102,9 @@ class DSK
 		@files={}
 		@sector_order=sector_order
 		@track_count=file_bytes.length/4096
+    @source_filename="(unknown)"
 	end
-	
+	  
   #write out DSK to file
   def save_as(filename)
     if !(filename=~/\.gz$/).nil? then
@@ -127,8 +134,53 @@ class DSK
         raise "initialisation of #{filesystem} file system not currently supported"
     end
   end
-  
-  
+
+  #for a generic DSK,return an instance of subclass representing the the best match file system
+  def best_subclass
+    SECTOR_ORDERS.each do |sector_order|
+			begin
+				candidate_filesystem="unknown"
+				if (self.is_dos33?(sector_order)) 
+					require 'DOSDisk'
+					candidate_filesystem="DOS 3.3"
+					return DOSDisk.new(self.file_bytes,sector_order)
+				end
+				
+				if (self.is_nadol?(sector_order)) 
+					require 'NADOLDisk'
+					candidate_filesystem="NADOL"
+					return NADOLDisk.new(self.file_bytes,sector_order)
+				end
+				
+				if (self.is_prodos?(sector_order))
+					require 'ProDOSDisk'
+					candidate_filesystem="ProDOS"
+					return ProDOSDisk.new(self.file_bytes,sector_order)
+				end
+	      
+				if (self.is_pascal?(sector_order))
+					require 'PascalDisk'
+					candidate_filesystem="Pascal"
+					return PascalDisk.new(self.file_bytes,sector_order)
+				end
+			rescue Exception=>e
+				STDERR<<"error while parsing #{self.source_filename} as #{candidate_filesystem} (sector order #{sector_order}\n"
+				STDERR<<"#{e}\n"
+				STDERR<<e.backtrace.join("\n")
+			end      
+		end
+    
+    #if none of the above matched, look for a DOS image with a VTOC in the wrong spot
+    0.upto(0x22) do |track|
+      if (self.is_modified_dos?(track,0)) 
+					require 'DOSDisk'
+					candidate_filesystem="MODIFIED DOS"
+					return DOSDisk.new(self.file_bytes,:physical,track,0)
+				end
+    end
+    #if we didn't find a better match, return self
+    self
+  end
 	#read in an existing DSK file (must exist)
 	def DSK.read(filename)
 		#is the file extension .gz?
@@ -139,46 +191,14 @@ class DSK
 			file_bytes=open(filename,"rb").read
 		end
 		
-
-		dsk=DSK.new(file_bytes)		
-		SECTOR_ORDERS.each do |sector_order|
-			begin
-				candidate_filesystem="unknown"
-				if (dsk.is_dos33?(sector_order)) 
-					require 'DOSDisk'
-					candidate_filesystem="DOS 3.3"
-					dsk=DOSDisk.new(file_bytes,sector_order)
-					break
-				end
-				
-				if (dsk.is_nadol?(sector_order)) 
-					require 'NADOLDisk'
-					candidate_filesystem="NADOL"
-					dsk=NADOLDisk.new(file_bytes,sector_order)
-					break
-				end
-				
-				if (dsk.is_prodos?(sector_order))
-					require 'ProDOSDisk'
-					candidate_filesystem="ProDOS"
-					dsk=ProDOSDisk.new(file_bytes,sector_order)
-					break
-				end
-	      
-				if (dsk.is_pascal?(sector_order))
-					require 'PascalDisk'
-					candidate_filesystem="Pascal"
-					dsk=PascalDisk.new(file_bytes,sector_order)
-					break
-				end
-
-			rescue Exception=>e
-				STDERR<<"error while parsing #{filename} as #{candidate_filesystem} (sector order #{sector_order}\n"
-				STDERR<<"#{e}\n"
-				STDERR<<e.backtrace.join("\n")
-			end
-		end
-		dsk
+    if (file_bytes.length-NIB_FILE_LENGTH).abs<=1 then
+      require 'Nibbles'
+      dsk=Nibbles.make_dsk_from_nibbles(file_bytes)
+    else
+      dsk=DSK.new(file_bytes)
+    end
+    dsk.source_filename=filename		
+		dsk.best_subclass
 	end
 
 	def get_sector(track,requested_sector,sector_order=@sector_order)
