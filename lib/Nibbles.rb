@@ -115,7 +115,7 @@ class Nibbles
         sector_nibbles.each_byte{|b| printf "%02X",b}    
         puts "# end sector data"    
       end
-      next unless sector_nibbles=~/^\xFF*\xD5/
+      next unless sector_nibbles=~/^\xFF*\xD5.*\xD5/
 
       address_field,data_field=/\xFF*(\xD5.*)(\xD5.*)/.match(sector_nibbles).captures
       address_field.each_byte{|b| printf "%02X",b}  if DEBUG
@@ -177,7 +177,7 @@ class Nibbles
       dsk.set_sector(track_no,logical_sector_no,decoded_data[0..255])
       puts dsk.dump_sector(track_no,logical_sector_no) if DEBUG
     end
-    raise "expected 16 sectors but found #{sector_count}" unless sector_count==16
+#    raise "expected 16 sectors but found #{sector_count} in track #{track_no}" unless sector_count==16
   end
 end
 
