@@ -10,6 +10,7 @@
 #
 # dsktool.rb [switches] <filename.dsk>
 #  -a | --add FILENAME       (*) add file
+#  -A | --ascii              force output to be ASCII (even if binary)
 #  -b | --base BASE          use BASE as address to load Binary File
 #                            this will add 2 bytes to the start of file
 #                            BASE should be a hex number 
@@ -93,6 +94,7 @@ opts.on("-v","--version") do
 	exit
 end
 opts.on("-r","--raw") {extract_mode=:raw}
+opts.on("-A","--ascii") {extract_mode=:ascii}
 opts.on("-c","--catalog") {catalog=true}
 opts.on("-D","--diskdump") {diskdump=true}
 opts.on("-x","--explode") {explode=true}
@@ -211,6 +213,7 @@ begin #to wrap a rescue clause
       output_file<< case extract_mode
         when :raw then file.contents
         when :hex then file.hex_dump
+        when :ascii then file.to_ascii          
         when :list then 	
           if file.respond_to?(:disassembly)
             file.disassembly
