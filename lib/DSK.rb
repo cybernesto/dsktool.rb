@@ -10,9 +10,9 @@ require 'open-uri'
 #
 class DSK
 
-	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:pascal,:modified_dos,:unknown,:none]
+	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:cpm,:pascal,:modified_dos,:unknown,:none]
 	SECTOR_ORDERS=[:physical,:dos]
-	DSK_IMAGE_EXTENSIONS=[".dsk",".po",".do",".hdv"]
+	DSK_IMAGE_EXTENSIONS=[".dsk",".po",".do",".hdv",".nib"]
 	INTERLEAVES={
 		:physical=>   [0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F],
 		:dos=>[0x00,0x0E,0x0D,0x0C,0x0B,0x0A,0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x02,0x01,0x0F],
@@ -75,6 +75,27 @@ class DSK
 		(@file_bytes[0x00211..0x00215]=="NADOL")
 	end
 
+  def is_cpm?(sector_order) 
+    #currently ignores sector order
+    #look for a valid looking CPM directory on track 3.
+    #go through each sector in order, for each sector, look at every 32nd byte, and see if it is a valid 'user number' (i.e. a number from 00..0F). Stop looking when you see an 'E5'.
+    #if an invalid user number is found before an E5, then the disk is NOT a CPM disk
+    found_0xE5_byte=false
+    [0x0,0x6,0xC,0x3,0x9,0xF,0xE,0x5].each do |sector_no|
+      sector=get_sector(3,INTERLEAVES[sector_order][sector_no])
+      [0x00,0x20,0x40,0x60,0x80,0xA0,0xC0,0xE0].each do |byte_number|
+        if (sector[byte_number]>0x0F && sector[byte_number]!=0xe5) then
+    #      puts "found #{sprintf '%02x',sector[byte_number]} at #{sprintf '%02x', byte_number} sector #{sprintf '%02x', sector_no}"
+          return false 
+        end
+        if (sector[byte_number]==0xe5) then
+          found_0xE5_byte=true
+        end
+      end
+    end
+    return found_0xE5_byte #if we've only seen 00 bytes, then it's not really a CPM 
+  end
+  
 	def	is_prodos?(sector_order)
 		#block $02 - bytes $00/$01 are both $00, byte $04 is $F?, 
 		#bytes $29-$2A = sectors ( 0x118 on a 35 track 5.25" disk)
@@ -162,6 +183,12 @@ class DSK
 					require 'PascalDisk'
 					candidate_filesystem="Pascal"
 					return PascalDisk.new(self.file_bytes,sector_order)
+				end
+        
+        if (self.is_cpm?(sector_order))
+					require 'CPMDisk'
+					candidate_filesystem="CP/M"
+					return CPMDisk.new(self.file_bytes,sector_order)
 				end
 			rescue Exception=>e
 				STDERR<<"error while parsing #{self.source_filename} as #{candidate_filesystem} (sector order #{sector_order}\n"

@@ -15,6 +15,15 @@ class DSKFile
 		@contents
 	end
 
+  def to_ascii
+    s=""
+		@contents.each_byte do |b|
+      s+=(b%0x80).chr.gsub(0x0D.chr,"\r\n")#.gsub(0x0A.chr,"\n")
+    end
+    return s.gsub(/\0/," ")
+    #return s.sub(/\0*$/,"")
+  end
+  
   def ==(other_object)
     if  !other_object.kind_of? DSKFile then
       return false

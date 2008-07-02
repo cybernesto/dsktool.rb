@@ -1,6 +1,10 @@
+v0.5.1
+Added read support for CPM disks
+
 v0.4.3
 Added ability to read .nib files
 BUG - dskexplorer.rb - remote (http) browsing was busted
+added "--ascii" option to dsktool.rb
 
 v0.4.2
 BUG - "-d" had become "delete" instead of "dump"
@@ -29,6 +33,7 @@ Added support for displaying hi-res graphic files as PNGs
 Added romdump.rb
 CHANGE - dsk.dump_catalog now returns a string rather than printing to stdout
 CHANGE - all catalogs now show file size in decimal bytes not blocks or sectorsbugfix - disassembly of X and Y indexed opcodes was displaying 3 bytes but only advancing 2 in buffer
+
 
 V0.2.1
 Added support for NADOL disks (Nibbles Away Disk Optimized Language)
