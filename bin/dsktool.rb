@@ -64,7 +64,7 @@
 #	dsktool.rb --I none -B /tmp/a.out demo1.dsk
 
 
-DSKTOOL_VERSION="0.4.3"
+DSKTOOL_VERSION="0.5.1"
 
 #make sure the relevant folder with our libraries is in the require path
 lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
