@@ -147,6 +147,9 @@ class DSK
     case filesystem 
       when :none
         return DSK.new()
+     when :cpm
+        require 'CPMDisk'
+        return CPMDisk.new("\xe5"*DSK_FILE_LENGTH,:physical)
       when :nadol
         return DSK.read(File.dirname(__FILE__)+"/nadol_blank.po.gz")
       when :dos33 

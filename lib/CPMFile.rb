@@ -8,7 +8,10 @@ class CPMFile < DSKFile
   attr_accessor :file_type
   def CPMFile.split_filename(filename)
     filename=~/^([^.]{1,8})(\.([^.]{0,3}))?$/ #filename should have 1-8 chars, then optionally a dot and up to 3 more chars.		
-		return [$1,$3]
+    partial_filename=$1
+    ext=$3
+    ext="" if ext.nil?
+		return [partial_filename,ext]
   end
 	def initialize(filename,contents)    
 		@filename,@file_type=CPMFile.split_filename(filename)
@@ -17,7 +20,11 @@ class CPMFile < DSKFile
 	end
   
   def full_filename
-    "#{@filename}.#{@file_type}"
+    if @file_type=="" then
+      @filename
+    else      
+      "#{@filename}.#{@file_type}"
+    end
   end
     
 	def to_s

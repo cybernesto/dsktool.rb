@@ -61,6 +61,10 @@ class CPMDisk < DSK
 		:cpm
 	end
 	
+  def make_file(filename,contents,file_options={})
+    return CPMFile.new(filename,contents)
+  end
+
   
   def delete_file(full_filename)
     catalog=get_block(0)+get_block(1)

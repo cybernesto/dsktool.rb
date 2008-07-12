@@ -1,5 +1,5 @@
 dsktool.rb is a command line tool + libraries (all in ruby) for manipulating DSK format images 
-used by Apple 2 emulators. Currently only DOS 3.3 and NADOL file systems are supported. 
+used by Apple 2 emulators. 
 
 
 PLATFORM SPECIFIC NOTES

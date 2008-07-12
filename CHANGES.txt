@@ -1,5 +1,5 @@
 v0.5.1
-Added read support for CPM disks
+Added read/write support for CPM disks
 Added support for unprotected MBASIC files
 
 v0.4.3
