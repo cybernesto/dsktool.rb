@@ -144,7 +144,7 @@ end
 			break if catalog_sector.nil?
 			(0..6).each {|file_number|
 				file_descriptive_entry_start=11+file_number*35
-				file_descriptive_entry=catalog_sector[file_descriptive_entry_start..file_descriptive_entry_start+35]					
+				file_descriptive_entry=catalog_sector[file_descriptive_entry_start,36]					
 				break if (file_descriptive_entry[0]==0xFF) # skip deleted files
 				filename=""
 				file_descriptive_entry[3..32].to_s.each_byte{|b| filename+=(b.%128).chr}
@@ -344,7 +344,7 @@ def add_file(file)
     sector_to_use=free_sectors[sector_in_file+1]
     track_sector_list[(sector_in_file*2)+0x0C]=sector_to_use.track_no
     track_sector_list[(sector_in_file*2)+0X0D]=sector_to_use.sector_no
-    sector_contents=file.contents[(sector_in_file*256)..(sector_in_file*256)+255] || ""
+    sector_contents=file.contents[(sector_in_file*256),256] || ""
     set_sector(sector_to_use.track_no,sector_to_use.sector_no,sector_contents)
   end
   #write the track/sector list
