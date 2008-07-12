@@ -6,11 +6,14 @@ require 'HGR'
 
 class CPMFile < DSKFile
   attr_accessor :file_type
-	def initialize(filename,contents,file_type)
-		raise "filename too long - #{filename}" unless filename.length<=15
-		@filename=filename
-		@contents=contents
-    @file_type=file_type
+  def CPMFile.split_filename(filename)
+    filename=~/^([^.]{1,8})(\.([^.]{0,3}))?$/ #filename should have 1-8 chars, then optionally a dot and up to 3 more chars.		
+		return [$1,$3]
+  end
+	def initialize(filename,contents)    
+		@filename,@file_type=CPMFile.split_filename(filename)
+    raise "invalid filename #{filename}" if @filename.nil?
+		@contents=contents    
 	end
   
   def full_filename
@@ -18,7 +21,7 @@ class CPMFile < DSKFile
   end
     
 	def to_s
-    @contents
+    @contents.gsub(/\x1A*$/,'')
 	end
   
 	def file_extension
@@ -38,10 +41,7 @@ class MBASICFile<CPMFile
   
   #the CP/M MBASIC file format is very similar to the MS-DOS BASICA/GWBASIC formats, described at
   #http://www.chebucto.ns.ca/~af380/GW-BASIC-tokens.html
-  #The differences are:
-  #     tokens have different values
-  #     the order of bytes in the floating byte values is reversed. i.e +1.5 is stored as 0x00,0x00,0x40,0x81 not 0x81,0x40,0x00,0x00
-
+  
   SINGLE_BYTE_TOKENS={
 	0x81=>'END',
 	0x82=>'FOR',
@@ -301,7 +301,6 @@ def buffer_as_gbasic(buffer)
 					token=SINGLE_BYTE_TOKENS[c]
 				end
 				s+=(token.nil?) ? sprintf("[%02X]",c):token
-
 
 			end
 		end

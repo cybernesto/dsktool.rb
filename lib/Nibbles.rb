@@ -139,7 +139,8 @@ class Nibbles
       0.upto(341) do |i|
         undecoded_byte=undecoded_data[i]
         decoded_byte=DATA_TRANSLATE_TABLE.index(undecoded_byte)
-        raise "invalid nibble #{sprintf '%02X',undecoded_byte} at nibble #{i}, track #{track_no}, sector #{sector_no}" if decoded_byte.nil?
+        decoded_byte=0 if decoded_byte.nil?
+        #raise "invalid nibble #{sprintf '%02X',undecoded_byte} at nibble #{i}, track #{track_no}, sector #{sector_no}" if decoded_byte.nil?
         decoded_byte^=checksum
         if i<86 then
           destination_offset=341-i

@@ -84,7 +84,7 @@ class DSK
     [0x0,0x6,0xC,0x3,0x9,0xF,0xE,0x5].each do |sector_no|
       sector=get_sector(3,INTERLEAVES[sector_order][sector_no])
       [0x00,0x20,0x40,0x60,0x80,0xA0,0xC0,0xE0].each do |byte_number|
-        if (sector[byte_number]>0x0F && sector[byte_number]!=0xe5) then
+        if (sector[byte_number]>0x0F && sector[byte_number]!=0xe5 && sector[byte_number]!=0x1F) then
     #      puts "found #{sprintf '%02x',sector[byte_number]} at #{sprintf '%02x', byte_number} sector #{sprintf '%02x', sector_no}"
           return false 
         end
@@ -233,7 +233,7 @@ class DSK
 		raise "bad sector_order #{sector_order}" if INTERLEAVES[sector_order].nil?
 		physical_sector=INTERLEAVES[sector_order][requested_sector]
 		start_byte=track*16*256+physical_sector*256
-		@file_bytes[start_byte..start_byte+255]
+		@file_bytes[start_byte,256]
 	end
 
  def set_sector(track,sector,contents)
@@ -252,7 +252,7 @@ end
     raise "boot code can't exceed 16 sectors" if sectors_needed>16
     s=sectors_needed.chr+contents
     for sector in 0..sectors_needed-1
-      sector_data=s[sector*256..255+sector*256]
+      sector_data=s[sector*256,256]
       set_sector(0,sector,sector_data)
     end
   end
