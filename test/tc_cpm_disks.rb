@@ -25,7 +25,7 @@ class TestCPMDisks <Test::Unit::TestCase
 		dskname=File.dirname(__FILE__)+"//STARCPM.DSK"
 		dsk=DSK.read(dskname)
 		assert_equal(:cpm,dsk.file_system,"#{dskname} should be CPM format")
-    puts dsk.dump_catalog
+    
     assert(dsk.files.length>0,"#{dskname} should have at least one file")
 		doc_file=dsk.files["STAR.DOC"]
 		assert(doc_file!=nil,"#{dskname} should have a file called STAR.DOC")
@@ -44,6 +44,10 @@ class TestCPMDisks <Test::Unit::TestCase
     dsk.save_as("cpm_write_test.dsk")   #save for later examination
     assert(dsk.files[test_file.full_filename]!=nil,"#{dskname} should have a file called #{test_file.full_filename}")
     assert_equal(test_file.contents.length,dsk.files[test_file.full_filename].contents.length)
+    
+    test_file=CPMFile.new("NO_TYPE","file has no extension")
+    dsk.add_file(test_file)
+    assert(dsk.files["NO_TYPE"]!=nil,"#{dskname} should have a file called NO_TYPE")
     
     #test we can add the same file multiple times without raising an exception
     100.times do

@@ -27,7 +27,7 @@
 #  -h | --help               display this message
 #  -I | --init FILESYSTEM    initialise the disk with the specified filesytem
 #                            DSK will be created if it doesn't exist.
-#                            FILESYSTEM can be : prodos,dos33,nadol,pascal,none
+#                            FILESYSTEM can be : cpm,dos33,nadol,pascal,none
 #  -l | --list FILENAME      monitor style listing (disassembles 65C02 opcodes)
 #  -o | --output FILENAME    specify name to save extracted file as
 #  -r | --raw                don't convert files to ASCII
@@ -44,6 +44,7 @@
 #    
 #	Currently supported filesystems:
 #		Apple Pascal         (read only)
+#		CP/M                 (READ/WRITE)
 #		DOS 3.3              (READ/WRITE)
 #		NADOL                (READ/WRITE)
 #		ProDOS 8             (read only)
@@ -61,7 +62,7 @@
 #	dsktool.rb --add STARTUP -T nadol.po
 #	dsktool.rb --add c:\src\dosdemo\a.out -t B -b $2000 dosdemo.dsk
 #	dsktool.rb --init dos33 new_dos_disk.dsk.gz
-#	dsktool.rb --I none -B /tmp/a.out demo1.dsk
+#	dsktool.rb -I none -B /tmp/a.out demo1.dsk
 
 
 DSKTOOL_VERSION="0.5.1"
