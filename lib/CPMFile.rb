@@ -7,7 +7,7 @@ require 'HGR'
 class CPMFile < DSKFile
   attr_accessor :file_type
   def CPMFile.split_filename(filename)
-    filename=~/^([^.]{1,8})(\.([^.]{0,3}))?$/ #filename should have 1-8 chars, then optionally a dot and up to 3 more chars.		
+    filename=~/^([^.]{0,8})(\.([^.]{0,3}))?$/ #filename should have 0-8 chars, then optionally a dot and up to 3 more chars.		
     partial_filename=$1
     ext=$3
     ext="" if ext.nil?
