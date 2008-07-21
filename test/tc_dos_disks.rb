@@ -134,6 +134,20 @@ class TestDOSDisks <Test::Unit::TestCase
 
 	end
 
+def test_musiccomp_file
+		dskname=File.dirname(__FILE__)+"//music.dsk"
+		dsk=DSK.read(dskname)
+		assert_equal(:dos,dsk.file_system,"#{dskname} should be DOS 3.3 format")
+		assert(dsk.files.length>0,"#{dskname} should have at least one file")		
+		file=dsk.files["ENTERTAINER ;MUSIC"]
+		assert(file!=nil,"#{dskname} should have a file called ENTERTAINER ;MUSIC")
+		assert(file.instance_of?(MusiCompFile),"ENTERTAINER ;MUSIC should be a MusiComp file")
+		assert(!file.can_be_picture?,"ENTERTAINER ;MUSIC should NOT be viewable as a picture")
+		assert(file.to_s.length>0,"ENTERTAINER ;MUSIC should have non-zero length")
+		assert_equal("MThd",file.to_s[0,4],"ENTERTAINER ;MUSIC should start with a MIDI header (MThd)")
+end
+	
+
 	def test_scasm_file
 		dskname=File.dirname(__FILE__)+"//AAL_1.DSK"
 		dsk=DSK.read(dskname)

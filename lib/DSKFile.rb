@@ -1,59 +1,25 @@
 $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
+require 'FSImageFile'
 
-require 'DumpUtilities'
 #Generic Apple II file
-class DSKFile	
-	attr_accessor(:filename,:contents) 
-	def initialize(filename,contents)
-		@filename=filename
-		@contents=contents
-	end
+class DSKFile	<FSImageFile
 
-	def to_s
-		@contents
-	end
-
+  #how many 256 byte sectors does this file require?
+  #excludes any catalog entry or T/S list
+  def length_in_sectors
+    ((255+contents.length)/256)
+  end
+  
   def to_ascii
     s=""
 		@contents.each_byte do |b|
       s+=(b%0x80).chr.gsub(0x0D.chr,"\r\n")#.gsub(0x0A.chr,"\n")
     end
     return s.gsub(/\0/," ")
-    #return s.sub(/\0*$/,"")
   end
   
-  def ==(other_object)
-    if  !other_object.kind_of? DSKFile then
-      return false
-    end
-     if self.filename!=other_object.filename then
-       return false
-     end
-    
-    return self.to_s==other_object.to_s
-  end
-  
-	def file_extension
-		".bin"
-	end
-  
-	def hex_dump
-    DumpUtilities.hex_dump(@contents)
-	end
-
-	#default is files can NOT be displayed as a picture
-	def can_be_picture?
-		false
-	end
-  
-  #how many 256 byte sectors does this file require?
-  #excludes any catalog entry or T/S list
-  def length_in_sectors
-    ((255+contents.length)/256)
-  end
-
 # Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
 #
 #Applesoft file format:

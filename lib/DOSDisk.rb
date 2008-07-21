@@ -87,8 +87,7 @@ class DOSDisk < DSK
   attr_accessor :vtoc_track_no,:vtoc_sector_no  
 	def dump_catalog
 		s=""
-	files.keys.sort.each { |file_name|		
-			file=files[file_name]	
+	files.each { |file|		
 			s<< "#{file.locked ? '*':' '}#{file.file_type} #{sprintf('%04d',file.contents.length)} #{file.filename}\n"
 		}
 		s
@@ -135,7 +134,7 @@ end
 
 	#reads the VTOC, and populate the "files" array with files
 	def read_vtoc
-    @files={}
+    @files=FileContainer.new
 		vtoc_sector=get_sector(vtoc_track_no,vtoc_sector_no)
 		catalog_sector=get_sector(vtoc_sector[01],vtoc_sector[02])
 		done=false
@@ -174,11 +173,11 @@ end
 						}
 					end
 					if contents.length>0 then
-						@files[filename]= case file_type_code
+						@files<< case file_type_code
 							when 0x00 then TextFile.new(filename,contents,locked)
 							when 0x01 then SCAsmFile.can_be_scasm_file?(contents)? SCAsmFile.new(filename,contents,locked): IntegerBasicFile.new(filename,contents,locked)
 							when 0x02 then AppleSoftFile.new(filename,contents,locked)
-							when 0x04 then BinaryFile.new(filename,contents,locked)
+							when 0x04 then MusiCompFile.can_be_musicomp_file?(filename,contents)? MusiCompFile.new(filename,contents,locked): BinaryFile.new(filename,contents,locked)
 	#						when 0x08 then "S"	#S type file
 	#						when 0x10 then "R"	#RELOCATABLE object module file
 	#						when 0x20 then "a"	#??

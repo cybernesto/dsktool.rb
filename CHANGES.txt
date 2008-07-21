@@ -1,3 +1,10 @@
+v0.6.1
+Added support for CBM (D64) images
+
+
+v0.5.2
+Added support for extracting MUSICOMP files as MIDI
+
 v0.5.1
 Added read/write support for CPM disks
 Added support for unprotected MBASIC files

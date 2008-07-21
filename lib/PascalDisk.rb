@@ -31,8 +31,7 @@ class PascalDisk < DSK
 
 	def dump_catalog
 		s=""
-		files.keys.sort.each { |file_name|		
-			file=files[file_name]	
+		files.each { |file|		
 			s<< "#{sprintf('% 6d',file.contents.length)}\t #{file.file_type}\t#{file.filename}\n"
 		}
 		s
@@ -90,7 +89,7 @@ class PascalDisk < DSK
             else
               file_contents<<this_block 
             end
-          files[file_name]=PascalFile.new(file_name,file_contents,file_type)
+          files<<PascalFile.new(file_name,file_contents,file_type)
         end        
       end
 	end

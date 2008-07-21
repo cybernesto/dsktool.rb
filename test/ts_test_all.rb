@@ -9,3 +9,6 @@ require 'tc_disassembly'
 require 'tc_nadol_disks'
 require 'tc_pascal_disks'
 require 'tc_modified_dos_disks'
+require 'tc_d64'
+
+require 'tc_generic_images'

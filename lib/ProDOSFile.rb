@@ -5,11 +5,12 @@ require 'DSKFile'
 
 #ProDOS file
 class ProDOSFile < DSKFile
-	attr_accessor :file_type,:aux_type
+	attr_accessor :file_type,:aux_type,:full_filename
 	
-	def initialize(filename,contents,file_type,aux_type)
+	def initialize(filename,contents,file_type,aux_type,full_filename)
 		raise "filename too long - #{filename}" unless filename.length<=15
 		@filename=filename
+    @full_filename=full_filename
 		@contents=contents
 		@file_type=PRODOS_FILE_TYPES[file_type]
 		@file_type=sprintf('$%02X',file_type) if @file_type.nil?
