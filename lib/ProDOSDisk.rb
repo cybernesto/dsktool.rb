@@ -13,9 +13,8 @@ class ProDOSDisk < DSK
 	end
 	def dump_catalog
 		s=""
-		files.keys.sort.each { |file_name|		
-			file=files[file_name]
-			s<< "#{sprintf('% 6d',file.contents.length)}\t #{file.file_type} : $#{sprintf '%X',file.aux_type}\t#{file_name}\n"
+		files.each { |file|
+			s<< "#{sprintf('% 6d',file.contents.length)}\t #{file.file_type} : $#{sprintf '%X',file.aux_type}\t#{file.full_filename}\n"
 		}
 		s
 	end
@@ -101,12 +100,13 @@ class ProDOSDisk < DSK
 				blocks_used=directory_entry[0x13]+directory_entry[0x14]*0x100
 				file_length=directory_entry[0x15]+directory_entry[0x16]*0x100+directory_entry[0x17]*0x10000
 				aux_type=directory_entry[0x1f]+directory_entry[0x20]*0x100
+        full_filename="#{dir_path}#{name}"
 				case storage_type
 					when 0x00 then
 						#nop
 					when 0x01 then  #it's a seedling
-						file_contents=get_block(key_pointer)
-						files[name]=ProDOSFile.new(name,file_contents,file_type,aux_type)
+						file_contents=get_block(key_pointer)            
+						files<<ProDOSFile.new(name,file_contents,file_type,aux_type,full_filename)
 					when 0x02 then  #it's a sapling
 						block_list=[]
 						index_block=get_block(key_pointer)
@@ -124,8 +124,8 @@ class ProDOSDisk < DSK
 								file_contents+=get_block(next_block_no)
 							end
 						end
-						file_contents=file_contents[0..file_length-1]
-						files["#{dir_path}#{name}"]=ProDOSFile.new(name,file_contents,file_type,aux_type)						
+						file_contents=file_contents[0..file_length-1]            
+						files<<ProDOSFile.new(name,file_contents,file_type,aux_type,full_filename)
 					when 0x03 then  #it's a tree
 						master_index_block=get_block(key_pointer)
 						block_list=[]
@@ -153,7 +153,7 @@ class ProDOSDisk < DSK
 							end
 						end
 						file_contents=file_contents[0..file_length-1]
-						files["#{dir_path}#{name}"]=ProDOSFile.new(name,file_contents,file_type,aux_type)						
+						files<<ProDOSFile.new(name,file_contents,file_type,aux_type,full_filename)
 					when 0x0D then 	#it's a subdirectory pointer
 						read_catalog(key_pointer,"#{dir_path}#{name}/")
 					when 0x0E then 	#it's a subdirectory header

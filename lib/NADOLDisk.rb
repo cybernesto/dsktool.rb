@@ -29,8 +29,7 @@ class NADOLDisk < DSK
 
 	def dump_catalog
 		s=""
-		files.keys.sort.each { |file_name|		
-			file=files[file_name]	
+		files.each { |file|		
 			s<< "#{sprintf('% 6d',file.contents.length)} #{file.filename}\n"
 		}
 		s
@@ -197,7 +196,7 @@ end
 	# 0E - track of track sector list sector
 	# 0F - sector of track sector list sector
 	def read_catalog
-    @files={}
+    @files=FileContainer.new
     track=0
     sector=3
     while (sector<=9) do
@@ -217,9 +216,9 @@ end
             end
             contents=contents[0..file_size-1]
             if (NADOLTokenisedFile.can_be_nadol_tokenised_file?(contents)) then
-              @files[filename]= NADOLTokenisedFile.new(filename,contents)
+              @files<< NADOLTokenisedFile.new(filename,contents)
             else
-              @files[filename]= NADOLBinaryFile.new(filename,contents)
+              @files<<NADOLBinaryFile.new(filename,contents)
             end
           end
         end

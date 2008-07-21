@@ -17,6 +17,7 @@ spec=Gem::Specification.new do |s|
 	s.bindir = "bin"
 	s.executables = ["dsktool.rb","dskexplorer.rb","romdump.rb"]
 	s.add_dependency('hpricot')
+  s.add_dependency('midilib')
 	s.add_dependency('png','=1.0.0')
 end
 if $0 == __FILE__

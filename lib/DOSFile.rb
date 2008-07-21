@@ -320,8 +320,92 @@ class AppleSoftFile < DOSFile
 	def file_extension
 		".bas"
 	end
+end
 
-end
+#Apple MusiComp / MusicMaster files are binary files with the following structure:
+#00..01  where to load to (like any BIN file)
+#02..03 length of file
+#04..end of file = <data>, where data is of the form...
+#         00..31     : note (4 octaves, note 0=D, 1=D#, 2=E, 3=F etc)
+#         32..        : rest
+#         80..FF     : "mode"
+#                        bits 0..1 = timbre            
+#                        bits 2..4 = length (whole,half,quarter,8th,sixteenth,dotted half,dotted quarter,dotted 8th)
+#                        bits 5..6 = mode: the options are 0=H>S, 1=H>H, 2=S>S. but not sure what that actually means
+
+class MusiCompFile < BinaryFile
+  NOTES=["D","D#","E","F","F#","G","G#","A","A#","B","C","C#"]
+ 
+  NOTE_LENGTHS=[
+	"whole",
+	"half",
+	"quarter",
+	"8th",
+	"sixteenth",
+	"dotted half",
+	"dotted quarter",
+	"dotted 8th",
+]
+
+  NOTE_MODES=[:H_S,:H_H, :S_S]
+  TIMBRES=[	"Bright Acoustic Piano",	"Harmonica",	"Electric Guitar (clean)",	"French Horn"]
+
+  def MusiCompFile.can_be_musicomp_file?(filename,contents)
+    return false unless filename=~/ ;MU.{0,3}$/
+    track_length=(contents[0x02,2].unpack("v")[0])-2
+    return (track_length<contents.length-4)
+  end
+  
+  def file_extension 
+    ".mid"
+  end
+  
+  def can_be_midi?
+    true
+  end
+  
+  def to_s
+    to_midi
+  end
+  
+  def to_midi
+    track_length=(@contents[0x02,2].unpack("v")[0])-2
+    track_contents=@contents[4,track_length]
+    require 'midilib/sequence'
+    require 'midilib/consts'
+    seq = MIDI::Sequence.new()
+    track = MIDI::Track.new(seq)
+    seq.tracks << track
+    track.events << MIDI::Tempo.new(MIDI::Tempo.bpm_to_mpq(130))
+    track.events << MIDI::MetaEvent.new(MIDI::META_SEQ_NAME, @filename)
+    length=NOTE_LENGTHS[0]
+    delta=seq.note_to_delta(length)
+    #track.events << MIDI::ProgramChange.new(0, 25, 0)
+    
+    track_contents.each_byte do |byte|
+      if byte==50 then  #rest
+        track.events << MIDI::NoteOnEvent.new(0, 0, 0, 0)
+        track.events << MIDI::NoteOffEvent.new(0, 0, 0, delta)
+        
+      elsif byte<=0x80 then #a note
+        note=NOTES[byte%12]
+        octave=byte/4	
+        track.events << MIDI::NoteOnEvent.new(0, 14 + byte, 127, 0)
+        track.events << MIDI::NoteOffEvent.new(0, 14 + byte, 127,  delta)
+
+      else #mode control code
+        mode=NOTE_MODES[byte%4]
+        length=NOTE_LENGTHS[(byte/4)%8]
+        delta=seq.note_to_delta(length)
+        timbre=(byte/32)%4
+      end
+    end
+    require 'stringio'
+    op=StringIO.new("","wb")
+    seq.write(op)
+    op.string
+    end
+end
 
 # Adapted from FID.C -- a utility to browse Apple II .DSK image files by Paul Schlyter (pausch@saaf.se)
 #

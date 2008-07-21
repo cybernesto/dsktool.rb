@@ -2,17 +2,16 @@ $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 require 'open-uri'
 
-
-
+require 'FSImage'
+require 'FileContainer'
 #
 # For manipulating DSK files, as created by ADT (http://adt.berlios.de) and ADTPRo (http://adtpro.sourceforge.net)
 # used by many Apple 2 emulators.
 #
-class DSK
+class DSK < FSImage
 
 	FILE_SYSTEMS=[:prodos,:dos33,:nadol,:cpm,:pascal,:modified_dos,:unknown,:none]
-	SECTOR_ORDERS=[:physical,:dos]
-	DSK_IMAGE_EXTENSIONS=[".dsk",".po",".do",".hdv",".nib"]
+	SECTOR_ORDERS=[:physical,:dos]	
 	INTERLEAVES={
 		:physical=>   [0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F],
 		:dos=>[0x00,0x0E,0x0D,0x0C,0x0B,0x0A,0x09,0x08,0x07,0x06,0x05,0x04,0x03,0x02,0x01,0x0F],
@@ -21,37 +20,29 @@ class DSK
 	#does this filename have a suitable extension?
 	def DSK.is_dsk_file?(filename)
 		extension=File.extname(File.basename(filename,".gz")).downcase
-		DSK_IMAGE_EXTENSIONS.include?(extension)
+		FSImage::DSK_IMAGE_EXTENSIONS.include?(extension)
 	end
 	DSK_FILE_LENGTH=143360
   NIB_FILE_LENGTH=232960
-	attr_accessor :file_bytes,:sector_order,:track_count,:source_filename
+	attr_accessor :sector_order,:source_filename
 
+  def sectors_in_track
+    [16]*track_count
+  end
+    
+  #what track does counting start from? usually 0 (Apple 2) or 1 (CBM)?
+  def start_track
+    0
+  end
+  
 	def file_system
 		:unknown
 	end
 
-  
-#add_file takes a *File object (of a type compatible with the underlying file system) and adds it to the in-memory image of this DSK
-#this should be overridden in each  *Disk type that has write support enabled
-  def add_file(new_file)
-    raise "add files to #{file_system} file system not yet supported"
-  end
-
-#make_file creates a *File object (of a type compatible with the underlying file system) from filename, contents and options required
-#for the underlying file system. The file is NOT added to the in-memory image of this DSK (call add_file to do that)
-  def make_file(filename,contents,file_options={})
-    raise "creating files for #{file_system} file system not yet supported"
-  end
-
-  def delete_file(filename)
-    raise "deleting from #{file_system} file system not yet supported"
+  def target_system
+      :apple_2
   end
   
-  def free_sector_list
-    raise "listing free sectors on #{file_system} file system not yet supported"
-  end
-
 	# does this DSK have a standard Apple DOS 3.3 VTOC?
 	def	is_dos33?(sector_order)
 		#currently ignores sector order
@@ -120,44 +111,31 @@ class DSK
 			raise "DSK files must be #{DSK_FILE_LENGTH} bytes long (was #{file_bytes.length} bytes)"
 		end
 		@file_bytes=file_bytes
-		@files={}
+		@files=FileContainer.new
 		@sector_order=sector_order
 		@track_count=file_bytes.length/4096
     @source_filename="(unknown)"
 	end
-	  
-  #write out DSK to file
-  def save_as(filename)
-    if !(filename=~/\.gz$/).nil? then
+	
+	#read in an existing DSK file (must exist)
+	def DSK.read(filename)
+		#is the file extension .gz?
+		if !(filename=~/\.gz$/).nil? then
 			require 'zlib'
-      f=Zlib::GzipWriter.new(open(filename,"wb"))
+			file_bytes=Zlib::GzipReader.new(open(filename,"rb")).read
+		else
+			file_bytes=open(filename,"rb").read
+		end
+		
+    if (file_bytes.length-NIB_FILE_LENGTH).abs<=1 then
+      require 'Nibbles'
+      dsk=Nibbles.make_dsk_from_nibbles(file_bytes)
     else
-      f=open(filename,"wb")
-    end    
-    f<<@file_bytes
-    f.close
-  end
-			
-
-  #create a new DSK initialised with specified filesystem
-  def DSK.create_new(filesystem)
-     
-    filesystem=:dos33 if filesystem==:dos 
-    
-    case filesystem 
-      when :none
-        return DSK.new()
-     when :cpm
-        require 'CPMDisk'
-        return CPMDisk.new("\xe5"*DSK_FILE_LENGTH,:physical)
-      when :nadol
-        return DSK.read(File.dirname(__FILE__)+"/nadol_blank.po.gz")
-      when :dos33 
-        return DSK.read(File.dirname(__FILE__)+"/dos33_blank.dsk.gz")
-    else 
-        raise "initialisation of #{filesystem} file system not currently supported"
+      dsk=DSK.new(file_bytes)
     end
-  end
+    dsk.source_filename=filename		
+		dsk.best_subclass
+	end
 
   #for a generic DSK,return an instance of subclass representing the the best match file system
   def best_subclass
@@ -211,26 +189,7 @@ class DSK
     #if we didn't find a better match, return self
     self
   end
-	#read in an existing DSK file (must exist)
-	def DSK.read(filename)
-		#is the file extension .gz?
-		if !(filename=~/\.gz$/).nil? then
-			require 'zlib'
-			file_bytes=Zlib::GzipReader.new(open(filename,"rb")).read
-		else
-			file_bytes=open(filename,"rb").read
-		end
-		
-    if (file_bytes.length-NIB_FILE_LENGTH).abs<=1 then
-      require 'Nibbles'
-      dsk=Nibbles.make_dsk_from_nibbles(file_bytes)
-    else
-      dsk=DSK.new(file_bytes)
-    end
-    dsk.source_filename=filename		
-		dsk.best_subclass
-	end
-
+	
 	def get_sector(track,requested_sector,sector_order=@sector_order)
 		raise "bad sector #{requested_sector}" unless requested_sector.between?(0,0x0F)
 		raise "bad sector_order #{sector_order}" if INTERLEAVES[sector_order].nil?
@@ -267,49 +226,7 @@ end
 		return self.get_sector(track,first_sector)+self.get_sector(track,first_sector+1)
 	end
 
-	def files
-		@files
-	end
-
-  #return a formatted hex dump of a single 256 byte sector
-	def dump_sector(track,sector)
-    require 'DumpUtilities'
-		start_byte=track.to_i*16*256+sector.to_i*256
-		s=hline
-		s<<sprintf("TRACK: $%02X SECTOR $%02X\ OFFSET $%04X\n",track,sector,start_byte)
-		sector_data=get_sector(track,sector)
-		s<< DumpUtilities.hex_dump(sector_data)
-		s
-	end
-
-	#return a formatted hex dump of a single 256 byte sector
-	def disassemble_sector(track,sector)
-		require 'D65'
-		sector_data=get_sector(track,sector)
-		if (track==0) && (sector==0) then
-			return D65.disassemble(sector_data[1..255],0x801)
-		else
-			return D65.disassemble(sector_data)
-		end
-	end
-
-	#return a formatted hex dump of all sectors on all tracks
-	def hex_dump
-		s=""
-		(0..34).each {|track|
-			(0..15).each {|sector|
-				s<<dump_sector(track,sector)
-			}
-		}
-		s
-	end
 	
-private
-
-	def hline
-		"-"*79+"\n"
-	end
-
 end
 
 

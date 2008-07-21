@@ -4,8 +4,10 @@
 #
 # == Synopsis
 #
-# Manipulate DSK format files (as used by Apple 2 emulators)
-#
+# Manipulate file system images as used by vintage computer emulators
+# Currently supports
+#   DSK images (as used by Apple 2 emulators)
+#   D64 images (as used by C64 emulators)
 # == Usage
 #
 # dsktool.rb [switches] <filename.dsk>
@@ -43,29 +45,33 @@
 #       file systems that have READ/WRITE support.
 #    
 #	Currently supported filesystems:
+#	Apple 2 filesytems
 #		Apple Pascal         (read only)
 #		CP/M                 (READ/WRITE)
 #		DOS 3.3              (READ/WRITE)
 #		NADOL                (READ/WRITE)
 #		ProDOS 8             (read only)
 #
-#	Supports 16 sector DSK images 
+#	CBM filesystems
+#		CBM DOS 2.6          (read only)
+#
+#	Supports 16 sector DSK images and 35-40 track D64 images
 #	files with extension .gz will be read & written using gzip
 #	input files can be URLs
 #
 # examples:
-#	dsktool.rb -c http://jamtronix.com/dsks/apshai.dsk.gz
+#	dsktool.rb -c http://jamtronix.com/dsks/apshai.fsimage.gz
 #	dsktool.rb --list fid -o fid.lst DOS3MASTR.dsk
 #	dsktool.rb --extract "COLOR DEMOSOFT" DOS3MASTR.dsk
 #	dsktool.rb -e HELLO -o HELLO.bas DOS3MASTR.dsk
-#	dsktool.rb -x DOS3MASTR.dsk.gz -o /tmp/DOS3MASTR/
+#	dsktool.rb -x DOS3MASTR.fsimage.gz -o /tmp/DOS3MASTR/
 #	dsktool.rb --add STARTUP -T nadol.po
 #	dsktool.rb --add c:\src\dosdemo\a.out -t B -b $2000 dosdemo.dsk
-#	dsktool.rb --init dos33 new_dos_disk.dsk.gz
+#	dsktool.rb --init dos33 new_dos_disk.fsimage.gz
 #	dsktool.rb -I none -B /tmp/a.out demo1.dsk
 
 
-DSKTOOL_VERSION="0.5.1"
+DSKTOOL_VERSION="0.6.1"
 
 #make sure the relevant folder with our libraries is in the require path
 lib_path=File.expand_path(File.dirname(__FILE__)+"//..//lib")
@@ -124,19 +130,19 @@ filename=opts.parse(ARGV)[0] rescue RDoc::usage_from_file(__FILE__,'Usage')
 RDoc::usage_from_file(__FILE__,'Usage') if (filename.nil?)
 
 	
-require 'DSK'
+require 'FSImage'
 
 begin #to wrap a rescue clause
 
   begin
    
   if !init_filesystem.nil? then
-    dsk=DSK.create_new(:"#{init_filesystem}")
-    dsk.save_as(filename)
+    fsimage=FSImage.create_new(:"#{init_filesystem}")
+    fsimage.save_as(filename)
   end
 
 
-  dsk=DSK.read(filename)
+  fsimage=FSImage.read(filename)
   rescue 
     #if we run dsktool.rb in a batch or shell file iterating over a bunch of dsk files, we may not know what file	
     #has the error
@@ -149,40 +155,43 @@ begin #to wrap a rescue clause
     else File.open(output_filename,"wb")
   end
 
-  if (dsk.respond_to?(:volume_name)) then    
-    puts "volume name:\t#{dsk.volume_name}"
+  if (fsimage.respond_to?(:volume_name)) then    
+    puts "volume name:\t#{fsimage.volume_name}"
   end 
   if (diskdump) then
-    puts dsk.hex_dump
+    puts fsimage.hex_dump
   end
 
   if !boot_filename.nil? then
-    dsk.set_boot_track(File.open(boot_filename,"rb").read)
-    dsk.save_as(filename)
+    fsimage.set_boot_track(File.open(boot_filename,"rb").read)
+    fsimage.save_as(filename)
   end
 
   if (!delete_filename.nil?) then
-    if dsk.files[delete_filename].nil? then
+    if fsimage.files[delete_filename].nil? then
       puts "#{delete_filename.upcase} not found in #{filename}"
     else
       puts "deleting #{delete_filename}"
-      dsk.delete_file(delete_filename)
-      dsk.save_as(filename)
+      fsimage.delete_file(delete_filename)
+      fsimage.save_as(filename)
     end
   end
 
   if (!add_filename.nil?) then
     filecontents=File.open(add_filename,"rb").read
-    new_file=dsk.make_file(File.basename(add_filename).upcase,filecontents,add_file_options)
-    dsk.add_file(new_file)
-    dsk.save_as(filename)
+    new_file=fsimage.make_file(File.basename(add_filename).upcase,filecontents,add_file_options)
+    fsimage.add_file(new_file)
+    fsimage.save_as(filename)
   end
 
   if(catalog) then	
-    puts "#{filename}\nsector order:\t#{dsk.sector_order}\nfilesystem:\t#{dsk.file_system}"
-  
-    if (dsk.respond_to?(:dump_catalog)) then    
-      puts dsk.dump_catalog
+    [:target_system,:sector_order,:file_system].each do |att|
+      if (fsimage.respond_to?(att)) then    
+        puts "#{att.to_s}:\t#{fsimage.send(att)}"
+      end 
+    end
+    if (fsimage.respond_to?(:dump_catalog)) then    
+      puts fsimage.dump_catalog
     else
       puts "#{filename} does not have a recognised file system"
     end
@@ -194,7 +203,7 @@ begin #to wrap a rescue clause
       Dir.mkdir(output_dir)	
     end
         
-    dsk.files.each_value do |f|
+    fsimage.files.each_value do |f|
       if (extract_mode==:raw) then
         output_filename=output_dir+"/"+f.filename+".raw"
         File.open(output_filename,"wb") <<f.contents
@@ -207,7 +216,7 @@ begin #to wrap a rescue clause
 
 
   if (!extract_filename.nil?) then
-    file=dsk.files[extract_filename]
+    file=fsimage.files[extract_filename]
     if file.nil? then
       puts "'#{extract_filename}' not found in #{filename}"
     else

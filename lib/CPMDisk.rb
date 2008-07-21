@@ -44,9 +44,8 @@ class CPMDisk < DSK
   
 	def dump_catalog
 		s=""
-		files.keys.sort.each { |file_name|		
-			file=files[file_name]	
-			s<< sprintf("% 12s % 6d \n",file.full_filename,file.contents.length)
+		files.each { |file|		
+			s<< sprintf("% -12s % 6d \n",file.full_filename,file.contents.length)
 		}
 		s
 	end
@@ -132,7 +131,7 @@ class CPMDisk < DSK
 	def read_catalog
     @free_blocks=[]
     @free_directory_entries=[]
-    @files={}
+    @files=FileContainer.new
     #first two blocks are where the catalog lives
     (2..((track_count-3)*4)-1).each {|block| @free_blocks<<block}
     catalog=get_block(0)+get_block(1)
@@ -152,7 +151,7 @@ class CPMDisk < DSK
           file=CPMFile.new("#{file_name}.#{file_ext}",'')
         end
         if @files[file.full_filename].nil? then
-          @files[file.full_filename]=file 
+          @files<<file 
         end
         s=""
         0x10.upto(0x1f) do |i|
