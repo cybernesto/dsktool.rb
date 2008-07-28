@@ -1,11 +1,11 @@
 #!/usr/bin/ruby
-# fsimageexplorer.rb
+# dskexplorer.rb
 #
 # == Synopsis
 # A web-based DSK and D64 file explorer
 #
 # == Usage
-# fsimageexplorer.rb [switches] 
+# dskexplorer.rb [switches] 
 #
 #  -h | --help               display this message
 #  -p | --port PORT_NUMBER   port number to listen on (default is 6502)
@@ -23,21 +23,25 @@ $:.unshift(lib_path) unless $:.include?(lib_path)
 
 require 'optparse'
 require 'rdoc_patch' #RDoc::usage patched to work under gem executables
-fsimageexplorer_VERSION="0.1.0"
+	require 'hpricot'
+	require 'open-uri'
 
+dskexplorer_VERSION="0.2.0"
+IS_WEBSITE_REGEX=/^http[s]?:/
+IS_FTP_SITE_REGEX=/^ftp:/
 @listening_port=6502
 @@root_directory="."
 opts=OptionParser.new
 opts.on("-h","--help") {RDoc::usage_from_file(__FILE__)}
 opts.on("-v","--version") do
-	puts File.basename($0)+" "+fsimageexplorer_VERSION
+	puts File.basename($0)+" "+dskexplorer_VERSION
 	exit
 end
 opts.on("-p","--port PORT_NUMBER",Integer) {|val| @listening_port=val%0xFFFF}
 opts.on("-r","--root ROOT_DIR",String) {|val| @@root_directory=val}
 
 filename=opts.parse(ARGV)[0] rescue RDoc::usage_from_file(__FILE__,'Usage')
-@@root_directory=File.expand_path(@@root_directory) unless @@root_directory=~/^http[s]?:/
+@@root_directory=File.expand_path(@@root_directory) unless (@@root_directory=~IS_WEBSITE_REGEX || @@root_directory=~IS_FTP_SITE_REGEX)
 require 'webrick'
 require 'FSImage'
 include WEBrick
@@ -67,15 +71,18 @@ def common_header
 end
 def common_footer
 "
-<p><i>this is alpha software - please send feedback using the <a href=http://rubyforge.org/tracker/?group_id=3844> fsimagetool.rb forum</a><p>
+<p><i>this is alpha software - please send feedback using the <a href=http://rubyforge.org/tracker/?group_id=3844> dsktool.rb forum</a><p>
 "
 end
 
 def root_dir_is_website?
-	require 'hpricot'
-	require 'open-uri'
-	@@root_directory=~/^http[s]?:/?true : false
+	@@root_directory=~IS_WEBSITE_REGEX ?true : false
 end
+
+def root_dir_is_ftp_site?
+	@@root_directory=~IS_FTP_SITE_REGEX ?true : false
+end
+
 def make_absolute_path(relative_path)
 	if root_dir_is_website? then
 		@@root_directory+uri_encode(relative_path)
@@ -106,6 +113,21 @@ def get_directories_and_files(relative_path)
 				fsimage_files<<(href)
 			end
 		end
+  elsif root_dir_is_ftp_site? then
+    require 'net/ftp'
+    require 'uri'    
+    ftp_uri=URI.parse(absolute_path)
+    ftp=Net::FTP.new(ftp_uri.host)
+    ftp.login(ftp_uri.user.nil? ? 'anonymous': ftp_uri.user,ftp_uri.password)
+    ftp.nlst(ftp_uri.path).each do |f|
+      #yes this is a horrible hack - assume that filenames with a . are files, if no dot then assume it's a directory
+      if f=~/\./ then
+        fsimage_files<<f if (FSImage.is_fsimage_file?(f))
+      else
+        directories<<f
+      end
+    end
+    ftp.quit
 	else 
 		if File.exist?(absolute_path) && (File.stat(absolute_path).directory?) then
 			dir=Dir.new(absolute_path)
@@ -118,7 +140,7 @@ def get_directories_and_files(relative_path)
 	[directories,fsimage_files]
 end
 
-def make_navigation_path(relative_path,filenumber=nil,display_mode=nil)
+def make_navigation_path(relative_path)
 	path_parts=relative_path.split("/")
 	#make the cookie-crumb-trail 
 	partial_path=""
@@ -133,21 +155,16 @@ def make_navigation_path(relative_path,filenumber=nil,display_mode=nil)
 			end
 		end
 	end
-	
-	mode_param=""	
-	if !display_mode.nil? then
-		mode_param="&mode=#{display_mode}"
-	end
-#	if !filename.nil? then
-#		s<<"/<a href=/showfile/#{uri_encode(relative_path)+'?filename='+uri_encode(filename)}#{mode_param}>#{filename}</a>"
-#	end
+	s
+end
 
-	
+  def show_files_and_directories(relative_path)
+	    
+	s=""
 	#show the contents of the current directory
 	directories,fsimage_files=get_directories_and_files(relative_path)
 
-	#list out the directories
-	
+	#list out the directories	
 	s<<"<ul>"
 	#s<<"<li>[dir] <a href=/#{uri_encode('/dir/'+File.dirname(relative_path))}>..</a>\n"
 	directories.sort.each do |d|
@@ -187,6 +204,8 @@ def make_catalog(relative_path)
 					s<<"<td><a href=#{display_url}&mode=png>picture</a></td>"
         elsif f.can_be_midi? then
 					s<<"<td><a href=#{display_url}&mode=midi>midi</a></td>"
+        elsif f.respond_to?(:can_be_basic?) && f.can_be_basic?
+					s<<"<td><a href=#{display_url}&mode=text>list basic</a></td>"
 				elsif f.respond_to?(:disassembly)
 					s<<"<td><a href=#{display_url}&mode=list>disassembly</a></td>"
 				else 					
@@ -257,7 +276,8 @@ def show_file(relative_path,filenumber,display_mode)
 	if file.nil? then
 		s="<i>file number #{filenumber} not found</i>"
 	else 
-		s="<hl><pre>"
+    s="<p><b>#{file.full_filename}</b><pr>\n"
+		s<<"<hl><pre>"
 		if display_mode=="hex" then
 			s<<html_escape(file.hex_dump)
     elsif display_mode=="list" && file.respond_to?(:disassembly) then
@@ -281,7 +301,7 @@ class DirectoryServlet < HTTPServlet::AbstractServlet
 	def do_GET(req,res)
 		relative_path=URI.unescape(req.path).sub(/^\/dir/,"")
 		res['Content-Type']="text/html"
-		res.body=common_header+make_navigation_path(relative_path)+common_footer
+		res.body=common_header+make_navigation_path(relative_path)+show_files_and_directories(relative_path)+common_footer
 	end
 end
 
@@ -299,7 +319,7 @@ class ShowFileServlet < HTTPServlet::AbstractServlet
 		filenumber=URI.unescape(req.query['filenumber']).to_i
 		display_mode=req.query['mode']
 		res['Content-Type']="text/html"
-		res.body=common_header+make_navigation_path(relative_path,filenumber,display_mode)+show_file(relative_path,filenumber,display_mode)+common_footer
+		res.body=common_header+make_navigation_path(relative_path)+show_file(relative_path,filenumber,display_mode)+common_footer
 	end
 end
 

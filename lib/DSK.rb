@@ -226,6 +226,16 @@ end
 		return self.get_sector(track,first_sector)+self.get_sector(track,first_sector+1)
 	end
 
+  #return a formatted hex dump of a single 256 byte sector
+	def disassemble_sector(track,sector)
+		require 'D65'
+		sector_data=get_sector(track,sector)
+		if (track==0) && (sector==0) then
+			return D65.disassemble(sector_data[1..255],0x801)
+		else
+			return D65.disassemble(sector_data)
+		end
+	end
 	
 end
 
