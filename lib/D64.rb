@@ -94,7 +94,7 @@ class D64 <CBMImage
   def read_directory
       dir_track_no=18
       dir_sector_no=1      
-      until dir_track_no==0 do 
+      until dir_track_no==0 || dir_track_no> end_track do 
         directory_sector=get_sector(dir_track_no,dir_sector_no)        
         dir_track_no=directory_sector[0]
         dir_sector_no=directory_sector[1]
@@ -105,7 +105,7 @@ class D64 <CBMImage
             file_track_no=directory_entry[0x03]
             file_sector_no=directory_entry[0x04]
             file_contents=""
-            until file_track_no==0 do
+            until file_track_no==0 || file_track_no> end_track do
               file_sector=get_sector(file_track_no,file_sector_no)
               file_track_no=file_sector[0]
               file_sector_no=file_sector[1]
@@ -116,39 +116,7 @@ class D64 <CBMImage
         end
       end
   end
-	#does this filename have a suitable extension?
-	#~ def D64.is_d64_file?(filename)
-		#~ extension=File.extname(File.basename(filename,".gz")).downcase
-		#~ DSK_IMAGE_EXTENSIONS.include?(extension)
-	#~ end
-	#~ 
-	#~
-  
-  #~ def add_file(new_file)
-    #~ raise "add files not yet supported"
-  #~ end
-  
-#~ #make_file creates a *File object (of a type compatible with the underlying file system) from filename, contents and options required
-#~ #for the underlying file system. The file is NOT added to the in-memory image of this DSK (call add_file to do that)
-  #~ def make_file(filename,contents,file_options={})
-    #~ raise "creating files not yet supported"
-  #~ end
-
-  #~ def delete_file(filename)
-    #~ raise "deleting not yet supported"
-  #~ end
-  	  
-  #~ #write out DSK to file
-  #~ def save_as(filename)
-    #~ if !(filename=~/\.gz$/).nil? then
-			#~ require 'zlib'
-      #~ f=Zlib::GzipWriter.new(open(filename,"wb"))
-    #~ else
-      #~ f=open(filename,"wb")
-    #~ end    
-    #~ f<<@file_bytes
-    #~ f.close
-  #~ end
+	
 			
   #read in an existing D64 file (must exist)
 	def D64.read(filename)
