@@ -36,7 +36,7 @@ HGR_BLUE=PNG::Color.new(0x30,0x8F,0xE3,0xFF)	#color=6
 
 HGR_COLS=40*7
 HGR_ROWS=8*8*3
-SCALE=2
+SCALE=1
 
 #per Apple // Reference Manual for //e chapter 2, pages 22-35
 #also TechNote - Apple IIe #3 Double High-Resolution Graphics - http://web.pdx.edu/~heiss/technotes/aiie/tn.aiie.03.html

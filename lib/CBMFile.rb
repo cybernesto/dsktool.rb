@@ -2,6 +2,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 	$:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 require 'D64'
+require 'D65'
 require 'FSImageFile'
 #CBM DOS File
 
@@ -40,7 +41,6 @@ class CBMFile		< FSImageFile
 	end
   
 	def disassembly
-    require 'D65'
 		start_address=(@contents[0]+@contents[1]*256)
 		D65.disassemble(contents_without_header,start_address)
 	end
@@ -177,6 +177,7 @@ CBM_BASIC_TOKENS={
   def to_cbm_basic_file
     s=""
     p=2 #skip over first 2 bytes, which are where a PRG file would get relocated to
+    
     end_of_file=false
     #
     while p<@contents.length && !end_of_file do
@@ -206,6 +207,9 @@ CBM_BASIC_TOKENS={
       end
       end_of_file=(@contents[p]==0 && @contents[p+1]==0) #is the address of the next line $0000?
     end
+    rest_of_file=@contents[p+2,0xFFFF]
+    start_address=p+(@contents[0]+@contents[1]*256)
+    s+=D65.disassemble(rest_of_file,start_address) unless rest_of_file.nil?
     s
   end
 end
