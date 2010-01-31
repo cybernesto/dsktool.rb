@@ -22,8 +22,12 @@ class DumpUtilities
   def DumpUtilities.font_dump(buffer)
   #treat buffer as a set 8 bit wide characters
   s=""
+  c=0
   buffer.each_byte do |byte| 
+      s<<sprintf(";char %02x\n",c>>3) if c%8==0
       s<<sprintf("%08b\n",byte).tr("1","#").tr("0"," ")
+      c+=1
+      
   end
   s
   end

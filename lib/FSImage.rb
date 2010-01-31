@@ -7,9 +7,6 @@ require 'open-uri'
 #
 class FSImage
 
-	DSK_IMAGE_EXTENSIONS=[".dsk",".po",".do",".hdv",".nib"]
-  CBM_IMAGE_EXTENSIONS=[".d64"]
-	
 	attr_accessor :file_bytes,:track_count,:source_filename
 
   def target_system
